@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>9. Session Management - URL Rewriting</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>9. Session Management - URL Rewriting</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-url">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>Some browsers (strict privacy / cookies blocked) will not store <code>JSESSIONID</code>. The session can still work if every next link carries the id: <code>Url2;jsessionid=...</code>. You must build that link with <code>response.encodeURL</code>, not with a raw href. This lab also passes <code>s_id1</code> and <code>s_id2</code> as ordinary query parameters (they are not the Tomcat session id).</p>
+<p>If cookies are off, Tomcat cannot send <code>JSESSIONID</code> as a cookie.
+<b>URL rewriting</b> appends the session id to links: <code>Url2;jsessionid=...</code>.</p>
+<p>You must build links with <code>response.encodeURL(...)</code>. If you write a raw href, the session can be lost.</p>
+<p>This lab also passes two extra query ids: <code>s_id1</code> and <code>s_id2</code>. Those are request parameters, not the Tomcat session id.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> If the luggage tag (cookie) will not stick, write the PNR <b>on the next boarding pass</b> (<code>;jsessionid=...</code>). Build that pass with <code>encodeURL</code>, not with a handwritten href.</p>
+<h3>The story (cookies blocked on a phone)</h3>
+<p>Safari / privacy mode may block cookies. Then Tomcat cannot keep <code>JSESSIONID</code> as a sticker. The hotel guest file (HttpSession) can still work if <b>every next link</b> carries the token in the URL:</p>
+<p><code>Url2;jsessionid=ABC123?s_id1=054&amp;s_id2=055</code></p>
+<p>Think of a queue token printed on the slip you take to the next counter, because the sticker on your shirt fell off.</p>
+<p>This lab also sends <code>s_id1</code> and <code>s_id2</code>. Those are ordinary query parameters (extra notes on the slip). They are <b>not</b> the Tomcat session id. Viva: do not mix them.</p>
+<p>If you write <code>&lt;a href="Url2"&gt;</code> by hand, you forgot to copy the token. The next counter treats you as a new stranger.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Daily life</th><th>Java</th></tr>
+<tr><td>Cookies blocked on the phone</td><td>No <code>JSESSIONID</code> cookie</td></tr>
+<tr><td>Print token on the next slip</td><td><code>response.encodeURL("Url2?...")</code></td></tr>
+<tr><td>Extra notes on the slip</td><td><code>s_id1</code>, <code>s_id2</code> query parameters</td></tr>
+<tr><td>Handwritten link without the token</td><td>Raw href — session can be lost</td></tr>
+</table>
+<h3>What you will see</h3>
+<p>Click the Url1 link. If cookies are off, the address bar shows <code>;jsessionid=</code>. Url2 still prints the two query ids.</p>
+<h3>Easy mistake</h3>
+<p>Calling query parameters “the session id.” Session id is <code>jsessionid</code>. <code>s_id1</code> is just data this program chose to send.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Phone with cookies blocked</h3>
+<p>Browser Settings → block cookies. A shopping cart that used only cookies would empty. encodeURL keeps the cart session in the link.</p>
+<h3>Older net-banking sites</h3>
+<p>You have seen long URLs with <code>;jsessionid=</code>. That is URL rewriting for customers who disable cookies.</p>
+<h3>Cafe Wi-Fi login page</h3>
+<p>If the next button is a raw <code>&lt;a href="Url2"&gt;</code> without encodeURL, the rewritten id is lost and you look “logged out”.</p>
+</div>
+
+<div class="section"><h2>B) When to use URL rewriting</h2>
+<table>
+<tr><th>Use encodeURL / URL rewriting when</th><th>Do not rely on it when</th></tr>
+<tr><td>Cookies may be disabled</td><td>You already know cookies work and you only need a cookie demo</td></tr>
+<tr><td>You print an &lt;a href&gt; that must keep the session</td><td>You type the next URL by hand without encodeURL</td></tr>
+<tr><td>You need session tracking plus extra query data (s_id1, s_id2)</td><td>You confuse query parameters with jsessionid (they are different)</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 9.1 — URL rewriting in Url1 / Url2</h3>
+<div class="flow"><div class="box">1. Execute Url1</div><div class="arrow">&rarr;</div><div class="box">2. encodeURL(Url2?s_id1=&amp;s_id2=)</div><div class="arrow">&rarr;</div><div class="box">3. Student clicks link</div><div class="arrow">&rarr;</div><div class="box">4. Url2 getParameter</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> encodeURL keeps session possible without cookies. Query parameters are just extra data.</div>
+<ol class="steps-n"><li>Url1 builds a link to Url2 with two query parameters.</li><li>encodeURL may add ;jsessionid=... if cookies are off.</li><li>The student clicks the link (GET).</li><li>Url2 prints s_id1 and s_id2.</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<pre class="syntax">String url = response.encodeURL("Url2?s_id1=054&amp;s_id2=055");
+out.println("&lt;a href='" + url + "'&gt;next page&lt;/a&gt;");
+
+// Url2
+String a = request.getParameter("s_id1");
+String b = request.getParameter("s_id2");
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>encodeURL(url)</code></td><td>May append ;jsessionid= if needed. Always use for session links.</td></tr><tr><td><code>s_id1 / s_id2</code></td><td>Normal query parameters. Not the session id.</td></tr><tr><td><code>getParameter</code></td><td>Reads those query values on Url2.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>If the browser will not store cookies, put identity in the link itself.</p>
+<article class="fn">
+<h3>1. Function: <code>encodeURL</code></h3>
+<p><b>Simple meaning:</b> If a session exists and cookies are off, Tomcat adds ;jsessionid=... to the URL. If cookies work, the URL stays clean.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String url = response.encodeURL("Url2?s_id1=" + id1 + "&amp;s_id2=" + id2);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>The next-page path plus your query string</td></tr>
+<tr><td>Returns</td><td>String (safe link to print in HTML)</td></tr>
+<tr><td>When to use (USE)</td><td>Always when you print a link to the next servlet in a session lab.</td></tr>
+<tr><td>Lab example</td><td>Url1 prints a link to Url2 with both roll numbers in the query.</td></tr>
+<tr><td>Common mistake</td><td>Hard-coding the next URL without encodeURL when cookies are disabled — session is lost.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>getParameter (from the rewritten URL)</code></h3>
+<p><b>Simple meaning:</b> Reads the ids that travelled in the query string (and still works if jsessionid is in the path).</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String a = request.getParameter("s_id1");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>s_id1 / s_id2</td></tr>
+<tr><td>Returns</td><td>String</td></tr>
+<tr><td>When to use (USE)</td><td>Url2 page shows both numbers.</td></tr>
+<tr><td>Lab example</td><td>Address bar shows Url2?s_id1=054&amp;s_id2=055</td></tr>
+<tr><td>Common mistake</td><td>Using POST for this lab — the point is to see ids in the URL.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>Type <code>jakarta.servlet</code> in every program. Extra imports (Cookie, HttpSession, RequestDispatcher) are added in later chapters when needed.</p>
+</div>
+
+<div class="why"><b>Matched programs:</b> Url1 then Url2.</div>
+
+<div class="section"><h2>F) Complete Java programs — every line explained</h2>
+<pre class="syntax">import java.io.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+
+public class Url1 extends HttpServlet {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String id1 = request.getParameter("s_id1");     // Extra data, NOT jsessionid
+        String id2 = request.getParameter("s_id2");
+        if (id1 == null) { id1 = "054"; }               // Default roll-like token
+        if (id2 == null) { id2 = "055"; }
+        String url = response.encodeURL("Url2?s_id1=" + id1 + "&amp;s_id2=" + id2);
+        // encodeURL may insert ;jsessionid=... before ? if cookies are off
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h2&gt;Url1&lt;/h2&gt;");
+        out.println("&lt;p&gt;&lt;a href='" + url + "'&gt;next page&lt;/a&gt;&lt;/p&gt;"); // Must use encoded URL
+        out.println("&lt;p&gt;&lt;a href='url.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+<pre class="syntax">public class Url2 extends HttpServlet {
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h2&gt;Url2&lt;/h2&gt;");
+        out.println("&lt;p&gt;s_id1=" + request.getParameter("s_id1") + "&lt;/p&gt;"); // Query value
+        out.println("&lt;p&gt;s_id2=" + request.getParameter("s_id2") + "&lt;/p&gt;");
+        out.println("&lt;p&gt;&lt;a href='url.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Url1&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Url1&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Url1&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Url1&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Url2&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Url2&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Url2&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Url2&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../url.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-4">ICA Practical 04</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-4">ICA Practical 04</a></div>
+</div>
+</body>
+</html>

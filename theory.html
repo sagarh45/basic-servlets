@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Theory · Unit-II Servlets · WIT Solapur</title>
+<link rel="stylesheet" href="portal.css?v=2100">
+<script src="portal.js?v=2100" defer></script>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a class="on" href="theory.html">Theory</a>
+    <a href="programs.html">Programs</a>
+    <a href="practicals.html">ICA Practicals</a>
+  </nav>
+  <div class="grow"></div>
+  <button class="iconbtn" type="button" id="paletteBtn">Jump</button>
+  <button class="iconbtn" type="button" id="themeBtn">Dark</button>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="kicker">Tab 1 · Complete theory package · English</span>
+    <h1>Visual theory: Servlets and session tracking</h1>
+    <p>Read this map first. Open each chapter for deep English notes: a daily-life story (restaurant, Gmail, hospital, UPI), what you will see, the matching Java, labelled diagrams, functions with syntax, and complete code.</p>
+  </section>
+
+  <div class="labstack">
+    <b>Lab stack:</b> Apache Tomcat 11.0.24 · JDK 17+ · <code>jakarta.servlet.*</code> (not <code>javax.servlet</code>).
+    <a href="setup.html">Open Lab Setup</a>
+  </div>
+
+  <h2>A) Picture of a request (whole unit)</h2>
+  <div class="diag">
+    <h3>Browser → Tomcat 11 → your servlet → HTML back</h3>
+    <div class="flow">
+      <div class="box">1. Student browser</div><div class="arrow">→</div>
+      <div class="box">2. HTTP GET/POST</div><div class="arrow">→</div>
+      <div class="box">3. Tomcat 11.0.24</div><div class="arrow">→</div>
+      <div class="box">4. web.xml URL map</div><div class="arrow">→</div>
+      <div class="box">5. doGet / doPost</div><div class="arrow">→</div>
+      <div class="box">6. PrintWriter HTML</div>
+    </div>
+  </div>
+  <div class="diag-cap"><b>Hold this picture:</b> the browser never runs Java servlet code. Tomcat runs it. The student only sees HTML.</div>
+  <ol class="steps-n">
+    <li>The student opens a URL such as <code>/basic-servlets/httpmethods</code>.</li>
+    <li>Tomcat reads <code>web.xml</code> and finds the Java class for that path.</li>
+    <li>The container calls <code>doGet</code> or <code>doPost</code> (or PUT/DELETE if the lab button sends them).</li>
+    <li>Your method writes HTML. The browser paints that page. That is the program output.</li>
+  </ol>
+
+  <h2>B) Visual cards — every syllabus idea</h2>
+  <div class="viz">
+    <div class="viz-card">
+      <h3>1. Servlet — what / why / how</h3>
+      <div class="mini"><span>Static HTML</span><i>→</i><span>Servlet + if/else</span><i>→</i><span>Page per user</span></div>
+      <p>Need: a live site must change after a form. Working: request in, HTML out.</p>
+    </div>
+    <div class="viz-card">
+      <h3>2. HTTP methods</h3>
+      <div class="mini"><span>GET read</span><span>POST save</span><span>PUT update</span><span>DELETE remove</span></div>
+      <p>Hospital-counter verbs. OPTIONS = menu of methods. TRACE = echo (often blocked).</p>
+    </div>
+    <div class="viz-card">
+      <h3>3. GET vs POST</h3>
+      <div class="mini"><span>GET → address bar</span><i>≠</i><span>POST → body</span></div>
+      <p>Search may use GET. Login password must use POST.</p>
+    </div>
+    <div class="viz-card">
+      <h3>4. Lifecycle</h3>
+      <div class="mini"><span>init 1×</span><i>→</i><span>service N×</span><i>→</i><span>destroy 1×</span></div>
+      <p>Like a restaurant kitchen: open once, cook many orders, close at shutdown.</p>
+    </div>
+    <div class="viz-card">
+      <h3>5. Config vs Context</h3>
+      <div class="mini"><span>Config = this servlet</span><i>≠</i><span>Context = whole app</span></div>
+      <p>Init-param is one shop. Context-param is the mall name for everyone.</p>
+    </div>
+    <div class="viz-card">
+      <h3>6. Forward vs Redirect</h3>
+      <div class="mini"><span>Forward same request</span><i>≠</i><span>Redirect new URL</span></div>
+      <p>Waiter to kitchen vs food-app → UPI. Address bar tells you which.</p>
+    </div>
+    <div class="viz-card">
+      <h3>7. Cookie</h3>
+      <div class="mini"><span>Server Set-Cookie</span><i>→</i><span>Browser store</span><i>→</i><span>Sent again</span></div>
+      <p>Remember-me in the browser. Not for passwords. Delete with maxAge 0.</p>
+    </div>
+    <div class="viz-card">
+      <h3>8. HttpSession</h3>
+      <div class="mini"><span>Login</span><i>→</i><span>setAttribute</span><i>→</i><span>Welcome</span><i>→</i><span>invalidate</span></div>
+      <p>Gmail-style login. Data lives on the server. Cookie only carries the session id.</p>
+    </div>
+    <div class="viz-card">
+      <h3>9. URL rewriting</h3>
+      <div class="mini"><span>Cookies off</span><i>→</i><span>jsessionid in link</span></div>
+      <p>When the browser will not store a cookie, the id travels in the URL.</p>
+    </div>
+    <div class="viz-card">
+      <h3>10. Hidden field</h3>
+      <div class="mini"><span>Not in address bar</span><i>but</i><span>visible in View Source</span></div>
+      <p>Multi-step exam form. Next POST carries the name. Not a secret.</p>
+    </div>
+    <div class="viz-card">
+      <h3>11. Capstone portal</h3>
+      <div class="mini"><span>POST</span><span>Session</span><span>Cookie</span><span>Forward</span><span>Logout</span></div>
+      <p>Join the unit: login java / servlet. Wrong password includes the form again.</p>
+    </div>
+  </div>
+
+  <h2>C) Two comparisons you must not mix</h2>
+  <div class="split2">
+    <div class="compare-col ok">
+      <h3>GET — search / view</h3>
+      <p>Data rides in the URL: <code>/search?roll=101</code>. Bookmarkable. Do not put a password here. Real life: Google / PNR search.</p>
+    </div>
+    <div class="compare-col warn">
+      <h3>POST — submit / save</h3>
+      <p>Data rides in the body. Address bar stays <code>/register</code>. Real life: Gmail login, checkout.</p>
+    </div>
+  </div>
+  <div class="split2">
+    <div class="compare-col ok">
+      <h3>Cookie — browser</h3>
+      <p>Small name=value on the client. Comes back on later requests. “Remember my name.”</p>
+    </div>
+    <div class="compare-col warn">
+      <h3>HttpSession — server</h3>
+      <p>Map on Tomcat, keyed by session id. “You are logged in as java.” Logout = invalidate().</p>
+    </div>
+  </div>
+  <div class="split2">
+    <div class="compare-col ok">
+      <h3>Forward — same request</h3>
+      <p>Server hands the work to another servlet. Address bar does not change. Waiter to kitchen.</p>
+    </div>
+    <div class="compare-col warn">
+      <h3>Redirect — new request</h3>
+      <p>Browser is told to open another URL (302). Address bar changes. Food app → UPI / “go to login”.</p>
+    </div>
+  </div>
+
+  <h2>D) Full chapter notes (open each)</h2>
+  <p class="note">Each chapter: concept in simple English, real-life examples, when to use, labelled diagram, functions (syntax + use + example), complete Java with every line commented, complete web.xml. Journal problem statements live on ICA Practicals and Source pages.</p>
+
+  <div class="chapters" id="chapters">
+    <article class="ch-card" data-id="ch-intro" data-kind="theory" data-tags="intro servlet">
+      <div class="ch-top"><span class="ch-num">CHAPTER 01</span></div>
+      <h2>Servlets Introduction, Need and Working</h2>
+      <p>Daily-life examples, request path through Tomcat 11, functions with syntax, complete HelloServlet + web.xml with every line commented.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/01-intro/theory.html?v=2100">Open full notes</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-http" data-kind="lab" data-tags="http">
+      <div class="ch-top"><span class="ch-num">CHAPTER 02</span></div>
+      <h2>HTTP Methods</h2>
+      <p>GET search, POST register, PUT update, DELETE remove, OPTIONS menu, TRACE echo.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/02-http/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-http">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-getpost" data-kind="lab" data-tags="get post">
+      <div class="ch-top"><span class="ch-num">CHAPTER 03</span></div>
+      <h2>GET vs POST</h2>
+      <p>Same fields, two methods. Proof is the address bar.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/03-getpost/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-getpost">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-lifecycle" data-kind="lab" data-tags="lifecycle">
+      <div class="ch-top"><span class="ch-num">CHAPTER 04</span></div>
+      <h2>Servlet Lifecycle</h2>
+      <p>init once, service every refresh, destroy on undeploy. Counts are the proof.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/04-lifecycle/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-life">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-config" data-kind="lab" data-tags="config context">
+      <div class="ch-top"><span class="ch-num">CHAPTER 05</span></div>
+      <h2>ServletConfig and ServletContext</h2>
+      <p>Per-servlet init-param versus app-wide college name.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/05-config/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-config">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-fwd" data-kind="lab" data-tags="forward redirect">
+      <div class="ch-top"><span class="ch-num">CHAPTER 06</span></div>
+      <h2>Forward and Redirect</h2>
+      <p>Same request versus new request. Include is a third tool (fail form).</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/06-forward-redirect/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-fwd">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-cookies" data-kind="lab" data-tags="cookie">
+      <div class="ch-top"><span class="ch-num">CHAPTER 07</span></div>
+      <h2>Cookies</h2>
+      <p>YouTube Remember me: save display name, last watched video, list cookies, Forget me with maxAge 0.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/07-cookies/theory.html?v=2400">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-cookie">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-session" data-kind="lab" data-tags="session">
+      <div class="ch-top"><span class="ch-num">CHAPTER 08</span></div>
+      <h2>HttpSession</h2>
+      <p>Server-side login. Welcome reads the session. Logout invalidates.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/08-httpsession/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-session">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-url" data-kind="lab" data-tags="url rewrite">
+      <div class="ch-top"><span class="ch-num">CHAPTER 09</span></div>
+      <h2>URL Rewriting</h2>
+      <p>Carry identity in the link when cookies are disabled.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/09-urlrewrite/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-url">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-hidden" data-kind="lab" data-tags="hidden">
+      <div class="ch-top"><span class="ch-num">CHAPTER 10</span></div>
+      <h2>Hidden Form Field</h2>
+      <p>Name travels in the next POST. View Source still shows it.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/10-hidden/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-hidden">Go to program</a>
+      </div>
+    </article>
+    <article class="ch-card" data-id="ch-capstone" data-kind="project" data-tags="capstone">
+      <div class="ch-top"><span class="ch-num">CHAPTER 11</span></div>
+      <h2>Capstone: Student login portal</h2>
+      <p>POST + session + remember cookie + forward / include + logout.</p>
+      <div class="ch-actions">
+        <a class="btn" href="topics/11-capstone/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="topics/11-capstone/project.html">Project sheet</a>
+      </div>
+    </article>
+  </div>
+
+  <p style="margin-top:22px">
+    <a class="exec-xl" href="programs.html">Next tab: Execute programs online</a>
+    <a class="btn ghost" href="quiz.html">Self-check quiz</a>
+  </p>
+  <div class="footer">Theory package · WIT Solapur CSE · Unit-II</div>
+</div>
+</body>
+</html>

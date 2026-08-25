@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>8. Session Management - HttpSession</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>8. Session Management - HttpSession</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-session">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>Gmail / Instagram remembers who you are on every inner page until you log out or the session times out. That memory is on the server (HttpSession). The browser only keeps a session id (usually cookie <code>JSESSIONID</code>). Login for this lab: user <b>java</b>, password <b>servlet</b>. Password must travel in POST, never in the GET URL.</p>
+<p><b>HttpSession</b> is memory <b>on the server</b> for one user (one browser session).
+Tomcat tracks it with a cookie named <code>JSESSIONID</code> (or URL rewriting if cookies are off).</p>
+<p>Login stores <code>username</code>. Welcome reads it. Logout calls <code>invalidate()</code>.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> HttpSession is the hotel’s <b>guest file at the reception cupboard</b> (server memory). The browser only carries a token number (<code>JSESSIONID</code>). Logout throws the whole file away (<code>invalidate</code>).</p>
+<h3>The story (Gmail / IRCTC login)</h3>
+<p>You log in to Gmail as <b>java</b> / <b>servlet</b> (POST, because the password must not sit in the URL). After that, Inbox, Sent and Settings all know who you are. Gmail is not printing your password on every page. The office opened a <b>file</b> labelled with a secret token and put <code>username = java</code> inside it.</p>
+<ol>
+<li><b>Login</b> — <code>getSession(true)</code> means “open a file if you do not have one.” Then <code>setAttribute("username", login)</code>.</li>
+<li><b>Welcome</b> — <code>getSession(false)</code> means “do not open a new empty file if nobody logged in.” Read <code>getAttribute("username")</code>. If null, send them to login.</li>
+<li><b>Logout</b> — <code>invalidate()</code>. The cupboard file is destroyed. The next person on the same cafe laptop must not still be “java”.</li>
+</ol>
+<p>Cookie vs session (do not mix in the journal): cookie = sticker on the bag (“remember display name”). session = file at reception (“this person is logged in”). The session id cookie is only the token to find the file, not the data inside it.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Gmail / hotel</th><th>Java</th></tr>
+<tr><td>Open a guest file at login</td><td><code>request.getSession(true)</code></td></tr>
+<tr><td>Write “logged in as java”</td><td><code>session.setAttribute("username", login)</code></td></tr>
+<tr><td>Inner page reads the file</td><td><code>getSession(false)</code> + <code>getAttribute</code></td></tr>
+<tr><td>Checkout / logout</td><td><code>session.invalidate()</code></td></tr>
+</table>
+<h3>What you will see</h3>
+<p>After login, Welcome prints the user. After logout, Welcome has no username. Restart Tomcat and lab sessions die (they lived in server memory).</p>
+<h3>Easy mistake</h3>
+<p>Calling <code>getSession(true)</code> on Welcome. That creates a blank session for a stranger and looks “logged in” with empty data. Welcome must use <code>false</code>.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Gmail / Instagram</h3>
+<p>After login, Inbox and Settings all know you. That is one HttpSession with attributes, not a note stuck on the laptop.</p>
+<h3>Cafe Wi-Fi shared laptop</h3>
+<p>If you only close the tab without logout, the next person on the same browser may still be “you” until timeout. That is why logout must call <code>invalidate()</code>.</p>
+<h3>Cookie vs session</h3>
+<p>Cookie = small value in the browser (“remember my display name”). Session = map in Tomcat (“you are logged in as java”). Do not mix the two in the journal.</p>
+</div>
+
+<div class="section"><h2>B) When to use HttpSession</h2>
+<table>
+<tr><th>Use HttpSession when</th><th>Use Cookie instead when</th></tr>
+<tr><td>Login identity, cart, marks — data must stay on the server</td><td>Small non-secret preference the browser can keep</td></tr>
+<tr><td>You must remove all user data at logout (invalidate)</td><td>You only need a remember-name cookie</td></tr>
+<tr><td>Many values for one user across pages</td><td>One tiny name=value is enough</td></tr>
+</table>
+<p><b>getSession(true)</b> on login (create if missing). <b>getSession(false)</b> on welcome (do not create an empty session). <b>invalidate()</b> on logout.</p>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 8.1 — HttpSession login flow</h3>
+<div class="flow"><div class="box">1. Login form POST</div><div class="arrow">&rarr;</div><div class="box">2. NotesSessionLogin</div><div class="arrow">&rarr;</div><div class="box">3. setAttribute username</div><div class="arrow">&rarr;</div><div class="box">4. NotesSessionWelcome</div><div class="arrow">&rarr;</div><div class="box">5. Logout invalidate</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> Session data is in Tomcat memory. Restarting Tomcat clears lab sessions.</div>
+<ol class="steps-n"><li>Student submits user (POST).</li><li>NotesSessionLogin calls getSession(true) and stores username.</li><li>It redirects to NotesSessionWelcome.</li><li>Welcome uses getSession(false) and getAttribute('username').</li><li>Logout invalidates. Next welcome has no username.</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<pre class="syntax">import jakarta.servlet.http.HttpSession;
+
+// LOGIN
+HttpSession session = request.getSession(true);
+session.setAttribute("username", login);
+response.sendRedirect("NotesSessionWelcome");
+
+// WELCOME
+HttpSession session = request.getSession(false);
+if (session == null) { /* not logged in */ }
+String user = (String) session.getAttribute("username");
+
+// LOGOUT
+HttpSession session = request.getSession(false);
+if (session != null) {
+  session.invalidate();
+}
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>getSession(true)</code></td><td>Create a session if none exists. Use on login.</td></tr><tr><td><code>getSession(false)</code></td><td>Do not create. Use on welcome/logout. May return null.</td></tr><tr><td><code>setAttribute(&quot;username&quot;, login)</code></td><td>Store an object until timeout or invalidate.</td></tr><tr><td><code>getAttribute</code></td><td>Returns Object. Cast to String.</td></tr><tr><td><code>invalidate()</code></td><td>Destroy the session. Logout.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>HttpSession is a map on the server. The browser only keeps a session id (usually a cookie named JSESSIONID).</p>
+<article class="fn">
+<h3>1. Function: <code>getSession(true) / getSession()</code></h3>
+<p><b>Simple meaning:</b> Get the existing session, or create one. Use after a successful login.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">HttpSession session = request.getSession(true);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>true = create if missing (default). false = do not create.</td></tr>
+<tr><td>Returns</td><td>HttpSession (or null if false and none exists)</td></tr>
+<tr><td>When to use (USE)</td><td>Login success: store the user name.</td></tr>
+<tr><td>Lab example</td><td>session.setAttribute("username", "java");</td></tr>
+<tr><td>Common mistake</td><td>Calling getSession(true) on the welcome page when you only wanted to check login — that can create an empty session.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>getSession(false)</code></h3>
+<p><b>Simple meaning:</b> Return the session if it exists. Return null if the student is not logged in. Do not create a new one.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">HttpSession session = request.getSession(false);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>false</td></tr>
+<tr><td>Returns</td><td>HttpSession or null</td></tr>
+<tr><td>When to use (USE)</td><td>Welcome and Logout: check before showing data.</td></tr>
+<tr><td>Lab example</td><td>If session == null, sendRedirect to the login page.</td></tr>
+<tr><td>Common mistake</td><td>Using getSession() without false on Welcome — a guest would get a new empty session.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>setAttribute</code></h3>
+<p><b>Simple meaning:</b> Put a value in server memory, keyed by a name.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">session.setAttribute("username", login);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name, value (any Object)</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>After password check succeeds.</td></tr>
+<tr><td>Lab example</td><td>username = java in this lab.</td></tr>
+<tr><td>Common mistake</td><td>Storing the password in the session. Store only the login id.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>getAttribute</code></h3>
+<p><b>Simple meaning:</b> Read the value back on the next request (same session id).</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String user = (String) session.getAttribute("username");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name used in setAttribute</td></tr>
+<tr><td>Returns</td><td>Object — cast to String. null if missing.</td></tr>
+<tr><td>When to use (USE)</td><td>Welcome page greeting.</td></tr>
+<tr><td>Lab example</td><td>Welcome java after forward from login.</td></tr>
+<tr><td>Common mistake</td><td>Forgetting the cast, or using a different key spelling.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>5. Function: <code>invalidate</code></h3>
+<p><b>Simple meaning:</b> Destroy the session. Next getSession(false) is null. Student is logged out.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">session.invalidate();</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Logout button.</td></tr>
+<tr><td>Lab example</td><td>NotesSessionLogout then redirect to the login form.</td></tr>
+<tr><td>Common mistake</td><td>Only deleting a cookie and forgetting invalidate — the session would still exist on the server.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;</pre>
+<p>This chapter needs <code>jakarta.servlet.http.HttpSession</code>. Type <code>jakarta.servlet</code>, never <code>javax.servlet</code>.</p>
+</div>
+
+<div class="why"><b>Matched programs:</b> NotesSessionLogin, NotesSessionWelcome, NotesSessionLogout.</div>
+
+<div class="section"><h2>F) Complete Java programs — every line explained</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;          // Server-side session API
+
+public class NotesSessionLogin extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {            // Login form MUST be POST
+        String login = request.getParameter("login");         // User box
+        String pwd = request.getParameter("pwd");             // Password box (body, not URL)
+        if (login != null &amp;&amp; pwd != null
+                &amp;&amp; login.equals("java") &amp;&amp; pwd.equals("servlet")) {
+            HttpSession session = request.getSession(true);   // Create session if missing
+            session.setAttribute("username", login);          // Store identity on the SERVER
+            response.sendRedirect("NotesSessionWelcome");     // New GET so refresh is safe
+            return;
+        }
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;p&gt;Wrong login. Use java / servlet.&lt;/p&gt;");
+        out.println("&lt;p&gt;&lt;a href='session_notes_login.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+<pre class="syntax">public class NotesSessionWelcome extends HttpServlet {
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession(false);      // Do NOT create an empty session
+        if (session == null || session.getAttribute("username") == null) {
+            response.sendRedirect("session_notes_login.html"); // Not logged in
+            return;
+        }
+        String user = (String) session.getAttribute("username"); // Cast Object → String
+        out.println("&lt;h1&gt;Welcome " + user + "&lt;/h1&gt;");
+        out.println("&lt;p&gt;&lt;a href='NotesSessionLogout'&gt;Logout&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+<pre class="syntax">public class NotesSessionLogout extends HttpServlet {
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);      // Existing session or null
+        if (session != null) {
+            session.invalidate();                             // Destroy ALL attributes + id
+        }
+        response.sendRedirect("session_notes_login.html");    // Back to login form
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;NotesSessionLogin&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;NotesSessionLogin&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;NotesSessionLogin&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/NotesSessionLogin&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;NotesSessionWelcome&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;NotesSessionWelcome&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;NotesSessionWelcome&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/NotesSessionWelcome&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;NotesSessionLogout&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;NotesSessionLogout&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;NotesSessionLogout&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/NotesSessionLogout&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../session_notes_login.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-4">ICA Practical 04</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-4">ICA Practical 04</a></div>
+</div>
+</body>
+</html>

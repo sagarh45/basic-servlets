@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>ICA 2 · WatchTube — run this small project</title>
+<link rel="stylesheet" href="portal.css?v=2500">
+<script src="portal.js?v=2500" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Small project: WatchTube (like YouTube)</h1>
+<p>One HTML page. Two Java classes are allowed. Refresh the video many times. Then read the channel stamp.</p>
+<div class="nav">
+<a class="btn ghost" href="practicals.html#ica-2">ICA journal</a>
+<a class="btn active" href="lifecycle.html">Run project</a>
+<a class="btn source" href="source/LifecycleServlet.html">Source</a>
+</div>
+
+<div class="ps">
+<h2>What this project does</h2>
+<p>WatchTube opens a video once (<code>init</code>). Every click or refresh is one more view (<code>service</code>). The channel name is shared for the whole site (ServletContext). This video’s author is private (ServletConfig). Those two values come from <code>web.xml</code>, not from the form.</p>
+<ol>
+<li>Open the video (GET) at least five times. <code>init</code> stays 1. <code>service</code> grows.</li>
+<li>Leave your name as a viewer (POST).</li>
+<li>Open the channel stamp. Copy channel name (context) and author (config).</li>
+</ol>
+<pre class="sample-out">GET view book
+init=1 service=5 lastVisitor=null</pre>
+</div>
+
+<div class="card">
+<h3>1) Open this video (GET)</h3>
+<p>Like opening a YouTube video. Each click is one more view. <code>init</code> does not run again.</p>
+<a class="btn" href="lifecycle">Open video (GET)</a>
+</div>
+
+<div class="card">
+<h3>2) Leave your name as a viewer (POST)</h3>
+<p>Like commenting your name. The view count still grows. init stays 1.</p>
+<form method="post" action="lifecycle">
+<div class="row"><label class="f">Your name</label><input name="visitor" value="Rahul"></div>
+<input type="submit" value="Sign as viewer (POST)">
+</form>
+</div>
+
+<div class="card" id="config">
+<h3>3) Channel stamp (ServletContext vs ServletConfig)</h3>
+<p>Second Java class: <code>ConfigContextServlet</code>. The form does not send channel name or author.</p>
+<p><b>ServletContext</b> = channel name on every video (shared). In this lab the XML name is <code>collegeName</code>.</p>
+<p><b>ServletConfig</b> = this video’s author (private). XML name is <code>author</code>.</p>
+<p><a class="btn" href="configcontext">Read channel stamp (GET)</a></p>
+<form method="post" action="configcontext">
+<div class="row"><label class="f">Viewer</label><input name="student" value="Rahul"></div>
+<div class="row"><label class="f">Question</label><input name="question" value="When is the next video?" size="30"></div>
+<input type="submit" value="Ask this channel (POST)">
+</form>
+</div>
+
+<p style="margin-top:18px;"><a href="practicals.html#ica-2">Back to ICA 2</a></p>
+</div>
+</body>
+</html>

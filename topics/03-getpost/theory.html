@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>3. GET vs POST Request and Differences</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>3. GET vs POST Request and Differences</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-getpost">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>You want to (a) search YouTube / Google by a name and (b) submit a Gmail password. Both jobs send a name. If you use GET for both, the name (and any secret) appears in the URL, history and server logs. If you use POST for a simple search, a friend cannot bookmark the result. The lab uses class <code>GetPostDiffServlet</code> at URL <code>/getpostdiff</code>; the address bar is the proof.</p>
+<p>GET and POST are the two methods you use every day with HTML forms.</p>
+<p><b>GET</b> means read/fetch. Form fields are added to the URL as a query string:
+<code>/getpostdiff?name=Rahul</code>. Easy to bookmark. Visible in history and logs.</p>
+<p><b>POST</b> means submit/send. Form fields go in the request body. The address bar usually stays
+<code>/getpostdiff</code> without the name. Better for login and large data.</p>
+<p>In the servlet, both still use <code>request.getParameter("name")</code>. The difference is where the data travelled, not the Java read API.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> GET writes the data on the token (address bar). POST puts the data in a closed envelope (request body). Java still opens both with <code>getParameter</code>.</p>
+<h3>The story (Google search vs Gmail login)</h3>
+<p>Two everyday jobs:</p>
+<ol>
+<li><b>Search by name</b> — You want to WhatsApp a Google / IRCTC result link. The friend should open the same page. That link must contain the name. That is <b>GET</b>: <code>/getpostdiff?name=Rahul</code>. Bookmark works. History shows the name. Fine for a search, never for a password.</li>
+<li><b>Login / send a secret</b> — You type a Gmail or Instagram password. If it appeared in the URL, anyone behind you, the browser history, and the server log would all see it. That is <b>POST</b>. The address bar stays <code>/getpostdiff</code>. Refresh may warn “resubmit the form.”</li>
+</ol>
+<p>Both forms can have a box named <code>name</code>. The servlet reads <code>request.getParameter("name")</code> in both <code>doGet</code> and <code>doPost</code>. The difference is <b>the road the data travelled</b>, not the Java read method.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Daily life</th><th>HTTP / Java</th></tr>
+<tr><td>Shareable Google / PNR search</td><td><code>&lt;form method="get"&gt;</code> → <code>doGet</code></td></tr>
+<tr><td>Gmail login / checkout</td><td><code>&lt;form method="post"&gt;</code> → <code>doPost</code></td></tr>
+<tr><td>Look at the address bar</td><td>GET shows <code>?name=...</code>; POST usually does not</td></tr>
+<tr><td>Same worker reads the paper</td><td><code>getParameter("name")</code> in both methods</td></tr>
+</table>
+<h3>What you will see</h3>
+<p>Run GET with name Rahul — URL changes. Run POST with the same name — URL does not show the name. The result page prints the method so you can prove which road was used.</p>
+<h3>Easy mistake</h3>
+<p>Saying “POST cannot use getParameter.” It can. Or putting a password on a GET form because “it is only a lab.” The address bar will still leak it.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>GET — Google / YouTube search</h3>
+<p>You search “Rahul”. You copy the URL and send it to a friend. They open the same result. Bookmark works. That is GET.</p>
+<h3>POST — Gmail / Instagram login</h3>
+<p>You type a password. If it appeared as <code>/login?pwd=servlet</code>, anyone behind you, or any proxy log, would see it. Login therefore uses POST. Refresh after POST may warn “resubmit form” — that is also part of the observation.</p>
+<h3>WhatsApp a link vs pay button</h3>
+<p>A search link can be shared (GET). A “Pay now” button must not be a shareable URL (POST).</p>
+</div>
+
+<div class="section"><h2>B) When to use GET vs POST</h2>
+<table>
+<tr><th>Point</th><th>GET — use when</th><th>POST — use when</th></tr>
+<tr><td>Purpose</td><td>Read / search / open a page</td><td>Submit / save / login</td></tr>
+<tr><td>Data location</td><td>URL query string</td><td>Request body</td></tr>
+<tr><td>Address bar</td><td>Shows <code>?name=Rahul</code></td><td>Usually does not show fields</td></tr>
+<tr><td>Bookmark</td><td>Yes</td><td>No (not for form data)</td></tr>
+<tr><td>Size</td><td>Limited by URL length</td><td>Larger body allowed</td></tr>
+<tr><td>Password</td><td>Never</td><td>Yes (still use HTTPS in real apps)</td></tr>
+<tr><td>Idempotent</td><td>Repeat GET should not create a new record</td><td>Repeat POST may submit again (use redirect after POST)</td></tr>
+<tr><td>Servlet method</td><td>doGet()</td><td>doPost()</td></tr>
+<tr><td>HTML</td><td><code>method="get"</code></td><td><code>method="post"</code></td></tr>
+</table>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 3.1 — GET form versus POST form (same servlet)</h3>
+<div class="flow"><div class="box">1. GET form</div><div class="arrow">&rarr;</div><div class="box">2. /getpostdiff?name=</div><div class="arrow">&rarr;</div><div class="box">3. doGet</div><div class="arrow">&rarr;</div><div class="box">4. Print method + name</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> After GET you see name in the URL. After POST you usually do not. Both still read name with getParameter.</div>
+<ol class="steps-n"><li>GET form uses method=get. Data is added to the URL.</li><li>Tomcat calls <code>doGet</code> on <code>GetPostDiffServlet</code>.</li><li>POST form uses method=post. Data is in the body.</li><li>Tomcat calls <code>doPost</code>. Both call the same helper to print method + name.</li></ol>
+
+<p>POST flow:</p>
+<div class="flow"><div class="box">1. POST form</div><div class="arrow">&rarr;</div><div class="box">2. /getpostdiff body</div><div class="arrow">&rarr;</div><div class="box">3. doPost</div><div class="arrow">&rarr;</div><div class="box">4. Print method + name</div></div>
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<pre class="syntax">&lt;form method="get" action="getpostdiff"&gt;
+  Name: &lt;input name="name" value="Rahul"&gt;
+  &lt;input type="submit" value="Run GET"&gt;
+&lt;/form&gt;
+
+&lt;form method="post" action="getpostdiff"&gt;
+  Name: &lt;input name="name" value="Rahul"&gt;
+  &lt;input type="submit" value="Run POST"&gt;
+&lt;/form&gt;
+</pre>
+<pre class="syntax">@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+  show(request, response);
+}
+
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+  show(request, response);
+}
+
+private void show(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  String method = request.getMethod();
+  String name = request.getParameter("name");
+  response.setContentType("text/html");
+  PrintWriter out = response.getWriter();
+  out.println("Current method: " + method);
+  out.println("name parameter: " + name);
+}
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>method=&quot;get&quot;</code></td><td>Browser puts fields into the URL.</td></tr><tr><td><code>method=&quot;post&quot;</code></td><td>Browser puts fields into the body.</td></tr><tr><td><code>name=&quot;name&quot;</code></td><td>Must match getParameter('name').</td></tr><tr><td><code>doGet / doPost</code></td><td>Tomcat chooses based on the HTTP method.</td></tr><tr><td><code>getParameter(&#x27;name&#x27;)</code></td><td>Works for both GET query string and POST body.</td></tr><tr><td><code>getMethod()</code></td><td>Print GET or POST so the student can compare.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>GET and POST can send the same boxes. The difference is the travel path. The address bar is the proof.</p>
+<article class="fn">
+<h3>1. Function: <code>doGet (search)</code></h3>
+<p><b>Simple meaning:</b> Handles the GET form. Data is copied into the URL.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Google / PNR search. Bookmark is allowed.</td></tr>
+<tr><td>Lab example</td><td>GET q=Java → address bar shows /getpostdiff?q=Java</td></tr>
+<tr><td>Common mistake</td><td>Using GET for feedback with a password.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>doPost (submit)</code></h3>
+<p><b>Simple meaning:</b> Handles the POST form. Data stays in the body. URL does not grow.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Feedback, login, register.</td></tr>
+<tr><td>Lab example</td><td>POST name + message → address bar stays /getpostdiff</td></tr>
+<tr><td>Common mistake</td><td>Forgetting method="post" on the form.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>getParameter (same call for both)</code></h3>
+<p><b>Simple meaning:</b> One method reads both GET and POST. Only the travel path of the data is different.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String q = request.getParameter("q");
+String name = request.getParameter("name");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>HTML name attribute</td></tr>
+<tr><td>Returns</td><td>String or null</td></tr>
+<tr><td>When to use (USE)</td><td>Always, after Tomcat has parsed the request.</td></tr>
+<tr><td>Lab example</td><td>doGet reads q. doPost reads name and message.</td></tr>
+<tr><td>Common mistake</td><td>Thinking getParameter works only for POST.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>Type <code>jakarta.servlet</code> in every program. Extra imports (Cookie, HttpSession, RequestDispatcher) are added in later chapters when needed.</p>
+</div>
+
+<div class="why"><b>Matched program:</b> class <code>GetPostDiffServlet</code>, URL <code>/getpostdiff</code>.
+Execute has two forms: Run GET and Run POST. Same servlet, same <code>getParameter("name")</code>.</div>
+
+<div class="section"><h2>F) Complete Java program — every line explained</h2>
+<pre class="syntax">import java.io.IOException;                      // Writer can throw IOException
+import java.io.PrintWriter;                      // HTML character writer
+import jakarta.servlet.ServletException;         // Required on doGet / doPost
+import jakarta.servlet.http.HttpServlet;         // HTTP servlet base class
+import jakarta.servlet.http.HttpServletRequest;  // Parameters + getMethod()
+import jakarta.servlet.http.HttpServletResponse; // Content type + writer
+
+public class GetPostDiffServlet extends HttpServlet {  // One class, two HTTP methods
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {          // Browser used method=get
+        String q = request.getParameter("q");               // Query string field (search box)
+        show(request, response, "GET search q=" + q
+                + " URL=" + request.getQueryString());      // Query string is visible proof
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {          // Browser used method=post
+        String name = request.getParameter("name");         // Body field — not in the URL
+        String message = request.getParameter("message");   // Second body field
+        show(request, response, "POST saved name=" + name + " message=" + message
+                + " query=" + request.getQueryString());    // Query is usually null on POST
+    }
+
+    private void show(HttpServletRequest request, HttpServletResponse response, String msg)
+            throws IOException {
+        response.setContentType("text/html");               // HTML response
+        PrintWriter out = response.getWriter();             // Open writer
+        out.println("&lt;h2&gt;request.getMethod() = " + request.getMethod() + "&lt;/h2&gt;"); // GET or POST
+        out.println("&lt;p&gt;" + msg + "&lt;/p&gt;");
+        out.println("&lt;p&gt;&lt;a href='getpostdiff.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+<pre class="syntax">&lt;!-- Complete HTML forms used on Execute --&gt;
+&lt;form method="get" action="getpostdiff"&gt;              &lt;!-- Fields go into the URL --&gt;
+  q: &lt;input name="q" value="101"&gt;                     &lt;!-- name= must match getParameter --&gt;
+  &lt;input type="submit" value="Run GET"&gt;
+&lt;/form&gt;
+&lt;form method="post" action="getpostdiff"&gt;             &lt;!-- Fields go into the body --&gt;
+  Name: &lt;input name="name" value="Rahul"&gt;
+  Message: &lt;input name="message" value="exam form"&gt;
+  &lt;input type="submit" value="Run POST"&gt;
+&lt;/form&gt;</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;GetPostDiffServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/getpostdiff&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../getpostdiff.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-1">ICA Practical 01</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-1">ICA Practical 01</a></div>
+</div>
+</body>
+</html>

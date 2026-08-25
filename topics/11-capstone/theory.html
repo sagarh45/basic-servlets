@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>11. Capstone Mini Project - Student Login App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>11. Capstone Mini Project - Student Login App</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-capstone">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>The capstone is a tiny Gmail-style login app. Correct login (<b>java</b> / <b>servlet</b>) keeps you signed in (session), optionally remembers the display name on this PC (cookie, never the password), shows Welcome without changing the URL (forward), shows the form again on a wrong password (include), and logs out cleanly (invalidate + delete cookie).</p>
+<p>The capstone joins earlier topics into one login app on Tomcat 11:</p>
+<ul>
+<li><b>POST form</b> — login and password (do not use GET for password)</li>
+<li><b>HttpSession</b> — store username after success</li>
+<li><b>Cookie</b> — remember the login name (not the password)</li>
+<li><b>forward</b> — success to CapstoneWelcome (same request)</li>
+<li><b>include</b> — fail, show capstone.html again</li>
+<li><b>invalidate + setMaxAge(0)</b> — logout</li>
+</ul>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> Mini Instagram / Gmail: POST login, hotel guest file (session), optional name sticker (cookie), kitchen on success (forward), same form on failure (include), throw the file away on logout.</p>
+<h3>The story (one Gmail visit, start to finish)</h3>
+<p>You open Gmail on a cafe laptop.</p>
+<ol>
+<li><b>You type login and password</b> — POST, never GET, so <code>servlet</code> is not in the address bar.</li>
+<li><b>Correct (java / servlet)</b> — Reception opens a file (HttpSession) and writes username. If you ticked remember name, a sticker is put on the browser (cookie, not the password). The waiter walks the slip to Welcome (<code>forward</code>). You may still see the login URL — that is a viva point: forward does not change the bar.</li>
+<li><b>Wrong password</b> — Nobody opens Welcome. The app stamps “error” and shows the same form (<code>include</code> <code>capstone.html</code>).</li>
+<li><b>Logout</b> — File destroyed (<code>invalidate</code>) and sticker peeled (<code>setMaxAge(0)</code>). The next person on that laptop is not you.</li>
+</ol>
+<p>Do not paste Cookie1 or NotesSessionLogin into this project. Those are other experiments. This app has its own three classes: CapstoneLogin, CapstoneWelcome, CapstoneLogout.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Gmail-style app</th><th>Technique</th></tr>
+<tr><td>Submit password</td><td>POST <code>doPost</code></td></tr>
+<tr><td>Stay logged in on inner pages</td><td>HttpSession <code>setAttribute</code></td></tr>
+<tr><td>Remember display name on this PC</td><td>Cookie (name only)</td></tr>
+<tr><td>Success page, same request</td><td><code>forward</code> CapstoneWelcome</td></tr>
+<tr><td>Fail: show form again</td><td><code>include</code> capstone.html</td></tr>
+<tr><td>Sign out</td><td><code>invalidate</code> + delete cookie</td></tr>
+</table>
+<h3>What you will see</h3>
+<p>Wrong password: login page with an error, still on the login URL. Right password: Welcome text. Logout: Welcome no longer knows you.</p>
+<h3>Easy mistake</h3>
+<p>Storing the password in the remember cookie. Or using GET for the login form. Or redirecting on success when this lab wants forward so attributes / same request still make sense.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Gmail / Instagram</h3>
+<p>POST login, session for inner pages, optional “remember user name”, error stays on the login screen, logout clears everything.</p>
+<h3>Internet banking (teaching analogy only)</h3>
+<p>Wrong PIN: same page with an error (include). Correct PIN: dashboard (forward or redirect depending on PRG). Logout: session dead. This lab uses forward on success so you can still see the original URL — a viva point.</p>
+</div>
+
+<div class="section"><h2>B) When to use which technique in this project</h2>
+<table>
+<tr><th>Technique</th><th>USE HERE</th><th>DO NOT mix</th></tr>
+<tr><td>POST</td><td>Submit login form</td><td>Do not put password in a GET URL</td></tr>
+<tr><td>HttpSession</td><td>Logged-in identity on Welcome</td><td>Do not use Cookie1 / NotesSessionLogin classes</td></tr>
+<tr><td>Cookie remember</td><td>Optional display name for 7 days</td><td>Do not store password in the cookie</td></tr>
+<tr><td>forward</td><td>Success &rarr; CapstoneWelcome</td><td>Do not redirect if you still need this request</td></tr>
+<tr><td>include</td><td>Wrong password &rarr; show form again</td><td>Do not forward to Welcome on fail</td></tr>
+<tr><td>invalidate</td><td>Logout</td><td>Do not only delete the cookie and leave the session</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 11.1 — Capstone student login app</h3>
+<div class="flow"><div class="box">1. capstone.html POST</div><div class="arrow">&rarr;</div><div class="box">2. CapstoneLogin check</div><div class="arrow">&rarr;</div><div class="box">3. Session + remember cookie</div><div class="arrow">&rarr;</div><div class="box">4. CapstoneWelcome</div><div class="arrow">&rarr;</div><div class="box">5. CapstoneLogout</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> One end-to-end app. Do not mix Cookie1 or NotesSessionLogin into this project.</div>
+<ol class="steps-n"><li>Student submits login/password (POST).</li><li>If java / servlet: session username, remember cookie, forward Welcome.</li><li>Else: include capstone.html with an error.</li><li>Logout invalidates the session and expires the cookie.</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax (success path)</h2>
+<pre class="syntax">String login = request.getParameter("login");
+String pwd = request.getParameter("pwd");
+if (login.equals("java") &amp;&amp; pwd.equals("servlet")) {
+  HttpSession session = request.getSession(true);
+  session.setAttribute("username", login);
+
+  Cookie remember = new Cookie("remember", login);
+  remember.setMaxAge(60 * 60 * 24 * 7);
+  response.addCookie(remember);
+
+  request.getRequestDispatcher("CapstoneWelcome").forward(request, response);
+} else {
+  request.getRequestDispatcher("/capstone.html").include(request, response);
+}
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>doPost</code></td><td>Login form must be POST.</td></tr><tr><td><code>getSession(true)</code></td><td>Create session on success.</td></tr><tr><td><code>Cookie remember</code></td><td>Name only. Never the password.</td></tr><tr><td><code>forward Welcome</code></td><td>Success navigation.</td></tr><tr><td><code>include capstone.html</code></td><td>Fail navigation.</td></tr><tr><td><code>invalidate + setMaxAge(0)</code></td><td>Logout both session and cookie.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>The mini project joins POST, session, cookie, forward, include and logout. Login is java / servlet.</p>
+<article class="fn">
+<h3>1. Function: <code>doPost (login check)</code></h3>
+<p><b>Simple meaning:</b> Compare typed values with the lab password. Never put the password in the URL (use POST).</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">if (login.equals("java") &amp;&amp; pwd.equals("servlet")) { ... }</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>getParameter login and pwd</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>CapstoneLogin only.</td></tr>
+<tr><td>Lab example</td><td>Correct pair → session + cookie + forward. Wrong pair → include form.</td></tr>
+<tr><td>Common mistake</td><td>Using GET for the login form.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>forward (success)</code></h3>
+<p><b>Simple meaning:</b> Show the welcome page on the same request. Address bar can stay on CapstoneLogin.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">request.getRequestDispatcher("CapstoneWelcome").forward(request, response);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>CapstoneWelcome</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>After session and remember cookie are set.</td></tr>
+<tr><td>Lab example</td><td>Welcome java with a Logout button.</td></tr>
+<tr><td>Common mistake</td><td>sendRedirect here — you would lose request-only data (session still works).</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>include (failure)</code></h3>
+<p><b>Simple meaning:</b> Print an error line and then the same login form again. URL does not jump away.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">request.getRequestDispatcher("/capstone.html").include(request, response);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>path to the HTML form</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Incorrect password.</td></tr>
+<tr><td>Lab example</td><td>Page shows Incorrect Login ID / Password plus the form.</td></tr>
+<tr><td>Common mistake</td><td>forward to the form — you might lose the error line you already wrote.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>invalidate + cookie maxAge 0</code></h3>
+<p><b>Simple meaning:</b> Logout must clear server session AND the remember cookie.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">session.invalidate();
+Cookie del = new Cookie("remember", "");
+del.setMaxAge(0);
+response.addCookie(del);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>void then redirect to login</td></tr>
+<tr><td>When to use (USE)</td><td>CapstoneLogout.</td></tr>
+<tr><td>Lab example</td><td>After logout, Welcome is blocked and remember name is gone.</td></tr>
+<tr><td>Common mistake</td><td>Only invalidating the session and leaving the cookie — the name would still appear next visit.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;</pre>
+<p>The capstone uses Cookie, HttpSession and RequestDispatcher together. Type <code>jakarta.servlet</code>, never <code>javax.servlet</code>.</p>
+</div>
+
+<div class="why"><b>Matched programs:</b> CapstoneLogin, CapstoneWelcome, CapstoneLogout.
+This is the only chapter with a Project button. Login <b>java</b> / <b>servlet</b>.</div>
+
+<div class="section"><h2>F) Complete Java programs — every line explained</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+public class CapstoneLogin extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.sendRedirect("capstone.html");           // Typing the servlet URL shows the form
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {        // Form method=post
+        String login = request.getParameter("login");
+        String pwd = request.getParameter("pwd");
+        if (login != null &amp;&amp; pwd != null
+                &amp;&amp; login.equals("java") &amp;&amp; pwd.equals("servlet")) {
+            HttpSession session = request.getSession(true);     // Server-side login
+            session.setAttribute("username", login);
+            Cookie remember = new Cookie("remember", login);    // Display name ONLY
+            remember.setMaxAge(60 * 60 * 24 * 7);               // 7 days
+            response.addCookie(remember);
+            request.getRequestDispatcher("CapstoneWelcome").forward(request, response); // URL stays
+        } else {
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("&lt;p&gt;Incorrect Login ID / Password&lt;/p&gt;");
+            RequestDispatcher rd = request.getRequestDispatcher("/capstone.html");
+            rd.include(request, response);                      // Error + form on same response
+        }
+    }
+}</pre>
+<pre class="syntax">public class CapstoneWelcome extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException { show(request, response); } // After forward
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException { show(request, response); }
+
+    private void show(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("username") == null) {
+            response.sendRedirect("capstone.html");             // Block direct access
+            return;
+        }
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h1&gt;Welcome " + session.getAttribute("username") + "&lt;/h1&gt;");
+        out.println("&lt;p&gt;&lt;a href='CapstoneLogout'&gt;Logout&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+<pre class="syntax">public class CapstoneLogout extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null) { session.invalidate(); }          // Clear server login
+        Cookie del = new Cookie("remember", "");
+        del.setMaxAge(0);                                       // Clear remember cookie
+        response.addCookie(del);
+        response.sendRedirect("capstone.html");                 // Back to empty form
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;CapstoneLogin&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/CapstoneLogin&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;CapstoneWelcome&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;CapstoneWelcome&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;CapstoneWelcome&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/CapstoneWelcome&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;CapstoneLogout&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;CapstoneLogout&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;CapstoneLogout&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/CapstoneLogout&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../capstone.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-4">ICA Practical 04</a>
+<a class="btn ghost" href="project.html">Project sheet</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-4">ICA Practical 04</a></div>
+</div>
+</body>
+</html>

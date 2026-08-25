@@ -1,0 +1,78 @@
+/* Shared source-page style — English lab journal, print-friendly */
+body { font-family: "Segoe UI", Candara, Calibri, Arial, sans-serif; margin: 28px; background: #f4efe6; color: #172029; }
+h1 { font-size: 26px; margin: 0 0 8px; }
+h2 { color: #0e5f5b; margin-top: 28px; border-bottom: 2px solid #0e5f5b; padding-bottom: 6px; }
+.info { background: #e4eef6; padding: 12px 14px; margin-bottom: 18px; border-left: 5px solid #1d4f73; }
+.prob { background:#fff8e6; border-left:5px solid #c45c26; padding:14px; margin:12px 0; }
+.why { background:#dceeed; border-left:4px solid #0e5f5b; padding:10px 14px; margin:10px 0; }
+a.btn { display: inline-block; margin: 4px 8px 4px 0; padding: 8px 16px; border: 1px solid #0e5f5b; color: #fff; background: #0e5f5b; text-decoration: none; font-size: 15px; border-radius: 8px; }
+a.btn.source { background: #2f3b46; border-color: #2f3b46; }
+a.btn.ghost { background:#fff; color:#0e5f5b; }
+.legend span { display:inline-block; margin-right:14px; font-size:14px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #d8cfc2; font-size:16px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#0000ff; }
+.synexp { width:100%; border-collapse:collapse; background:#fff; margin:12px 0 18px; }
+.synexp th, .synexp td { border:1px solid #ccc; padding:10px 12px; text-align:left; vertical-align:top; }
+.synexp th { background:#e3f3ea; }
+code { background:#eee; padding:2px 5px; }
+.fn { background:#fff; border:1px solid #d8cfc2; border-radius:10px; padding:12px 14px; margin:12px 0 16px; }
+.fn h3 { margin:0 0 8px; font-size:17px; color:#0e5f5b; border:0; }
+.fn p { margin:0 0 8px; }
+.fn table { width:100%; border-collapse:collapse; background:#fff; margin:8px 0 0; }
+.fn th, .fn td { border:1px solid #ccc; padding:8px 10px; text-align:left; vertical-align:top; }
+.fn th { background:#e3f3ea; }
+.ps { background:#fff8e6; border-left:5px solid #c45c26; padding:14px; margin:12px 0 18px; }
+.ps h2 { margin:0 0 10px; border:0; color:#c45c26; font-size:18px; }
+.ps ol, .ps ul { margin:8px 0 10px 22px; }
+.sample-out {
+  background:#fff;
+  border:1px solid #ccc;
+  padding:10px 12px;
+  font:15px Consolas, "Courier New", monospace;
+  white-space:pre-wrap;
+  overflow:auto;
+  margin:8px 0 0;
+}
+.pflow {
+  background:#fffdf8;
+  border:1px solid #d8cfc2;
+  border-left:6px solid #0e5f5b;
+  border-radius:14px;
+  padding:14px 16px;
+  margin:16px 0 22px;
+}
+.pflow h2 { margin:0 0 6px; border:0; padding:0; font-size:18px; color:#0e5f5b; }
+.pflow-cap { margin:0 0 10px; color:#5b6570; font-size:14px; }
+.pflow-lab {
+  width:100%; font-size:12px; font-weight:800; letter-spacing:.03em;
+  text-transform:uppercase; color:#c45c26; margin:8px 0 2px;
+}
+.pflow-row { display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; margin:0 0 12px; }
+.pflow-n {
+  background:#dceeed; border:2px solid #0e5f5b; border-radius:12px;
+  padding:8px 10px; min-width:118px; flex:1 1 118px; max-width:220px;
+  text-align:center; font-size:13px;
+}
+.pflow-n b { display:block; margin-bottom:4px; color:#0e5f5b; }
+.pflow-n span { display:block; font-weight:500; font-size:12px; line-height:1.4; }
+.pflow-n.out { background:#fff8e6; border-color:#c45c26; }
+.pflow-n.out b { color:#c45c26; }
+.pflow-a { align-self:center; font-size:22px; font-weight:800; color:#c45c26; }
+.icatag { display:inline-block; background:#c45c26; color:#fff; font-size:12px; font-weight:800; letter-spacing:.04em; padding:5px 12px; border-radius:6px; margin:8px 0 12px; }
+.rel { background:#fff; border:1px solid #d8cfc2; padding:12px 14px; margin:0 0 14px; border-radius:10px; }
+.rel a { margin-right:8px; }
+.realex { background:#eef8f4; border-left:5px solid #0e5f5b; padding:12px 14px; margin:0 0 16px; }
+.realex ul { margin:6px 0 0 18px; }

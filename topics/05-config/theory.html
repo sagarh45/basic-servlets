@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>5. ServletConfig and ServletContext</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>5. ServletConfig and ServletContext</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-config">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>Every page of a shopping mall website can print the same mall name: “Phoenix Mall”. That name belongs to the <b>whole mall</b>, not to one shop. One shop can also print its own manager name — that stamp belongs only to that shop. Mixing them is a common viva trap.</p>
+<p><b>ServletConfig</b> is data for <b>one servlet</b> (init-param inside that servlet in web.xml).</p>
+<p><b>ServletContext</b> is data for the <b>whole application</b> (context-param at the top of web.xml). Every servlet in <code>basic-servlets</code> can read it.</p>
+<p>Both use a method named <code>getInitParameter(name)</code>. The object you call it on decides which XML you read.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> Mall name is shared (<code>ServletContext</code>). One shop’s manager stamp is private (<code>ServletConfig</code>). Same method name <code>getInitParameter</code> — the object you call it on decides which drawer you open.</p>
+<h3>The story (mall name vs shop stamp)</h3>
+<p>Every shop notice, bill and offer can print:</p>
+<p><b>“Phoenix Mall”</b></p>
+<p>That name belongs to the <b>whole mall</b>. Change it once at the mall office and every shop’s page updates. In XML that is <code>&lt;context-param&gt;</code> named <code>collegeName</code> (this lab still uses that param name). You read it with <code>getServletContext().getInitParameter("collegeName")</code>.</p>
+<p>Now look at one shop only. The page also prints <b>author = Student Name</b>. That stamp belongs to <b>this shop / this servlet</b>, not to Cookie1 or ForwardServlet. In XML that is <code>&lt;init-param&gt;</code> inside this servlet. You read it with <code>getServletConfig().getInitParameter("author")</code>.</p>
+<p>If you ask Config for <code>collegeName</code>, you get <code>null</code>. If you put author as a context-param, every other program could read a value that is not theirs. That mix-up is a common viva trap.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Daily life</th><th>web.xml / Java</th></tr>
+<tr><td>Mall name on every page</td><td><code>context-param</code> + <code>getServletContext()</code></td></tr>
+<tr><td>This shop’s manager / author</td><td><code>init-param</code> + <code>getServletConfig()</code></td></tr>
+<tr><td>Wrong drawer</td><td>Same method, wrong object → <code>null</code></td></tr>
+</table>
+<h3>What you will see</h3>
+<p>The result page prints two lines: shared name (context) and author (this servlet). The form field <code>student</code> is <b>not</b> XML — it comes from the request, like a name written on today’s token.</p>
+<h3>Easy mistake</h3>
+<p>Copying the mall name as init-param into every servlet. One change would need ten XML edits. Context exists so you change it once.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Mall / hospital name = ServletContext</h3>
+<p>Every bill can print the same mall name. Change it once in <code>web.xml</code> and every servlet sees the new name. That is context-param.</p>
+<h3>One shop’s manager stamp = ServletConfig</h3>
+<p>Shop A has manager “Student Name”. Shop B is another program. Those values must not leak. That is init-param.</p>
+<h3>Hotel vs room</h3>
+<p>Hotel name is shared (context). Room number / this servlet’s author is private (config).</p>
+</div>
+
+<div class="section"><h2>B) When to use Config vs Context</h2>
+<table>
+<tr><th></th><th>ServletConfig — use when</th><th>ServletContext — use when</th></tr>
+<tr><td>Scope</td><td>Value belongs to one servlet only (author, practical number)</td><td>Value is shared (college name, department)</td></tr>
+<tr><td>XML</td><td>&lt;init-param&gt; inside &lt;servlet&gt;</td><td>&lt;context-param&gt; at application level</td></tr>
+<tr><td>Read</td><td>getServletConfig().getInitParameter(name)</td><td>getServletContext().getInitParameter(name)</td></tr>
+<tr><td>This lab</td><td>author (init-param)</td><td>collegeName (context-param)</td></tr>
+<tr><td>Do not</td><td>Do not store college name as init-param of every servlet</td><td>Do not put one servlet's private setting as context-param</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 5.1 — ServletConfig versus ServletContext</h3>
+<div class="flow"><div class="box">1. web.xml</div><div class="arrow">&rarr;</div><div class="box">2. init-param (one servlet)</div><div class="arrow">&rarr;</div><div class="box">3. context-param (whole app)</div><div class="arrow">&rarr;</div><div class="box">4. ConfigContextServlet</div><div class="arrow">&rarr;</div><div class="box">5. Two tables</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> Another servlet can read context-param. It cannot read another servlet's init-param.</div>
+<ol class="steps-n"><li>web.xml stores both kinds of parameters.</li><li>ServletConfig values belong only to ConfigContextServlet.</li><li>ServletContext values are shared by every servlet in this app.</li><li>doGet reads both APIs and prints two HTML tables.</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<p>Do not paste XML tags alone. The complete <code>web.xml</code> (opening tags + context-param + servlet + mapping + close) is in section G below.</p>
+<pre class="syntax">String author = getServletConfig().getInitParameter("author");
+String college = getServletContext().getInitParameter("collegeName");
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>context-param</code></td><td>Shared. Read with getServletContext().</td></tr><tr><td><code>init-param</code></td><td>One servlet. Read with getServletConfig().</td></tr><tr><td><code>getInitParameter(name)</code></td><td>Name must match param-name exactly.</td></tr><tr><td><code>null</code></td><td>Returned if the name is wrong or missing.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>Same method name getInitParameter. The object you call it on decides Config or Context.</p>
+<article class="fn">
+<h3>1. Function: <code>getServletConfig</code></h3>
+<p><b>Simple meaning:</b> Gives the configuration of THIS servlet only (init-param from web.xml).</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">ServletConfig config = getServletConfig();</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>ServletConfig</td></tr>
+<tr><td>When to use (USE)</td><td>Read author / practical number that belong only to this program.</td></tr>
+<tr><td>Lab example</td><td>config.getInitParameter("author") → Student Name</td></tr>
+<tr><td>Common mistake</td><td>Calling this before init has finished.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>getServletContext</code></h3>
+<p><b>Simple meaning:</b> Gives the shared application object (context-param). Every servlet in this app can read it.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">ServletContext context = getServletContext();</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>ServletContext</td></tr>
+<tr><td>When to use (USE)</td><td>College letterhead: name that must be the same on every page.</td></tr>
+<tr><td>Lab example</td><td>context.getInitParameter("collegeName") → Walchand Institute of Technology, Solapur</td></tr>
+<tr><td>Common mistake</td><td>Putting author here — then every servlet would see it. That is the wrong place.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>getInitParameter (Config)</code></h3>
+<p><b>Simple meaning:</b> Reads one &lt;init-param&gt; inside this &lt;servlet&gt; in web.xml.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String author = getServletConfig().getInitParameter("author");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name must match &lt;param-name&gt; exactly.</td></tr>
+<tr><td>Returns</td><td>String or null</td></tr>
+<tr><td>When to use (USE)</td><td>Private stamp of this practical.</td></tr>
+<tr><td>Lab example</td><td>author = Student Name in this lab.</td></tr>
+<tr><td>Common mistake</td><td>Looking for collegeName on ServletConfig — it is not there (null).</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>getInitParameter (Context)</code></h3>
+<p><b>Simple meaning:</b> Reads one &lt;context-param&gt; at web-app level.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String college = getServletContext().getInitParameter("collegeName");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>param-name from web.xml</td></tr>
+<tr><td>Returns</td><td>String or null</td></tr>
+<tr><td>When to use (USE)</td><td>Shared college / department values.</td></tr>
+<tr><td>Lab example</td><td>collegeName on every notice.</td></tr>
+<tr><td>Common mistake</td><td>Wrong key spelling → null. That is not a Tomcat crash; check the name.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>Type <code>jakarta.servlet</code> in every program. Extra imports (Cookie, HttpSession, RequestDispatcher) are added in later chapters when needed.</p>
+</div>
+
+<div class="why"><b>Matched program:</b> class <code>ConfigContextServlet</code>, URL <code>/configcontext</code>.</div>
+
+<div class="section"><h2>F) Complete Java + complete XML — every line explained</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletConfig;             // Per-servlet configuration
+import jakarta.servlet.ServletContext;            // Whole-application object
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class ConfigContextServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        show(request, response);                  // GET from Execute / address bar
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        show(request, response);                  // Same output if a form posts here
+    }
+
+    private void show(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ServletConfig config = getServletConfig();     // THIS servlet's init-param
+        ServletContext context = getServletContext();  // Shared context-param
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h2&gt;" + request.getMethod() + "&lt;/h2&gt;");
+        out.println("&lt;p&gt;collegeName (context) = " + context.getInitParameter("collegeName") + "&lt;/p&gt;");
+        out.println("&lt;p&gt;author (config) = " + config.getInitParameter("author") + "&lt;/p&gt;");
+        out.println("&lt;p&gt;student = " + request.getParameter("student") + "&lt;/p&gt;"); // Form field, not XML
+        out.println("&lt;p&gt;&lt;a href='configcontext.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;collegeName&lt;/param-name&gt;
+        &lt;param-value&gt;Walchand Institute of Technology, Solapur&lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;ConfigContextServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;ConfigContextServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;author&lt;/param-name&gt;
+            &lt;param-value&gt;Student Name&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ConfigContextServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/configcontext&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../configcontext.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-2">ICA Practical 02</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-2">ICA Practical 02</a></div>
+</div>
+</body>
+</html>

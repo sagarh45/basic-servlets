@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>7. Session Management - Cookies</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>7. Session Management - Cookies</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-cookies">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>HTTP is stateless. After one response, Tomcat forgets the browser. YouTube still says “Continue as Rahul” and remembers the last video because the <b>browser</b> kept small stickers (cookies). You must never store a password in a cookie in this lab.</p>
+<p>HTTP is <b>stateless</b>. After one response, Tomcat forgets the browser unless you store something.</p>
+<p>A <b>cookie</b> is a small name=value stored by the <b>browser</b> and sent back on later requests in the Cookie header.</p>
+<p>This lab stores display name in cookie <code>user</code> and last watched video in cookie <code>lastVideo</code>. Do not store passwords in cookies.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> A cookie is a small name-sticker the <b>browser</b> keeps (like a luggage tag on your bag). Tomcat does not remember you unless that sticker comes back. Never write a password on the sticker.</p>
+<h3>The story (YouTube “Remember me” + last watched)</h3>
+<p>HTTP is forgetful. After one answer, the shop forgets who stood at the counter. That is why a website feels “new” on every click unless we store something.</p>
+<p>You type your display name on a shared cafe laptop and click Remember me. Next visit, the same browser says <b>Continue as Rahul</b> and opens Home with last watched <b>Java Servlets</b>. The name was not stored in Tomcat as a login session. It was stored as stickers on that browser: cookie <code>user=Rahul</code> and cookie <code>lastVideo=Java</code>.</p>
+<ol>
+<li><b>Create (Cookie1)</b> — Remember me writes sticker <code>user</code> and hands it to the browser (<code>addCookie</code>). Password is never stored.</li>
+<li><b>Read + add (Cookie2)</b> — Home greets you from cookie <code>user</code> and saves last watched <code>lastVideo=Java</code> (like YouTube remembers the last video).</li>
+<li><b>List (Cookie3)</b> — Account settings loops <code>getCookies()</code> and prints every sticker on this laptop.</li>
+<li><b>Delete (CookieDelete)</b> — “Forget me on this device” sends sticker <code>user</code> with age 0. The browser throws it away. Exam answer: <code>setMaxAge(0)</code>.</li>
+</ol>
+<p>Gmail “Stay signed in” and Amazon “remember me” are the same idea, with more security. This lab only stores a display name and a last-watched title.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Daily life</th><th>Java</th></tr>
+<tr><td>YouTube Remember me / Continue as Rahul</td><td><code>new Cookie("user", login)</code> + <code>addCookie</code></td></tr>
+<tr><td>YouTube remembers last watched video</td><td><code>new Cookie("lastVideo", "Java")</code></td></tr>
+<tr><td>You return; stickers are still on the bag</td><td><code>request.getCookies()</code></td></tr>
+<tr><td>Sign out of this browser / Forget me</td><td>same name + <code>setMaxAge(0)</code></td></tr>
+<tr><td>Password on a tag on a cafe laptop</td><td>Never — use session + POST instead</td></tr>
+</table>
+<h3>What you will see</h3>
+<p>After Cookie1, DevTools → Application → Cookies shows <code>user</code>. Cookie2 greets Rahul and adds <code>lastVideo</code>. Cookie3 lists both. After Forget me, Cookie3 should not find <code>user</code>.</p>
+<h3>Easy mistake</h3>
+<p>Saying “cookie is stored in Tomcat.” It lives in the <b>browser</b>. Restart Tomcat and the cookie can still be there. Close that browser profile and it may be gone.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Remember my name on this browser (YouTube)</h3>
+<p>You type display name Rahul. Next visit the site says Continue as Rahul. Cookie <code>user</code> lives in the browser profile, not in Tomcat memory.</p>
+<h3>Last watched video</h3>
+<p>YouTube Home remembers the last video. Cookie2 saves <code>lastVideo=Java</code>. Cookie3 lists it under Account cookies.</p>
+<h3>Gmail / Amazon “remember me”</h3>
+<p>The site stores a token or display name. Real banks use HttpOnly secure cookies; this lab stores only a display name and a last-watched title.</p>
+<h3>Forget me on this device</h3>
+<p>YouTube “Sign out of this browser” must delete cookie <code>user</code>. <code>setMaxAge(0)</code> is the exam answer for delete.</p>
+</div>
+
+<div class="section"><h2>B) When to use cookies</h2>
+<table>
+<tr><th>Use cookies when</th><th>Do not use cookies when</th></tr>
+<tr><td>Remember a display name, theme, last city (non-secret)</td><td>Password, marks, bank data</td></tr>
+<tr><td>You need data on the next visit even after the tab closed (setMaxAge &gt; 0)</td><td>You need data only on the server (use HttpSession)</td></tr>
+<tr><td>The browser may send the value back automatically</td><td>Cookies are disabled (use URL rewriting or hidden field)</td></tr>
+</table>
+<p><b>Create</b> Remember me in Cookie1. <b>Read + last watched</b> in Cookie2. <b>List</b> in Cookie3. <b>Forget me</b> with same name + setMaxAge(0) in CookieDelete.</p>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 7.1 — Cookie chain in this laboratory</h3>
+<div class="flow"><div class="box">1. Remember me POST</div><div class="arrow">&rarr;</div><div class="box">2. Cookie1 user=Rahul</div><div class="arrow">&rarr;</div><div class="box">3. Browser stores cookie</div><div class="arrow">&rarr;</div><div class="box">4. Home lastVideo + list</div><div class="arrow">&rarr;</div><div class="box">5. Forget me maxAge 0</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> Cookies live in the browser. They are not Tomcat memory.</div>
+<ol class="steps-n"><li>Execute form POSTs display name to Cookie1 (Remember me).</li><li>Cookie1 creates cookie user=Rahul and addCookie. Password is not stored.</li><li>The browser stores it for this host.</li><li>Cookie2 greets Rahul from getCookies() and adds lastVideo=Java. Cookie3 lists both.</li><li>CookieDelete sends cookie user with maxAge 0 so the browser removes it (Forget me on this device).</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<pre class="syntax">import jakarta.servlet.http.Cookie;
+
+// CREATE
+Cookie c = new Cookie("user", login);
+response.addCookie(c);
+
+// READ
+Cookie[] arr = request.getCookies();
+if (arr != null) {
+  for (Cookie x : arr) {
+    if ("user".equals(x.getName())) {
+      out.println(x.getValue());
+    }
+  }
+}
+
+// DELETE
+Cookie del = new Cookie("user", "");
+del.setMaxAge(0);
+response.addCookie(del);
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>new Cookie(&quot;user&quot;, login)</code></td><td>Name and value. Avoid spaces in the value.</td></tr><tr><td><code>addCookie(c)</code></td><td>Sends Set-Cookie to the browser.</td></tr><tr><td><code>getCookies()</code></td><td>May return null if the browser sent none.</td></tr><tr><td><code>setMaxAge(0)</code></td><td>Delete. Negative = session cookie (until browser closes). Positive = seconds to live.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>A cookie lives in the browser. Tomcat forgets the browser; the cookie comes back on the next request.</p>
+<article class="fn">
+<h3>1. Function: <code>new Cookie</code></h3>
+<p><b>Simple meaning:</b> Creates a small name=value pair. Name in this lab must be user so Cookie2 can find it.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">Cookie c = new Cookie("user", login);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name (no spaces), value (display name, not a password)</td></tr>
+<tr><td>Returns</td><td>Cookie object (not yet sent)</td></tr>
+<tr><td>When to use (USE)</td><td>Remember-me display name.</td></tr>
+<tr><td>Lab example</td><td>Cookie1: new Cookie("user", "Rahul")</td></tr>
+<tr><td>Common mistake</td><td>Storing the password in a cookie.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>setMaxAge</code></h3>
+<p><b>Simple meaning:</b> Lifetime in seconds. Positive = keep after the tab closes. 0 = delete.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">c.setMaxAge(60 * 60);   // 1 hour
+c.setMaxAge(0);          // delete now</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>seconds (int)</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Persistent Remember me, or Forget me on this device.</td></tr>
+<tr><td>Lab example</td><td>CookieDelete uses 0 so the browser drops cookie user (YouTube Sign out of this browser).</td></tr>
+<tr><td>Common mistake</td><td>Calling setMaxAge after addCookie on a different object — the browser never sees it.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>addCookie</code></h3>
+<p><b>Simple meaning:</b> Sends Set-Cookie to the browser. Prefer this before writing the HTML body.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">response.addCookie(c);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>the Cookie you built</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>After you create or delete a cookie.</td></tr>
+<tr><td>Lab example</td><td>Cookie1 addCookie then prints Continue as Rahul and a link to Home.</td></tr>
+<tr><td>Common mistake</td><td>Only creating the Cookie in memory and never calling addCookie.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>getCookies</code></h3>
+<p><b>Simple meaning:</b> Array of cookies the browser sent. May be null if none.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">Cookie[] arr = request.getCookies();
+if (arr != null) { ... }</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>Cookie[] or null</td></tr>
+<tr><td>When to use (USE)</td><td>Read the saved name on the next page.</td></tr>
+<tr><td>Lab example</td><td>Cookie2 loops and prints user = Rahul.</td></tr>
+<tr><td>Common mistake</td><td>Using arr.length without the null check — NullPointerException.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>5. Function: <code>getName / getValue</code></h3>
+<p><b>Simple meaning:</b> Read one cookie’s name and value in the loop.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">arr[i].getName()
+arr[i].getValue()</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>String</td></tr>
+<tr><td>When to use (USE)</td><td>Find cookie user among JSESSIONID and others.</td></tr>
+<tr><td>Lab example</td><td>if ("user".equals(arr[i].getName())) print the value.</td></tr>
+<tr><td>Common mistake</td><td>Comparing with == instead of equals.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>This chapter needs <code>jakarta.servlet.http.Cookie</code>. Type <code>jakarta.servlet</code>, never <code>javax.servlet</code>.</p>
+</div>
+
+<div class="why"><b>Matched programs:</b> Cookie1 Remember me, Cookie2 Home / last watched, Cookie3 Account cookies, CookieDelete Forget me.</div>
+
+<div class="section"><h2>F) Complete Java programs — every line explained</h2>
+<pre class="syntax">import java.io.*;                                // IOException, PrintWriter
+import jakarta.servlet.*;                        // ServletException
+import jakarta.servlet.http.*;                   // HttpServlet, Cookie, request, response
+
+public class Cookie1 extends HttpServlet {       // Remember me — CREATE cookie user
+
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String login = request.getParameter("login");  // Display name from the form
+        if (login == null || login.isEmpty()) {
+            login = "guest";                     // Safe default for empty box
+        }
+        Cookie c = new Cookie("user", login);    // Name must be "user" for later readers
+        c.setMaxAge(60 * 60);                    // 1 hour in seconds (persistent)
+        response.addCookie(c);                   // Sends Set-Cookie to the browser
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h2&gt;Continue as " + login + "&lt;/h2&gt;");
+        out.println("&lt;p&gt;This browser saved your name (cookie user=" + login + "), like YouTube Remember me.&lt;/p&gt;");
+        out.println("&lt;p&gt;Password is not stored.&lt;/p&gt;");
+        out.println("&lt;p&gt;&lt;a href='Cookie2'&gt;Open Home (last watched)&lt;/a&gt; | &lt;a href='CookieDelete'&gt;Forget me on this device&lt;/a&gt;&lt;/p&gt;");
+        out.println("&lt;p&gt;&lt;a href='cookie.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+<pre class="syntax">public class Cookie2 extends HttpServlet {       // Home — READ cookies + last watched
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        String display = "guest";
+        out.println("&lt;html&gt;&lt;body&gt;&lt;h2&gt;Home — last watched&lt;/h2&gt;");
+        Cookie[] arr = request.getCookies();     // May be null if browser sent none
+        if (arr != null) {
+            for (int i = 0; i &lt; arr.length; i++) {
+                if ("user".equals(arr[i].getName())) {
+                    display = arr[i].getValue(); // Continue as ...
+                }
+                out.println(arr[i].getName() + " = " + arr[i].getValue() + "&lt;br&gt;");
+            }
+        } else {
+            out.println("&lt;p&gt;No cookies yet. Stay signed in first.&lt;/p&gt;");
+        }
+        out.println("&lt;p&gt;Welcome back " + display + "&lt;/p&gt;");
+        Cookie c2 = new Cookie("lastVideo", "Java");
+        response.addCookie(c2);                  // Like YouTube last watched
+        out.println("&lt;p&gt;Saved last watched: Java Servlets (cookie lastVideo=Java), like YouTube remembers the last video.&lt;/p&gt;");
+        out.println("&lt;p&gt;&lt;a href='Cookie3'&gt;Account cookies&lt;/a&gt;&lt;/p&gt;");
+        out.println("&lt;/body&gt;&lt;/html&gt;");
+    }
+}</pre>
+<pre class="syntax">public class Cookie3 extends HttpServlet {       // Account settings — LIST cookies
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;html&gt;&lt;body&gt;&lt;h2&gt;Account — cookies on this browser&lt;/h2&gt;");
+        Cookie[] arr = request.getCookies();
+        if (arr != null) {
+            for (int i = 0; i &lt; arr.length; i++) {
+                out.println(arr[i].getName() + " = " + arr[i].getValue() + "&lt;br&gt;");
+            }
+        } else {
+            out.println("&lt;p&gt;No cookies.&lt;/p&gt;");
+        }
+        out.println("&lt;p&gt;&lt;a href='CookieDelete'&gt;Forget me on this device&lt;/a&gt;&lt;/p&gt;");
+        out.println("&lt;/body&gt;&lt;/html&gt;");
+    }
+}</pre>
+<pre class="syntax">public class CookieDelete extends HttpServlet {  // Forget me — DELETE cookie user
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        Cookie del = new Cookie("user", "");     // Same NAME as the cookie to remove
+        del.setMaxAge(0);                        // 0 seconds = delete now
+        response.addCookie(del);                 // Browser drops cookie "user"
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h2&gt;Forgot you on this device&lt;/h2&gt;");
+        out.println("&lt;p&gt;Cookie user was deleted (setMaxAge(0)), like YouTube Sign out of this browser.&lt;/p&gt;");
+        out.println("&lt;p&gt;lastVideo may still be here until you clear site data.&lt;/p&gt;");
+        out.println("&lt;p&gt;&lt;a href='Cookie3'&gt;Check account cookies&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Cookie1&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Cookie1&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Cookie1&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Cookie1&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Cookie2&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Cookie2&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Cookie2&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Cookie2&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Cookie3&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Cookie3&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Cookie3&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Cookie3&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;CookieDelete&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;CookieDelete&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;CookieDelete&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/CookieDelete&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../cookie.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-4">ICA Practical 04</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-4">ICA Practical 04</a></div>
+</div>
+</body>
+</html>

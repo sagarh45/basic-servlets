@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Source - CapstoneLogin.java + HTML + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+.prob { background:#fff8e6; border:1px solid #e6d59a; padding:14px; margin:12px 0; max-width:980px; }
+.why { background:#f0f7ff; border-left:4px solid #336699; padding:10px 14px; margin:10px 0; max-width:980px; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a.btn.ghost { background:#fff; color:#336699; }
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+.legend .attr { color:#0000ff; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#0000ff; }
+.js { color:#333; }
+.synexp { width:100%; max-width:980px; border-collapse:collapse; background:#fff; margin:12px 0 18px; }
+.synexp th, .synexp td { border:1px solid #ccc; padding:10px 12px; text-align:left; vertical-align:top; }
+.synexp th { background:#eef8ee; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<p class="icatag">ICA PRACTICAL 04 · MYMAIL ACCOUNT</p>
+<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookies, session, URL rewrite, hidden field and portal together.
+Java: <a href="Cookie1.html">Cookie1</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="Url1.html">Url1</a> · <a href="Valid.html">Valid</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
+<a href="../practicals.html#ica-4">ICA journal</a>
+<a class="btn" href="../capstone.html">Run MyMail account</a></div>
+<div class="realex"><b>Real examples:</b> Cookie = YouTube / Instagram Continue as Rahul (never store a password).
+HttpSession = Gmail / WhatsApp Web login until Logout.
+URL rewriting = old net-banking when cookies are blocked.
+Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + forward / include.</div>
+
+<div class="ps">
+<h2>Problem statement (ICA 4 · MyMail portal)</h2>
+<p><b>Title:</b> Mini Gmail portal — session + remember cookie + forward / include + logout</p>
+<p>Same HTML <code>capstone.html</code> as the four session techniques. Login <b>java</b> / <b>servlet</b>. Password is never stored in a cookie.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Correct POST: HttpSession username, cookie remember (display name only), forward Welcome. URL stays <code>/CapstoneLogin</code>.</li>
+<li>Wrong password: print error and include the form again.</li>
+<li>Logout: <code>invalidate()</code> and remember cookie <code>maxAge 0</code>.</li>
+</ol>
+<p><b>Sample output:</b></p>
+<pre class="sample-out">Welcome java
+Login success using forward.
+Username stored in HttpSession.
+Cookie remember also created for next visit.
+Logout</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Mini portal: session + remember cookie + forward on success, include on failure. Login <b>java</b> / <b>servlet</b>.</p>
+<div class="pflow-lab">Success</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/CapstoneLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>session + cookie remember<br>forward CapstoneWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome java<br>Login success using forward<br>(URL still /CapstoneLogin)</span></div></div><div class="pflow-lab">Failure</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>print error + include form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect Login ID / Password<br>+ login form again</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>invalidate + cookie maxAge 0</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>capstone.html</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again</span></div></div></div>
+<p>
+<a class="btn ghost" href="../topics/11-capstone/theory.html">Theory</a>
+<a class="btn" href="../capstone.html">Execute</a>
+<a class="btn source" href="CapstoneLogin.html">Source</a>
+<a class="btn ghost" href="../index.html#ch-capstone">Index</a>
+</p>
+<h1>Source: CapstoneLogin</h1>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="tag">&lt;form&gt;</span>
+    <span class="attr">method=</span>
+    <span class="str">"post"</span>
+    <span class="cmt">&lt;!-- comment --&gt;</span>
+  </div>
+</div>
+<h2>1. HTML — one ICA page (capstone.html) — MyMail account</h2><div class="why"><b>Simple meaning:</b> Same as a real login page. POST java / servlet. No script needed.</div><div class="why"><b>Is &lt;script&gt; required?</b> <b>No.</b> The login form is enough.</div><table class="synexp"><tr><th>HTML / line</th><th>Simple meaning</th></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;CapstoneLogin&quot;&gt;</code></td><td>POST to /CapstoneLogin. Password stays out of the URL.</td></tr><tr><td><code>&lt;input name=&quot;login&quot;&gt;</code></td><td>getParameter("login") must equal java.</td></tr><tr><td><code>&lt;input type=&quot;password&quot; name=&quot;pwd&quot;&gt;</code></td><td>getParameter("pwd") must equal servlet.</td></tr></table><p>Copy this small page. <code>name=</code> must match <code>getParameter</code> in Java.</p><pre class="code">&lt;!DOCTYPE html&gt;
+&lt;<span class="tag">html</span>&gt;
+&lt;<span class="tag">head</span>&gt;
+&lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
+&lt;<span class="tag">title</span>&gt;Capstone login&lt;/<span class="tag">title</span>&gt;
+&lt;/<span class="tag">head</span>&gt;
+&lt;<span class="tag">body</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;CapstoneLogin&quot;</span>&gt;
+  Login: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;login&quot;</span> <span class="attr">value</span>=<span class="str">&quot;java&quot;</span>&gt;
+  Password: &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;password&quot;</span> <span class="attr">name</span>=<span class="str">&quot;pwd&quot;</span> <span class="attr">value</span>=<span class="str">&quot;servlet&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Login&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+&lt;/<span class="tag">body</span>&gt;
+&lt;/<span class="tag">html</span>&gt;</pre><h2>2. Java program — CapstoneLogin.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">RequestDispatcher</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">Cookie</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpSession</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">CapstoneLogin</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;capstone.html&quot;</span>);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> login = request.<span class="mtd">getParameter</span>(<span class="str">&quot;login&quot;</span>);
+        <span class="cls">String</span> pwd = request.<span class="mtd">getParameter</span>(<span class="str">&quot;pwd&quot;</span>);
+        <span class="kw">if</span> (login != <span class="kw">null</span> &amp;&amp; pwd != <span class="kw">null</span> &amp;&amp; login.<span class="mtd">equals</span>(<span class="str">&quot;java&quot;</span>) &amp;&amp; pwd.<span class="mtd">equals</span>(<span class="str">&quot;servlet&quot;</span>)) {
+            <span class="cls">HttpSession</span> session = request.<span class="mtd">getSession</span>(<span class="kw">true</span>);
+            session.<span class="mtd">setAttribute</span>(<span class="str">&quot;username&quot;</span>, login);
+            <span class="cls">Cookie</span> remember = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;remember&quot;</span>, login);
+            remember.<span class="mtd">setMaxAge</span>(60 * 60 * 24 * 7);
+            response.<span class="mtd">addCookie</span>(remember);
+            request.<span class="mtd">getRequestDispatcher</span>(<span class="str">&quot;CapstoneWelcome&quot;</span>).<span class="mtd">forward</span>(request, response);
+        } <span class="kw">else</span> {
+            response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+            <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Incorrect Login ID / Password&lt;/p&gt;&quot;</span>);
+            <span class="cls">RequestDispatcher</span> rd = request.<span class="mtd">getRequestDispatcher</span>(<span class="str">&quot;/capstone.html&quot;</span>);
+            rd.<span class="mtd">include</span>(request, response);
+        }
+    }
+}
+</pre><h2>3. Java program — CapstoneWelcome.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpSession</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">CapstoneWelcome</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">show</span>(request, response);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">show</span>(request, response);
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> <span class="mtd">show</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response) <span class="kw">throws</span> <span class="cls">IOException</span> {
+        <span class="cls">HttpSession</span> session = request.<span class="mtd">getSession</span>(<span class="kw">false</span>);
+        <span class="kw">if</span> (session == <span class="kw">null</span> || session.<span class="mtd">getAttribute</span>(<span class="str">&quot;username&quot;</span>) == <span class="kw">null</span>) {
+            response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;capstone.html&quot;</span>);
+            <span class="kw">return</span>;
+        }
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h1&gt;Welcome &quot;</span> + session.<span class="mtd">getAttribute</span>(<span class="str">&quot;username&quot;</span>) + <span class="str">&quot;&lt;/h1&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;CapstoneLogout&#x27;&gt;Logout&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+    }
+}
+</pre><h2>4. Java program — CapstoneLogout.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">Cookie</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpSession</span>;
+
+<span class="cmt">/** Capstone logout: invalidate session and clear remember cookie. */</span>
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">CapstoneLogout</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1L;
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+
+        <span class="cls">HttpSession</span> session = request.<span class="mtd">getSession</span>(<span class="kw">false</span>);
+        <span class="kw">if</span> (session != <span class="kw">null</span>) {
+            session.<span class="mtd">invalidate</span>();
+        }
+
+        <span class="cls">Cookie</span> del = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;remember&quot;</span>, <span class="str">&quot;&quot;</span>);
+        del.<span class="mtd">setMaxAge</span>(0);
+        response.<span class="mtd">addCookie</span>(del);
+
+        response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;capstone.html?back=ch-capstone&quot;</span>);
+    }
+}
+</pre>
+<p><a class="btn" href="../capstone.html">Run ICA project</a> <a class="btn ghost" href="../practicals.html#ica-4">ICA journal</a> <a class="btn" href="../index.html">Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;CapstoneLogin&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/CapstoneLogin&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;CapstoneWelcome&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;CapstoneWelcome&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;CapstoneWelcome&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/CapstoneWelcome&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;CapstoneLogout&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;CapstoneLogout&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;CapstoneLogout&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/CapstoneLogout&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

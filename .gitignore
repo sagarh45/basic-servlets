@@ -1,0 +1,22 @@
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.iml
+
+# Java / Tomcat build output
+*.class
+*.jar
+*.war
+WEB-INF/classes/
+work/
+logs/
+
+# Secrets
+.env
+.env.*
+credentials.json

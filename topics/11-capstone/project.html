@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Project - 11. Capstone Student Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=1700">
+<script src="../../portal.js?v=1700" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Project - 11. Capstone: Student login portal</h1>
+<div class="nav">
+<a class="btn ghost" href="theory.html?v=1127">Theory</a>
+<a class="btn" href="../../capstone.html?back=ch-capstone">Execute</a>
+<a class="btn source" href="../../source/CapstoneLogin.html">Source</a>
+<a class="btn active" href="project.html">Project</a>
+<a class="btn secondary" href="../../index.html#ch-capstone">Index</a>
+</div>
+
+<div class="match">
+  <b>Matched lab programs:</b> <code>CapstoneLogin</code>, <code>CapstoneWelcome</code>, <code>CapstoneLogout</code><br>
+  Fill the login form on Execute. Correct user: <b>java</b> / <b>servlet</b>.
+</div>
+
+<div class="prob"><b>Problem statement (mini-project):</b>
+Develop a student login portal for Walchand Institute of Technology, Solapur on Apache Tomcat 11.
+The student submits a login form using HTTP POST (user <b>java</b>, password <b>servlet</b>).
+On success the server must (1) store the user name in HttpSession, (2) remember the display name in a cookie for seven days (never the password),
+and (3) forward to Welcome so the address bar stays <code>/CapstoneLogin</code>.
+On a wrong password the same response must include the login form again with an error.
+Logout must invalidate the session and delete the remember cookie.
+Submit complete Java for CapstoneLogin, CapstoneWelcome and CapstoneLogout, plus the complete web.xml mappings.
+Do not mix Cookie1 or NotesSessionLogin into this project.</div>
+
+<div class="card">
+<h3>What the student actually does</h3>
+<ol>
+<li>Open Execute. Type user <code>java</code> and password <code>servlet</code>. Click Login (POST).</li>
+<li>Success page: Welcome java. Address bar still shows <code>/CapstoneLogin</code> because of <b>forward</b>.</li>
+<li>Refresh Welcome later: session still has the name (HttpSession).</li>
+<li>Open login again later: the user box may already show <code>java</code> (remember cookie).</li>
+<li>Click Logout: session is invalidated, cookie is removed, form comes back empty.</li>
+<li>Try a wrong password: error message + the same form is included (include, not forward).</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>What each class does</h3>
+<table>
+<tr><th>Class</th><th>Real job</th></tr>
+<tr><td><code>CapstoneLogin</code></td><td>Reads the filled form. Checks java/servlet. On success: session + cookie + forward.</td></tr>
+<tr><td><code>CapstoneWelcome</code></td><td>Reads session. If missing, send back to the form. Shows Welcome + Logout.</td></tr>
+<tr><td><code>CapstoneLogout</code></td><td>invalidate() session and delete remember cookie, then go back to the form.</td></tr>
+</table>
+</div>
+
+<div class="why"><b>Check yourself:</b> After a correct login, is the password in the address bar? It should not be (POST body).
+After logout, does Welcome still greet you? It should not (session cleared).</div>
+
+<p><a class="btn" href="../../capstone.html?back=ch-capstone">Run the form (Execute)</a>
+<a class="btn source" href="../../source/CapstoneLogin.html">Read the Java (Source)</a></p>
+<div class="footer"><a href="../../index.html#ch-capstone">Return to Index</a></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Programs · Execute Online · Unit-II Servlets</title>
+<link rel="stylesheet" href="portal.css?v=1800">
+<script src="portal.js?v=1800" defer></script>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="theory.html">Theory</a>
+    <a class="on" href="programs.html">Programs</a>
+    <a href="practicals.html">ICA Practicals</a>
+  </nav>
+  <div class="grow"></div>
+  <button class="iconbtn" type="button" id="paletteBtn">Jump</button>
+  <button class="iconbtn" type="button" id="themeBtn">Dark</button>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="kicker">Tab 2 · Live Tomcat 11 programs</span>
+    <h1>Programs — Execute Online</h1>
+    <p>Every green button runs the program in this website. Fill the form, watch the address bar in the result, then open Source. Students do not need Tomcat. If this folder is opened on Tomcat 8080, the original Java servlets still run instead.</p>
+    <div class="hero-actions">
+      <a class="btn ghost" href="theory.html">Back to Theory</a>
+      <a class="btn ghost" href="practicals.html">ICA Practicals</a>
+    </div>
+  </section>
+
+  <div class="info">
+    <b>How to execute:</b> Click <b>Execute Online</b>. On the public website it runs here in the browser.
+    Login for session programs: <b>java</b> / <b>servlet</b>.
+    Source pages match the four ICA projects (ShopEasy, WatchTube, MyMail + PayNow, MyMail account). Login: <b>java</b> / <b>servlet</b>.
+  </div>
+
+  <h2>A) Syllabus programs (must run)</h2>
+
+  <div class="prog" id="p-http">
+    <div>
+      <h3>2. ICA 1 · ShopEasy — HTTP methods</h3>
+      <p>Amazon Track / Checkout / Edit city / Cancel. Same page also has GET search vs POST review.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="httpmethods.html">Execute Online</a>
+      <a class="btn source" href="source/HttpMethodsServlet.html">Source</a>
+      <a class="btn ghost" href="sample-registration.html">Sample form</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-getpost">
+    <div>
+      <h3>3. ICA 1 · GET vs POST (same ShopEasy page)</h3>
+      <p>YouTube search vs review. Do not use a second HTML file. Source matches ICA 1.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="httpmethods.html#getpost">Execute Online</a>
+      <a class="btn source" href="source/GetPostDiffServlet.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-life">
+    <div>
+      <h3>4. ICA 2 · WatchTube — lifecycle</h3>
+      <p>YouTube view count: init once, every refresh is a view.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="lifecycle.html">Execute Online</a>
+      <a class="btn source" href="source/LifecycleServlet.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-config">
+    <div>
+      <h3>5. ICA 2 · Channel name vs author (same WatchTube page)</h3>
+      <p>ServletContext (collegeName) vs ServletConfig (author). Same HTML as lifecycle.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="lifecycle.html#config">Execute Online</a>
+      <a class="btn source" href="source/ConfigContextServlet.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-fwd">
+    <div>
+      <h3>6. ICA 3 · MyMail + PayNow</h3>
+      <p>Forward = open mail (URL stays). Redirect = Amazon Pay (URL changes). Include = footer on the same page.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="forward.html">Execute Online</a>
+      <a class="btn source" href="source/ForwardServlet.html">Source</a>
+      <a class="btn ghost" href="redirect_demo.html">Redirect demo</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-cookie">
+    <div>
+      <h3>7. ICA 4 · Remember me (cookies)</h3>
+      <p>YouTube Continue as Rahul. Same MyMail account page as session, URL rewrite, hidden field and portal.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="capstone.html">Execute Online</a>
+      <a class="btn source" href="source/Cookie1.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-session">
+    <div>
+      <h3>8. ICA 4 · Gmail login (HttpSession)</h3>
+      <p>Login <b>java</b> / <b>servlet</b>. Same <code>capstone.html</code> as the rest of ICA 4.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="capstone.html">Execute Online</a>
+      <a class="btn source" href="source/NotesSessionLogin.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-url">
+    <div>
+      <h3>9. ICA 4 · URL rewriting (cookies off)</h3>
+      <p>Old net-banking style. Same MyMail account page.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="capstone.html">Execute Online</a>
+      <a class="btn source" href="source/Url1.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-hidden">
+    <div>
+      <h3>10. ICA 4 · Hidden form field</h3>
+      <p>IRCTC-style step id. Same <code>capstone.html</code>.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="capstone.html">Execute Online</a>
+      <a class="btn source" href="source/Valid.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-capstone">
+    <div>
+      <h3>11. ICA 4 · MyMail portal</h3>
+      <p>POST login, HttpSession, remember cookie, forward on success, include on failure, logout. Same <code>capstone.html</code>.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="capstone.html">Execute Online</a>
+      <a class="btn source" href="source/CapstoneLogin.html">Source</a>
+      <a class="btn ghost" href="topics/11-capstone/project.html">Project</a>
+    </div>
+  </div>
+
+  <h2>B) Extra lab programs (same server)</h2>
+  <p class="note">These also Execute Online on Tomcat. Use them for extra practice after the syllabus list.</p>
+
+  <div class="prog"><div><h3>Hello servlet</h3><p><code>HelloServlet</code> · first HTML from Java.</p></div>
+    <div class="acts"><a class="exec-xl" href="hello.html">Execute Online</a><a class="btn source" href="source/HelloServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>GenericServlet</h3><p><code>GenericServletDemo</code> · service() without HTTP helpers.</p></div>
+    <div class="acts"><a class="exec-xl" href="generic.html">Execute Online</a><a class="btn source" href="source/GenericServletDemo.html">Source</a></div></div>
+  <div class="prog"><div><h3>Request information</h3><p><code>RequestInfoServlet</code> · method, URI, query string.</p></div>
+    <div class="acts"><a class="exec-xl" href="requestinfo.html">Execute Online</a><a class="btn source" href="source/RequestInfoServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>Response headers</h3><p><code>ResponseDemoServlet</code> · content type and writer.</p></div>
+    <div class="acts"><a class="exec-xl" href="response.html">Execute Online</a><a class="btn source" href="source/ResponseDemoServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>ICA 3 · Include footer</h3><p><code>IncludeServlet</code> · Gmail-style footer on the same page. Run from MyMail + PayNow.</p></div>
+    <div class="acts"><a class="exec-xl" href="forward.html">Execute Online</a><a class="btn source" href="source/IncludeServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>Request attributes</h3><p><code>AttributeDemoServlet</code> · data carried on a forward.</p></div>
+    <div class="acts"><a class="exec-xl" href="attributes.html">Execute Online</a><a class="btn source" href="source/AttributeDemoServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>Hyperlink → servlet</h3><p><code>HyperLinkDemo</code> · GET from an &lt;a&gt; tag.</p></div>
+    <div class="acts"><a class="exec-xl" href="hyperlink.html">Execute Online</a><a class="btn source" href="source/HyperLinkDemo.html">Source</a></div></div>
+  <div class="prog"><div><h3>doGet demo</h3><p><code>DoGetDemo</code> · classic GET handler.</p></div>
+    <div class="acts"><a class="exec-xl" href="doget.html">Execute Online</a><a class="btn source" href="source/DoGetDemo.html">Source</a></div></div>
+  <div class="prog"><div><h3>Maximum of numbers</h3><p><code>Max</code> · form values, compare, print result.</p></div>
+    <div class="acts"><a class="exec-xl" href="max.html">Execute Online</a><a class="btn source" href="source/Max.html">Source</a></div></div>
+  <div class="prog"><div><h3>Hit counter</h3><p><code>CounterServlet</code> · instance variable across refreshes.</p></div>
+    <div class="acts"><a class="exec-xl" href="counter.html">Execute Online</a><a class="btn source" href="source/CounterServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>ServletConfig init-param</h3><p><code>MyServlet</code> · name from web.xml.</p></div>
+    <div class="acts"><a class="exec-xl" href="myservlet.html">Execute Online</a><a class="btn source" href="source/MyServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>ServletContext demo</h3><p><code>ServletContextDemo</code> · shared context-param.</p></div>
+    <div class="acts"><a class="exec-xl" href="servletcontext.html">Execute Online</a><a class="btn source" href="source/ServletContextDemo.html">Source</a></div></div>
+  <div class="prog"><div><h3>Concat / call servlet</h3><p><code>ConcatServlet</code> + <code>CallServlet</code>.</p></div>
+    <div class="acts"><a class="exec-xl" href="concat.html">Execute Online</a><a class="btn source" href="source/ConcatServlet.html">Source</a></div></div>
+  <div class="prog"><div><h3>GET vs POST (second demo)</h3><p><code>GetPostDemoServlet</code> · extra form.</p></div>
+    <div class="acts"><a class="exec-xl" href="getpost.html">Execute Online</a><a class="btn source" href="source/GetPostDemoServlet.html">Source</a></div></div>
+
+  <p style="margin-top:22px">
+    <a class="exec-xl" href="practicals.html">Next tab: ICA Practicals (real life)</a>
+  </p>
+  <div class="footer">Programs run on this Tomcat · not simulated</div>
+</div>
+</body>
+</html>

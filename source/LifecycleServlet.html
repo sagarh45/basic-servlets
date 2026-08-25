@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Source - LifecycleServlet.java + HTML + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+.prob { background:#fff8e6; border:1px solid #e6d59a; padding:14px; margin:12px 0; max-width:980px; }
+.why { background:#f0f7ff; border-left:4px solid #336699; padding:10px 14px; margin:10px 0; max-width:980px; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a.btn.ghost { background:#fff; color:#336699; }
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+.legend .attr { color:#0000ff; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#0000ff; }
+.js { color:#333; }
+.synexp { width:100%; max-width:980px; border-collapse:collapse; background:#fff; margin:12px 0 18px; }
+.synexp th, .synexp td { border:1px solid #ccc; padding:10px 12px; text-align:left; vertical-align:top; }
+.synexp th { background:#eef8ee; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<p class="icatag">ICA PRACTICAL 02 · WATCHTUBE (like YouTube)</p>
+<div class="rel"><b>One HTML page:</b> <code>lifecycle.html</code> — do not add a second HTML file.
+Java: <a href="LifecycleServlet.html">LifecycleServlet</a> · <a href="ConfigContextServlet.html">ConfigContextServlet</a>.
+<a href="../practicals.html#ica-2">ICA journal</a>
+<a class="btn" href="../lifecycle.html">Run WatchTube</a></div>
+<div class="realex"><b>Real examples:</b> init once = YouTube player starts once.
+service many times = every refresh / like is a new view.
+destroy = Tomcat undeploy, not closing the tab.
+ServletContext = channel / store name (shared). ServletConfig = this video’s author only.</div>
+
+<div class="ps">
+<h2>Problem statement (ICA 2 · WatchTube)</h2>
+<p><b>Title:</b> WatchTube view counter — init once, service on every view</p>
+<p>Like YouTube: the player starts once; every refresh is another view. Same HTML also prints channel name vs this video’s author (ConfigContextServlet).</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Open the video (GET) at least five times. init stays 1. service goes 1, 2, 3…</li>
+<li>POST viewer name to sign this view.</li>
+<li>Write init, service, doGet, doPost, destroy and web.xml with <code>load-on-startup</code>.</li>
+</ol>
+<p><b>Sample output:</b></p>
+<pre class="sample-out">GET open video
+init=1 service=5 lastVisitor=null</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Servlet object is created once. Every click runs service again. init stays 1. service grows.</p>
+<div class="pflow-lab">GET — open WatchTube video</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Open video</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET <code>/lifecycle</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Tomcat</b><span>init() once<br>then service() every time</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Java</b><span>doGet()</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>GET open video<br>init=1 service=N lastVisitor=null</span></div></div><div class="pflow-lab">POST — sign this view</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type visitor name<br>submit POST</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/lifecycle</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>doPost() stores lastVisitor</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>POST signed Rahul<br>init=1 service=N lastVisitor=Rahul</span></div></div></div>
+<p>
+<a class="btn ghost" href="../topics/04-lifecycle/theory.html">Theory</a>
+<a class="btn" href="../lifecycle.html">Execute</a>
+<a class="btn source" href="LifecycleServlet.html">Source</a>
+<a class="btn ghost" href="../index.html#ch-lifecycle">Index</a>
+</p>
+<h1>Source: LifecycleServlet</h1>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="tag">&lt;form&gt;</span>
+    <span class="attr">method=</span>
+    <span class="str">"post"</span>
+    <span class="cmt">&lt;!-- comment --&gt;</span>
+  </div>
+</div>
+<h2>1. HTML — one ICA page (lifecycle.html) — WatchTube</h2><div class="why"><b>Simple meaning:</b> A link is GET. A form with method=post is POST. No script needed.</div><div class="why"><b>Is &lt;script&gt; required?</b> <b>No.</b> Link = GET, form = POST.</div><table class="synexp"><tr><th>HTML / line</th><th>Simple meaning</th></tr><tr><td><code>&lt;a href=&quot;lifecycle&quot;&gt;</code></td><td>Click = GET. Tomcat runs doGet. No new name is written.</td></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;lifecycle&quot;&gt;</code></td><td>Submit = POST. Tomcat runs doPost.</td></tr><tr><td><code>&lt;input name=&quot;visitor&quot;&gt;</code></td><td>doPost reads request.getParameter("visitor").</td></tr></table><p>Copy this small page. <code>name=</code> must match <code>getParameter</code> in Java.</p><pre class="code">&lt;!DOCTYPE html&gt;
+&lt;<span class="tag">html</span>&gt;
+&lt;<span class="tag">head</span>&gt;
+&lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
+&lt;<span class="tag">title</span>&gt;Lifecycle&lt;/<span class="tag">title</span>&gt;
+&lt;/<span class="tag">head</span>&gt;
+&lt;<span class="tag">body</span>&gt;
+&lt;<span class="tag">h2</span>&gt;GET - open book&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">p</span>&gt;&lt;<span class="tag">a</span> <span class="attr">href</span>=<span class="str">&quot;lifecycle&quot;</span>&gt;Open video&lt;/<span class="tag">a</span>&gt;&lt;/<span class="tag">p</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;POST - sign name&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;lifecycle&quot;</span>&gt;
+  Name: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;visitor&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Sign&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+&lt;/<span class="tag">body</span>&gt;
+&lt;/<span class="tag">html</span>&gt;</pre><h2>2. Java program — LifecycleServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletConfig</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">LifecycleServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="kw">static</span> <span class="kw">int</span> initCount = 0;
+    <span class="kw">static</span> <span class="kw">int</span> serviceCount = 0;
+    <span class="kw">static</span> <span class="cls">String</span> lastVisitor = <span class="str">&quot;-&quot;</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">init</span>(<span class="cls">ServletConfig</span> config) <span class="kw">throws</span> <span class="cls">ServletException</span> {
+        <span class="kw">super</span>.<span class="mtd">init</span>(config);
+        initCount++;
+        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;init count=&quot;</span> + initCount);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">service</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        serviceCount++;
+        <span class="kw">super</span>.<span class="mtd">service</span>(request, response);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">show</span>(response, <span class="str">&quot;GET open video&quot;</span>);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        lastVisitor = request.<span class="mtd">getParameter</span>(<span class="str">&quot;visitor&quot;</span>);
+        <span class="mtd">show</span>(response, <span class="str">&quot;POST signed &quot;</span> + lastVisitor);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">destroy</span>() {
+        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;destroy&quot;</span>);
+        <span class="kw">super</span>.<span class="mtd">destroy</span>();
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> <span class="mtd">show</span>(<span class="cls">HttpServletResponse</span> response, <span class="cls">String</span> msg) <span class="kw">throws</span> <span class="cls">IOException</span> {
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;&quot;</span> + msg + <span class="str">&quot;&lt;/h2&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;init=&quot;</span> + initCount + <span class="str">&quot; service=&quot;</span> + serviceCount
+                + <span class="str">&quot; lastVisitor=&quot;</span> + lastVisitor + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;lifecycle.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+    }
+}
+</pre>
+<p><a class="btn" href="../index.html#ch-lifecycle">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;LifecycleServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/lifecycle&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

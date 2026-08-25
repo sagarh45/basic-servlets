@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>ICA 4 · MyMail account — run this small project</title>
+<link rel="stylesheet" href="portal.css?v=2500">
+<script src="portal.js?v=2500" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Small project: MyMail account</h1>
+<p>One HTML page. Many Java classes (that is allowed). Login is always <b>java</b> / <b>servlet</b>. Password is never stored in a cookie. Click every block.</p>
+<div class="nav">
+<a class="btn ghost" href="practicals.html#ica-4">ICA journal</a>
+<a class="btn active" href="capstone.html">Run project</a>
+<a class="btn source" href="source/CapstoneLogin.html">Source</a>
+</div>
+
+<div class="ps">
+<h2>What this project does</h2>
+<p>MyMail is a small Gmail-like site. HTTP forgets you after each click, so we store a name in four ways. Then we join them in one portal.</p>
+<ol>
+<li><b>Remember me (cookie)</b> — browser keeps <code>user=Rahul</code>. Home greets you. Forget me uses <code>setMaxAge(0)</code>.</li>
+<li><b>Gmail login (HttpSession)</b> — name lives on the server. Welcome then Logout.</li>
+<li><b>Cookies off (URL rewriting)</b> — ids travel in the next-page link.</li>
+<li><b>Hidden id</b> — form posts <code>session_id=054</code> you did not type. View Source still shows it.</li>
+<li><b>Full portal</b> — success: session + cookie + forward (URL stays /CapstoneLogin). Wrong password: include the form. Logout: invalidate + cookie maxAge 0.</li>
+</ol>
+<pre class="sample-out">Welcome java
+Login success using forward.
+Username stored in HttpSession.
+Cookie remember also created for next visit.
+Logout</pre>
+</div>
+
+<div class="card">
+<h3>A) Remember me on this browser (cookie)</h3>
+<p>Like YouTube Continue as Rahul. Display name only. Four Java classes: Cookie1, Cookie2, Cookie3, CookieDelete.</p>
+<form method="post" action="Cookie1">
+<div class="row"><label class="f">Display name</label><input name="login" value="Rahul"></div>
+<input type="submit" value="Remember me (POST)">
+</form>
+<p style="margin-top:10px;"><a href="Cookie2">Open Home</a> &nbsp;|&nbsp; <a href="Cookie3">List cookies</a> &nbsp;|&nbsp; <a href="CookieDelete">Forget me</a></p>
+</div>
+
+<div class="card">
+<h3>B) Sign in (HttpSession)</h3>
+<p>Like Gmail. Name lives on the server. Three Java classes. Try a wrong password too.</p>
+<form method="post" action="NotesSessionLogin">
+<div class="row"><label class="f">User</label><input name="login" value="java"></div>
+<div class="row"><label class="f">Password</label><input type="password" name="pwd" value="servlet"></div>
+<input type="submit" value="Sign in (POST)">
+</form>
+</div>
+
+<div class="card">
+<h3>C) Cookies are off (URL rewriting)</h3>
+<p>Like old net-banking. The next page reads both ids from the URL. Two Java classes: Url1, Url2.</p>
+<form method="get" action="Url1">
+<div class="row"><label class="f">Id 1</label><input name="s_id1" value="054"></div>
+<div class="row"><label class="f">Id 2</label><input name="s_id2" value="055"></div>
+<input type="submit" value="Carry ids in the URL (GET)">
+</form>
+</div>
+
+<div class="card">
+<h3>D) Hidden application id</h3>
+<p>Like a two-step form. Hidden <code>session_id=054</code> is posted with login. View Source to see it. Two Java classes: Valid, Welcome.</p>
+<form method="post" action="Valid">
+<div class="row"><label class="f">Login</label><input name="login" value="java"></div>
+<div class="row"><label class="f">Password</label><input name="pwd" value="servlet"></div>
+<input type="hidden" name="session_id" value="054">
+<input type="submit" value="Continue (POST)">
+</form>
+</div>
+
+<div class="card">
+<h3>E) Full MyMail portal</h3>
+<p>Joins session + remember cookie + forward + include + logout. Three Java classes. Correct login: java / servlet.</p>
+<form method="post" action="CapstoneLogin">
+<div class="row"><label class="f">Login</label><input name="login" value="java"></div>
+<div class="row"><label class="f">Password</label><input type="password" name="pwd" value="servlet"></div>
+<input type="submit" value="Open MyMail portal (POST)">
+</form>
+</div>
+
+<p style="margin-top:18px;"><a href="practicals.html#ica-4">Back to ICA 4</a></p>
+</div>
+</body>
+</html>

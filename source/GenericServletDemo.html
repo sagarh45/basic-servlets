@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Source - GenericServletDemo.java + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; scroll-margin-top: 20px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+ol.cat { margin: 0; padding-left: 22px; }
+ol.cat > li { margin: 8px 0; }
+table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 8px; }
+th, td { border: 1px solid #ccc; padding: 10px 12px; text-align: left; vertical-align: middle; }
+th { background: #f0f0f0; }
+tr[id] { scroll-margin-top: 24px; }
+tr:target { background: #fff8d6; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a { color: #0066cc; }
+code { background: #eee; padding: 2px 5px; }
+.files a { margin-right: 8px; margin-bottom: 4px; }
+.box { background: #fff; border: 1px solid #ccc; padding: 24px; display: inline-block; min-width: 320px; }
+label { display: inline-block; width: 90px; }
+.row { margin: 10px 0; }
+input[type=submit] { padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; font-size: 16px; cursor: pointer; }
+.syllabus { background:#fff; border:1px solid #ccc; padding:14px; margin-bottom:18px; }
+
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.num { color:#098658; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#ff0000; }
+.aval { color:#0000ff; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<h1>Source: GenericServletDemo</h1>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> GenericServlet using service() instead of doGet</p>
+<p>GenericServlet does not know GET vs POST. You override service() for every request.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Extend GenericServlet (not HttpServlet).</li><li>Override service(ServletRequest, ServletResponse) and print a short HTML page.</li><li>Map URL /generic. Write complete web.xml.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">GenericServlet - service() Method Demo
+This servlet extends GenericServlet (not HttpServlet).
+We override service() directly instead of doGet()/doPost().</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">This class extends GenericServlet, so every request goes to service() — not doGet/doPost.</p>
+<div class="pflow-lab">Any request</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Execute</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET <code>/generic</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Tomcat</b><span>GenericServletDemo</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Java</b><span>service()</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>GenericServlet - service() Method Demo</span></div></div></div>
+<p><a class="btn" href="../index.html#ex-generic">Return to Index</a></p>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="cmt">// comment</span>
+    <span class="tag">&lt;xml-tag&gt;</span>
+  </div>
+</div>
+<h2>1) Java code - GenericServletDemo.java</h2>
+<pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">GenericServlet</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletResponse</span>;
+
+<span class="cmt">/**
+ * Practical 9: GenericServlet Demo
+ * Extends GenericServlet and overrides service() to handle ALL HTTP methods.
+ * HttpServlet extends GenericServlet and adds doGet(), doPost(), etc.
+ */</span>
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">GenericServletDemo</span> <span class="kw">extends</span> <span class="cls">GenericServlet</span> {
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1<span class="cls">L</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">service</span>(<span class="cls">ServletRequest</span> request, <span class="cls">ServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html;charset=UTF-8&quot;</span>);
+
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;!DOCTYPE html&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;GenericServlet Demo&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;GenericServlet - service() Method Demo&lt;/h2&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;This servlet extends &lt;b&gt;GenericServlet&lt;/b&gt; (not HttpServlet).&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;We override &lt;b&gt;service()&lt;/b&gt; directly instead of doGet()/doPost().&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;b&gt;Request method info:&lt;/b&gt; GenericServlet uses ServletRequest (no getMethod()).&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;b&gt;Remote address:&lt;/b&gt; &quot;</span> + request.<span class="mtd">getRemoteAddr</span>() + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;b&gt;Server name:&lt;/b&gt; &quot;</span> + request.<span class="mtd">getServerName</span>() + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;i&gt;Note: HttpServlet extends GenericServlet and splits service() into doGet(), doPost(), etc.&lt;/i&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;index.html#ex-generic&#x27;&gt;Back to Index&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+
+        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;[GenericServletDemo] service() executed - GenericServlet handles all methods here.&quot;</span>);
+    }
+}
+</pre>
+<p><a href="../index.html#ex-generic">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GenericServletDemo&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;GenericServletDemo&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GenericServletDemo&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/generic&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

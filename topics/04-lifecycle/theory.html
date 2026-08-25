@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>4. Servlet Lifecycle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>4. Servlet Lifecycle</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-lifecycle">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>A restaurant kitchen opens once in the morning, cooks hundreds of orders during the day, and closes at night. It does not rebuild the kitchen for every plate. A servlet is the same: Tomcat constructs the object, calls <code>init</code> once, then reuses that object. Counters on the result page prove that <code>init</code> ran once and <code>service</code> ran many times.</p>
+<p>Tomcat 11 owns the servlet lifecycle. You override methods; the container calls them.</p>
+<p><b>load</b> &rarr; <b>init()</b> once &rarr; <b>service()</b> / <b>doGet()</b> for every request &rarr; <b>destroy()</b> once when undeployed.</p>
+<p>This lab uses <code>&lt;load-on-startup&gt;1&lt;/load-on-startup&gt;</code> so <code>init</code> can run when the app starts, not only on the first hit.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> Tomcat opens the kitchen <b>once</b> (<code>init</code>), cooks many orders (<code>service</code> / <code>doGet</code>), and closes once (<code>destroy</code>). It does not rebuild the kitchen for every plate.</p>
+<h3>The story (restaurant kitchen)</h3>
+<ol>
+<li><b>Morning — open (<code>init</code>)</b> — Lights on, gas on, counters set to zero. This happens once when Tomcat loads the servlet (this lab uses <code>load-on-startup</code> so it can happen at deploy, not only on the first click).</li>
+<li><b>Day — each order (<code>service</code> then <code>doGet</code>)</b> — Table 1 refreshes. Table 2 refreshes. Each refresh is a new request. The same kitchen object serves them. The “orders cooked today” number goes 1, 2, 3… That growing number is your proof.</li>
+<li><b>Night — close (<code>destroy</code>)</b> — You stop Tomcat or undeploy the app. The kitchen closes once. Watch the Tomcat console for the destroy message. The browser page will not show destroy, because the kitchen is already closed.</li>
+</ol>
+<p>You never shout “open the kitchen!” from inside one order. You do not write <code>new LifecycleServlet()</code>. Tomcat owns the keys.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Restaurant</th><th>Servlet method</th></tr>
+<tr><td>Open once, set up the stove</td><td><code>init(ServletConfig)</code> — call <code>super.init(config)</code></td></tr>
+<tr><td>Every order at the counter</td><td><code>service</code> (count) then <code>doGet</code> (print the page)</td></tr>
+<tr><td>Close the kitchen</td><td><code>destroy()</code> — close files / log a line</td></tr>
+<tr><td>Do not rebuild the kitchen per plate</td><td>Do not call init from doGet</td></tr>
+</table>
+<h3>What you will see</h3>
+<p>Refresh five times. <code>init</code> count stays 1 (or a small number). <code>service</code> / request count climbs. That difference is the viva answer.</p>
+<h3>Easy mistake</h3>
+<p>Thinking a new servlet object is created on every refresh. If that were true, init would increase every time. It does not.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Restaurant kitchen hours</h3>
+<p><b>init</b> = lighting the stove (once). <b>service/doGet</b> = each plate. <b>destroy</b> = switching off when Tomcat stops. You would never rebuild the kitchen for every plate — that is why init count stays small.</p>
+<h3>ATM / cinema box office</h3>
+<p>The machine starts once. Each customer is a request. Shutdown is destroy.</p>
+<h3>What not to do</h3>
+<p>Do not call <code>init()</code> or <code>destroy()</code> from <code>doGet</code>. Do not write <code>new LifecycleServlet()</code> yourself. Tomcat owns the lifecycle.</p>
+</div>
+
+<div class="section"><h2>B) When each lifecycle method runs</h2>
+<table>
+<tr><th>Method</th><th>How many times</th><th>USE / WHEN it runs</th><th>Put this code here</th></tr>
+<tr><td>init(ServletConfig)</td><td>Once</td><td>Servlet is loaded</td><td>Open DB, read init-param, set starting values. Always call super.init(config).</td></tr>
+<tr><td>service(...)</td><td>Every request</td><td>Before doGet/doPost</td><td>Logging, counting. Then call super.service(...) so doGet still runs.</td></tr>
+<tr><td>doGet / doPost</td><td>Every matching request</td><td>Write the HTML page</td><td>Your normal program output.</td></tr>
+<tr><td>destroy()</td><td>Once</td><td>Undeploy app / stop Tomcat</td><td>Close DB, files. Check Tomcat console logs.</td></tr>
+</table>
+<p><b>Do not</b> create a new servlet object yourself. <b>Do not</b> call init/destroy from doGet.</p>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 4.1 — Lifecycle of LifecycleServlet</h3>
+<div class="flow"><div class="box">1. Tomcat load</div><div class="arrow">&rarr;</div><div class="box">2. init() once</div><div class="arrow">&rarr;</div><div class="box">3. service()/doGet() N times</div><div class="arrow">&rarr;</div><div class="box">4. destroy() once</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> init count stays 1 (or small). service count grows on every refresh. That is the proof.</div>
+<ol class="steps-n"><li>Tomcat loads the class from WEB-INF/classes.</li><li><code>init(ServletConfig)</code> runs once. initCount increases.</li><li>Each refresh calls <code>service</code> then <code>doGet</code>. Counts increase.</li><li><code>destroy()</code> runs when you undeploy or stop Tomcat. Watch the console.</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<pre class="syntax">@Override
+public void init(ServletConfig config) throws ServletException {
+  super.init(config);
+  initCount++;
+}
+
+@Override
+protected void service(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+  serviceCount++;
+  super.service(request, response);  // then doGet/doPost
+}
+
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+  response.setContentType("text/html");
+  PrintWriter out = response.getWriter();
+  out.println("init count = " + initCount);
+  out.println("service count = " + serviceCount);
+}
+
+@Override
+public void destroy() {
+  destroyCount++;
+  super.destroy();
+}
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>super.init(config)</code></td><td>Stores ServletConfig. Required if you override init(ServletConfig).</td></tr><tr><td><code>super.service(...)</code></td><td>Lets HttpServlet call doGet or doPost.</td></tr><tr><td><code>initCount vs serviceCount</code></td><td>init stays 1; service grows. That is the lab proof.</td></tr><tr><td><code>destroy()</code></td><td>You will not see it in the browser. See Tomcat console.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>Tomcat owns the life of the servlet object. You override methods. You do not call them from main().</p>
+<article class="fn">
+<h3>1. Function: <code>init</code></h3>
+<p><b>Simple meaning:</b> Runs once when Tomcat loads this servlet. Open the office. Read init-param here if you wish.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">@Override
+public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    initCount++;
+}</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>config — this servlet’s ServletConfig</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Start counters, open a file, read init-param. Always call super.init(config).</td></tr>
+<tr><td>Lab example</td><td>LifecycleServlet: initCount becomes 1. Refresh does not add another init.</td></tr>
+<tr><td>Common mistake</td><td>Skipping super.init(config) — getServletConfig() may fail later.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>service</code></h3>
+<p><b>Simple meaning:</b> Runs on every HTTP request, then Tomcat still calls doGet or doPost if you call super.service.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">@Override
+protected void service(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    serviceCount++;
+    super.service(request, response);
+}</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Count visits, log the method, then dispatch.</td></tr>
+<tr><td>Lab example</td><td>Each refresh: serviceCount grows 1, 2, 3…</td></tr>
+<tr><td>Common mistake</td><td>Forgetting super.service — doGet never runs, page stays blank.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>doGet / doPost</code></h3>
+<p><b>Simple meaning:</b> Write the HTML the student sees. Runs after service on each matching request.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doGet(...) throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Print counters and the last visitor name.</td></tr>
+<tr><td>Lab example</td><td>GET opens the book. POST signs a name then the same HTML is shown.</td></tr>
+<tr><td>Common mistake</td><td>Putting init() logic inside doGet — init would then run every refresh.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>destroy</code></h3>
+<p><b>Simple meaning:</b> Runs once when the app is undeployed or Tomcat stops. Lock the office.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">@Override
+public void destroy() {
+    System.out.println("[LifecycleServlet] destroy");
+}</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Close files / database. Message is on the Tomcat console, not in the browser.</td></tr>
+<tr><td>Lab example</td><td>Stop the app in Tomcat Manager — console prints destroy.</td></tr>
+<tr><td>Common mistake</td><td>Waiting to see destroy() in the web page. It will never appear there.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>Type <code>jakarta.servlet</code> in every program. Extra imports (Cookie, HttpSession, RequestDispatcher) are added in later chapters when needed.</p>
+</div>
+
+<div class="why"><b>Matched program:</b> class <code>LifecycleServlet</code>, URL <code>/lifecycle</code>.
+Refresh many times. Watch init count vs service count.</div>
+
+<div class="section"><h2>F) Complete Java program — every line explained</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletConfig;            // Passed to init(); holds init-param
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class LifecycleServlet extends HttpServlet {
+
+    static int initCount = 0;        // How many times init ran (expect 1 per load)
+    static int serviceCount = 0;     // How many HTTP requests were served
+    static String lastVisitor = "-"; // Optional: last POST visitor name
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);          // MUST store config; otherwise getServletConfig() fails
+        initCount++;                 // Proof: this block is not per-refresh
+        System.out.println("init count=" + initCount); // Tomcat console
+    }
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        serviceCount++;              // Every GET/POST hits service first
+        super.service(request, response); // Dispatch to doGet or doPost
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        show(response, "GET view book");  // Browser refresh uses GET
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        lastVisitor = request.getParameter("visitor"); // Form field from Execute page
+        show(response, "POST signed " + lastVisitor);
+    }
+
+    @Override
+    public void destroy() {
+        System.out.println("destroy"); // Visible only in Tomcat log when app stops
+        super.destroy();
+    }
+
+    private void show(HttpServletResponse response, String msg) throws IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h2&gt;" + msg + "&lt;/h2&gt;");
+        out.println("&lt;p&gt;init=" + initCount + " service=" + serviceCount
+                + " lastVisitor=" + lastVisitor + "&lt;/p&gt;");  // Journal proof
+        out.println("&lt;p&gt;&lt;a href='lifecycle.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;LifecycleServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/lifecycle&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../lifecycle.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-2">ICA Practical 02</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-2">ICA Practical 02</a></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complete web.xml · Unit-II Servlets · WIT Solapur</title>
+<link rel="stylesheet" href="portal.css?v=1700">
+<script src="portal.js?v=1700" defer></script>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="theory.html">Theory</a>
+    <a href="programs.html">Programs</a>
+    <a href="practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>Complete web.xml (every block explained)</h1>
+<p>File location: <code>WEB-INF/web.xml</code>. This is the full deployment descriptor used by Apache Tomcat 11.0.24 (Jakarta EE 11 / Servlet 6.1). Copy this entire file into the ICA journal when the teacher asks for complete XML. Each <code>&lt;servlet&gt;</code> registers a Java class. Each <code>&lt;servlet-mapping&gt;</code> binds a URL. The two <code>&lt;servlet-name&gt;</code> values must match exactly.</p>
+
+<div class="ps">
+<h2>Rules for this file</h2>
+<p><b>Header</b> must use Jakarta namespace and <code>version="6.1"</code> — not Java EE / javax / web-app 2.5.</p>
+<p><b>context-param</b> is application-wide (college letterhead). <b>init-param</b> sits inside one servlet (clerk stamp).</p>
+<p><b>url-pattern</b> is the path after <code>/basic-servlets</code>. Example: <code>/hello</code> means <code>http://localhost:8080/basic-servlets/hello</code>.</p>
+</div>
+
+<pre class="syntax">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- XML declaration: this file is UTF-8 text --&gt;
+
+&lt;web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         version="6.1"&gt;
+    &lt;!-- Root of the deployment descriptor. version 6.1 = Tomcat 11 / Servlet 6.1 --&gt;
+
+    &lt;display-name&gt;Unit-II Basic Servlet Programs&lt;/display-name&gt;
+    &lt;!-- Name shown in Tomcat Manager. Not a URL. --&gt;
+
+    &lt;!-- ========== ServletContext (whole application / college letterhead) ========== --&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;collegeName&lt;/param-name&gt;
+        &lt;param-value&gt;Walchand Institute of Technology, Solapur&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;department&lt;/param-name&gt;
+        &lt;param-value&gt;Computer Science and Engineering&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;subject&lt;/param-name&gt;
+        &lt;param-value&gt;Advanced Java (Unit-II Servlets)&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;name&lt;/param-name&gt;
+        &lt;param-value&gt;Walchand Institute of Technology&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    &lt;!-- Read with getServletContext().getInitParameter("collegeName") --&gt;
+
+    &lt;!-- Chapter 1: HelloServlet → /hello --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;HelloServlet&lt;/servlet-name&gt;      &lt;!-- Logical name --&gt;
+        &lt;servlet-class&gt;HelloServlet&lt;/servlet-class&gt;    &lt;!-- Java class in WEB-INF/classes --&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;HelloServlet&lt;/servlet-name&gt;      &lt;!-- Must match above --&gt;
+        &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;              &lt;!-- Browser path --&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;!-- Chapter 3 extra demo --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GetPostDemoServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;GetPostDemoServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GetPostDemoServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/getpost&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 01 / Chapter 2: HTTP methods student office --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;HttpMethodsServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;HttpMethodsServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;HttpMethodsServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/httpmethods&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;!-- Sample registration (POST only, not mixed with HTTP-methods office) --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;SampleRegisterServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;SampleRegisterServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;SampleRegisterServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/sampleregister&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 03 / Chapter 4: lifecycle. load-on-startup forces init at deploy. --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;LifecycleServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/lifecycle&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 04 / Chapter 5: init-param = this servlet only --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;ConfigContextServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;ConfigContextServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;author&lt;/param-name&gt;
+            &lt;param-value&gt;Student Name&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;practicalNo&lt;/param-name&gt;
+            &lt;param-value&gt;5&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;topic&lt;/param-name&gt;
+            &lt;param-value&gt;ServletConfig and ServletContext&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ConfigContextServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/configcontext&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 05: forward / redirect / target --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;ForwardServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/forward&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;RedirectServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/redirect&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;TargetServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/target&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;!-- Supporting demos --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;GenericServletDemo&lt;/servlet-name&gt;&lt;servlet-class&gt;GenericServletDemo&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;GenericServletDemo&lt;/servlet-name&gt;&lt;url-pattern&gt;/generic&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;RequestInfoServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;RequestInfoServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;RequestInfoServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/requestinfo&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;ResponseDemoServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;ResponseDemoServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;ResponseDemoServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/response&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;IncludeServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;IncludeServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;IncludeServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/include&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;IncludeFooterServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;IncludeFooterServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;IncludeFooterServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/includefooter&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;AttributeDemoServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;AttributeDemoServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;AttributeDemoServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/attributes&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;!-- Notes PDF examples --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;HyperLinkDemo&lt;/servlet-name&gt;&lt;servlet-class&gt;HyperLinkDemo&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;HyperLinkDemo&lt;/servlet-name&gt;&lt;url-pattern&gt;/HyperLinkDemo&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;DoGetDemo&lt;/servlet-name&gt;&lt;servlet-class&gt;DoGetDemo&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;DoGetDemo&lt;/servlet-name&gt;&lt;url-pattern&gt;/DoGetDemo&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Max&lt;/servlet-name&gt;&lt;servlet-class&gt;Max&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Max&lt;/servlet-name&gt;&lt;url-pattern&gt;/Max&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;CounterServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;CounterServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;CounterServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/CounterServlet&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;MyServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;name&lt;/param-name&gt;
+            &lt;param-value&gt;Hello from ServletConfig init-param&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/MyServlet&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;&lt;servlet-name&gt;ServletContextDemo&lt;/servlet-name&gt;&lt;servlet-class&gt;ServletContextDemo&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;ServletContextDemo&lt;/servlet-name&gt;&lt;url-pattern&gt;/ServletContextDemo&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;ConcatServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;ConcatServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;part1&lt;/param-name&gt;
+            &lt;param-value&gt;Welcome to&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ConcatServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/ConcatServlet&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;&lt;servlet-name&gt;CallServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;CallServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;CallServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/CallServlet&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;FwdDemo&lt;/servlet-name&gt;&lt;servlet-class&gt;FwdDemo&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;FwdDemo&lt;/servlet-name&gt;&lt;url-pattern&gt;/FwdDemo&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Redirect&lt;/servlet-name&gt;&lt;servlet-class&gt;Redirect&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Redirect&lt;/servlet-name&gt;&lt;url-pattern&gt;/Redirect&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;RedirectOk&lt;/servlet-name&gt;&lt;servlet-class&gt;RedirectOk&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;RedirectOk&lt;/servlet-name&gt;&lt;url-pattern&gt;/RedirectOk&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 06: cookies --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Cookie1&lt;/servlet-name&gt;&lt;servlet-class&gt;Cookie1&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Cookie1&lt;/servlet-name&gt;&lt;url-pattern&gt;/Cookie1&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Cookie2&lt;/servlet-name&gt;&lt;servlet-class&gt;Cookie2&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Cookie2&lt;/servlet-name&gt;&lt;url-pattern&gt;/Cookie2&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Cookie3&lt;/servlet-name&gt;&lt;servlet-class&gt;Cookie3&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Cookie3&lt;/servlet-name&gt;&lt;url-pattern&gt;/Cookie3&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;CookieDelete&lt;/servlet-name&gt;&lt;servlet-class&gt;CookieDelete&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;CookieDelete&lt;/servlet-name&gt;&lt;url-pattern&gt;/CookieDelete&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 07: HttpSession login --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;NotesSessionLogin&lt;/servlet-name&gt;&lt;servlet-class&gt;NotesSessionLogin&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;NotesSessionLogin&lt;/servlet-name&gt;&lt;url-pattern&gt;/NotesSessionLogin&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;NotesSessionWelcome&lt;/servlet-name&gt;&lt;servlet-class&gt;NotesSessionWelcome&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;NotesSessionWelcome&lt;/servlet-name&gt;&lt;url-pattern&gt;/NotesSessionWelcome&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;NotesSessionLogout&lt;/servlet-name&gt;&lt;servlet-class&gt;NotesSessionLogout&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;NotesSessionLogout&lt;/servlet-name&gt;&lt;url-pattern&gt;/NotesSessionLogout&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 08: URL rewriting --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Url1&lt;/servlet-name&gt;&lt;servlet-class&gt;Url1&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Url1&lt;/servlet-name&gt;&lt;url-pattern&gt;/Url1&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Url2&lt;/servlet-name&gt;&lt;servlet-class&gt;Url2&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Url2&lt;/servlet-name&gt;&lt;url-pattern&gt;/Url2&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 09: hidden field --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Valid&lt;/servlet-name&gt;&lt;servlet-class&gt;Valid&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Valid&lt;/servlet-name&gt;&lt;url-pattern&gt;/Valid&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;&lt;servlet-class&gt;Welcome&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;&lt;url-pattern&gt;/Welcome&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;&lt;servlet-name&gt;ServletIntroWorking&lt;/servlet-name&gt;&lt;servlet-class&gt;ServletIntroWorking&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;ServletIntroWorking&lt;/servlet-name&gt;&lt;url-pattern&gt;/intro&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 02 / Chapter 3: GET vs POST --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;GetPostDiffServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/getpostdiff&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;!-- ICA 10 capstone mini project --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;&lt;servlet-class&gt;CapstoneLogin&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;&lt;url-pattern&gt;/CapstoneLogin&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;CapstoneWelcome&lt;/servlet-name&gt;&lt;servlet-class&gt;CapstoneWelcome&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;CapstoneWelcome&lt;/servlet-name&gt;&lt;url-pattern&gt;/CapstoneWelcome&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;CapstoneLogout&lt;/servlet-name&gt;&lt;servlet-class&gt;CapstoneLogout&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;CapstoneLogout&lt;/servlet-name&gt;&lt;url-pattern&gt;/CapstoneLogout&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+
+    &lt;welcome-file-list&gt;
+        &lt;welcome-file&gt;index.html&lt;/welcome-file&gt;
+        &lt;!-- Default document when the student opens /basic-servlets/ --&gt;
+    &lt;/welcome-file-list&gt;
+
+&lt;/web-app&gt;
+&lt;!-- End of deployment descriptor --&gt;</pre>
+
+<p><a class="btn" href="practicals.html">Back to ICA Practicals</a>
+<a class="btn ghost" href="theory.html">Theory package</a>
+<a class="btn ghost" href="setup.html">Lab Setup</a></p>
+<div class="footer">Complete web.xml · WIT Solapur CSE · Tomcat 11.0.24 · Servlet 6.1</div>
+</div>
+</body>
+</html>

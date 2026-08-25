@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Registration Form (POST only)</title>
+<link rel="stylesheet" href="portal.css?v=2300">
+<script src="portal.js?v=2300" defer></script>
+<style>
+.wrap { max-width: 640px; }
+label { display: block; font-weight: 700; margin: 12px 0 4px; }
+.hint { font-weight: 500; color: var(--muted); font-size: 13px; }
+input[type=text], input[type=email], input[type=tel], input[type=password],
+input[type=number], input[type=date], select, textarea { width: 100%; min-width: 0; }
+textarea { height: 70px; }
+.inline label { display: inline; font-weight: 500; margin-right: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Student Registration (sample form)</h1>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> Sample registration form (POST only)</p>
+<p>This is a full student registration form. It is only POST so name, password and other fields stay out of the URL.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Fill the form (name, roll, email, mobile and the other fields).</li><li>Submit. The result page must show request.getMethod() = POST and a table of every field.</li><li>Confirm the address bar stays /sampleregister (no password in the URL).</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">request.getMethod() = POST
+fullname = Rahul
+roll = 101
+email = rahul@college.edu</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Full registration form. POST only, so password and other fields stay out of the URL.</p>
+<div class="pflow-lab">POST registration</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Fill the form and submit</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/sampleregister</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>doPost() reads every field</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>request.getMethod() = POST<br>table of all fields</span></div></div></div>
+<div class="note">
+<b>Teaching sample only.</b> This page is a full HTML registration form.
+It is <b>not</b> mixed with GET / PUT / DELETE / OPTIONS / TRACE.
+<code>method="post"</code> so name, password and all fields go in the <b>body</b>, not in the URL.
+</div>
+
+<form method="post" action="sampleregister">
+
+<label>Full name <span class="hint">(text)</span></label>
+<input type="text" name="fullname" >
+
+<label>Roll number <span class="hint">(text)</span></label>
+<input type="text" name="roll" value="101">
+
+<label>Email <span class="hint">(email)</span></label>
+<input type="email" name="email" value="rahul@college.edu">
+
+<label>Mobile <span class="hint">(tel)</span></label>
+<input type="tel" name="mobile" value="9876543210">
+
+<label>Password <span class="hint">(password - hidden while typing)</span></label>
+<input type="password" name="pwd" value="secret123">
+
+<label>Confirm password <span class="hint">(password)</span></label>
+<input type="password" name="pwd2" value="secret123">
+
+<label>Age <span class="hint">(number)</span></label>
+<input type="number" name="age" value="19" min="16" max="40">
+
+<label>Date of birth <span class="hint">(date)</span></label>
+<input type="date" name="dob" value="2006-06-15">
+
+<label>Gender <span class="hint">(radio - only one choice)</span></label>
+<div class="inline">
+<label><input type="radio" name="gender" value="Male" checked> Male</label>
+<label><input type="radio" name="gender" value="Female"> Female</label>
+<label><input type="radio" name="gender" value="Other"> Other</label>
+</div>
+
+<label>Course <span class="hint">(dropdown / select)</span></label>
+<select name="course">
+  <option value="BCA">BCA</option>
+  <option value="BSc CS" selected>BSc Computer Science</option>
+  <option value="MCA">MCA</option>
+  <option value="BE CSE">BE CSE</option>
+</select>
+
+<label>City <span class="hint">(dropdown / select)</span></label>
+<select name="city">
+  <option value="Solapur" selected>Solapur</option>
+  <option value="Pune">Pune</option>
+  <option value="Mumbai">Mumbai</option>
+  <option value="Other">Other</option>
+</select>
+
+<label>Hobbies <span class="hint">(checkbox - zero or more)</span></label>
+<div class="inline">
+<label><input type="checkbox" name="hobby" value="Sports" checked> Sports</label>
+<label><input type="checkbox" name="hobby" value="Music"> Music</label>
+<label><input type="checkbox" name="hobby" value="Coding" checked> Coding</label>
+<label><input type="checkbox" name="hobby" value="Reading"> Reading</label>
+</div>
+
+<label>Address <span class="hint">(textarea - many lines)</span></label>
+<textarea name="address">WIT campus, Solapur</textarea>
+
+<div class="row">
+<label class="inline"><input type="checkbox" name="agree" value="yes" checked>
+ I agree to the college rules <span class="hint">(checkbox)</span></label>
+</div>
+
+<input type="submit" value="Register (POST)">
+<input type="reset" value="Clear">
+</form>
+
+<p><a href="topics/02-http/theory.html?v=1129">Back to Theory (POST)</a> |
+<a href="index.html#ch-http">Index</a></p>
+</div>
+</body>
+</html>

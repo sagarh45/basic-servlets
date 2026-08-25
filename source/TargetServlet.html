@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Source - TargetServlet.java + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; scroll-margin-top: 20px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+ol.cat { margin: 0; padding-left: 22px; }
+ol.cat > li { margin: 8px 0; }
+table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 8px; }
+th, td { border: 1px solid #ccc; padding: 10px 12px; text-align: left; vertical-align: middle; }
+th { background: #f0f0f0; }
+tr[id] { scroll-margin-top: 24px; }
+tr:target { background: #fff8d6; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a { color: #0066cc; }
+code { background: #eee; padding: 2px 5px; }
+.files a { margin-right: 8px; margin-bottom: 4px; }
+.box { background: #fff; border: 1px solid #ccc; padding: 24px; display: inline-block; min-width: 320px; }
+label { display: inline-block; width: 90px; }
+.row { margin: 10px 0; }
+input[type=submit] { padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; font-size: 16px; cursor: pointer; }
+.syllabus { background:#fff; border:1px solid #ccc; padding:14px; margin-bottom:18px; }
+
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.num { color:#098658; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#ff0000; }
+.aval { color:#0000ff; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<p class="icatag">ICA PRACTICAL 03 · MYMAIL + PAYNOW</p>
+<div class="rel"><b>One HTML page:</b> <code>forward.html</code> — do not add extra HTML files.
+Java: <a href="ForwardServlet.html">ForwardServlet</a> · <a href="RedirectServlet.html">RedirectServlet</a> · <a href="TargetServlet.html">TargetServlet</a> · <a href="IncludeServlet.html">IncludeServlet</a>.
+<a href="../practicals.html#ica-3">ICA journal</a>
+<a class="btn" href="../forward.html">Run MyMail + PayNow</a></div>
+<div class="realex"><b>Real examples:</b> Forward = Gmail opens a mail in the same tab (URL stays).
+Redirect = Amazon Pay / PhonePe / net-banking (URL must change).
+Include = Gmail “Wrong password” still shows the form on the same page.</div>
+
+<h1>Source: TargetServlet</h1>
+<div class="ps">
+<h2>Problem statement (ICA 3 · mail / payment result page)</h2>
+<p><b>Title:</b> TargetServlet shows FORWARD (attribute) or REDIRECT (query)</p>
+<p>After Gmail forward, <code>getAttribute("message")</code> is present and the URL is still <code>/forward</code>. After Amazon Pay redirect, only query <code>from=</code> is present and the URL is <code>/target</code>.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Handle GET (redirect) and POST (forward keeps POST).</li>
+<li>If attribute message exists, print FORWARD. Else if <code>from</code> exists, print REDIRECT.</li>
+</ol>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Forward is an inside hand-off (URL stays). Redirect tells the browser to open a new URL.</p>
+<div class="pflow-lab">FORWARD — open mail (Gmail)</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Open mail<br>student=Rahul</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/forward</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>ForwardServlet<br>setAttribute + forward</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. TargetServlet</b><span>reads attribute<br>URL still /forward</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>FORWARD: Result for Rahul: PASS<br>(URL still /forward)</span></div></div><div class="pflow-lab">REDIRECT — Pay now (Amazon Pay)</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Pay now</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/redirect</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>RedirectServlet<br>sendRedirect</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Browser again</b><span>GET <code>/target?from=RedirectServlet</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>REDIRECT from RedirectServlet<br>student=Rahul (URL changed)</span></div></div></div>
+<p><a class="btn" href="../forward.html">Run ICA project</a> <a class="btn ghost" href="../practicals.html#ica-3">ICA journal</a> <a class="btn" href="../index.html">Index</a></p>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="cmt">// comment</span>
+    <span class="tag">&lt;xml-tag&gt;</span>
+  </div>
+</div>
+<h2>1) Java code - TargetServlet.java</h2>
+<pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="cmt">/**
+ * Target servlet for Forward and Redirect demos.
+ */</span>
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">TargetServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1<span class="cls">L</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+
+        <span class="cmt">// Check if request came via forward (attribute) or redirect (query param)</span>
+        <span class="cls">String</span> forwardedMessage = (<span class="cls">String</span>) request.<span class="mtd">getAttribute</span>(<span class="str">&quot;message&quot;</span>);
+        <span class="cls">String</span> forwardedSource = (<span class="cls">String</span>) request.<span class="mtd">getAttribute</span>(<span class="str">&quot;source&quot;</span>);
+        <span class="cls">String</span> redirectFrom = request.<span class="mtd">getParameter</span>(<span class="str">&quot;from&quot;</span>);
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;!DOCTYPE html&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Target Servlet&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;TargetServlet - Destination Page&lt;/h2&gt;&quot;</span>);
+
+        <span class="kw">if</span> (forwardedMessage != <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p style=&#x27;color:green;&#x27;&gt;&lt;b&gt;Arrived via FORWARD from &quot;</span> + forwardedSource + <span class="str">&quot;&lt;/b&gt;&lt;/p&gt;&quot;</span>);
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Message: &quot;</span> + forwardedMessage + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;i&gt;Notice: Browser URL still shows /forward (forward keeps same request).&lt;/i&gt;&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> <span class="kw">if</span> (redirectFrom != <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p style=&#x27;color:blue;&#x27;&gt;&lt;b&gt;Arrived via REDIRECT from &quot;</span> + redirectFrom + <span class="str">&quot;&lt;/b&gt;&lt;/p&gt;&quot;</span>);
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;i&gt;Notice: Browser URL changed to /target (redirect creates new request).&lt;/i&gt;&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Direct access to TargetServlet.&lt;/p&gt;&quot;</span>);
+        }
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;forward&#x27;&gt;Try Forward&lt;/a&gt; | &lt;a href=&#x27;redirect&#x27;&gt;Try Redirect&lt;/a&gt; | &lt;a href=&#x27;index.html#ex-target&#x27;&gt;Index&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+
+        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;[TargetServlet] doGet() executed.&quot;</span>);
+    }
+
+    <span class="cmt">// Forward from a POST form keeps POST, so TargetServlet must also handle doPost.</span>
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">doGet</span>(request, response);
+    }
+}
+</pre>
+<p><a href="../index.html#ex-target">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;TargetServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/target&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

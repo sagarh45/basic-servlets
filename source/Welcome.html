@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Source - Welcome.java + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; scroll-margin-top: 20px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+ol.cat { margin: 0; padding-left: 22px; }
+ol.cat > li { margin: 8px 0; }
+table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 8px; }
+th, td { border: 1px solid #ccc; padding: 10px 12px; text-align: left; vertical-align: middle; }
+th { background: #f0f0f0; }
+tr[id] { scroll-margin-top: 24px; }
+tr:target { background: #fff8d6; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a { color: #0066cc; }
+code { background: #eee; padding: 2px 5px; }
+.files a { margin-right: 8px; margin-bottom: 4px; }
+.box { background: #fff; border: 1px solid #ccc; padding: 24px; display: inline-block; min-width: 320px; }
+label { display: inline-block; width: 90px; }
+.row { margin: 10px 0; }
+input[type=submit] { padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; font-size: 16px; cursor: pointer; }
+.syllabus { background:#fff; border:1px solid #ccc; padding:14px; margin-bottom:18px; }
+
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.num { color:#098658; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#ff0000; }
+.aval { color:#0000ff; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<p class="icatag">ICA PRACTICAL 04 · MYMAIL ACCOUNT</p>
+<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookies, session, URL rewrite, hidden field and portal together.
+Java: <a href="Cookie1.html">Cookie1</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="Url1.html">Url1</a> · <a href="Valid.html">Valid</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
+<a href="../practicals.html#ica-4">ICA journal</a>
+<a class="btn" href="../capstone.html">Run MyMail account</a></div>
+<div class="realex"><b>Real examples:</b> Cookie = YouTube / Instagram Continue as Rahul (never store a password).
+HttpSession = Gmail / WhatsApp Web login until Logout.
+URL rewriting = old net-banking when cookies are blocked.
+Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + forward / include.</div>
+
+<h1>Source: Welcome</h1>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> Welcome page after hidden-field login</p>
+<p>Welcome is reached by forward from Valid. It reads login and session_id with getParameter.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Print the hidden session_id as a heading.</li><li>Print Welcome plus the login name.</li><li>Write complete Java and complete web.xml.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">id:054
+Welcome java</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Hidden field session_id is posted with the form. Success uses forward, so the URL stays /Valid.</p>
+<div class="pflow-lab">Correct login java / servlet</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST login + password<br>+ hidden session_id=054</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/Valid</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>Valid checks login<br>then forward Welcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Welcome</b><span>getParameter login + session_id</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>id:054<br>Welcome java<br>(URL still /Valid)</span></div></div><div class="pflow-lab">Wrong password</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong values</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>Valid does not forward</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect LoginId/Password</span></div></div></div>
+<p><a class="btn" href="../capstone.html">Run ICA project</a> <a class="btn ghost" href="../practicals.html#ica-4">ICA journal</a> <a class="btn" href="../index.html">Index</a></p>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="cmt">// comment</span>
+    <span class="tag">&lt;xml-tag&gt;</span>
+  </div>
+</div>
+<h2>1) Java code - Welcome.java</h2>
+<pre class="code"><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> jakarta.servlet.*;
+<span class="kw">import</span> jakarta.servlet.http.*;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">Welcome</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+    <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        <span class="cls">String</span> session = request.<span class="mtd">getParameter</span>(<span class="str">&quot;session_id&quot;</span>);
+        <span class="cls">String</span> username = request.<span class="mtd">getParameter</span>(<span class="str">&quot;login&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;body&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h1&gt;id:&quot;</span> + session + <span class="str">&quot;&lt;/h1&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h3&gt;Welcome &quot;</span> + username + <span class="str">&quot;&lt;/h3&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;index.html#ex-hidden&#x27;&gt;Index&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+    }
+}
+</pre>
+<p><a href="../index.html">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Welcome&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Welcome&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

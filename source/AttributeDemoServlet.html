@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Source - AttributeDemoServlet.java + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; scroll-margin-top: 20px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+ol.cat { margin: 0; padding-left: 22px; }
+ol.cat > li { margin: 8px 0; }
+table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 8px; }
+th, td { border: 1px solid #ccc; padding: 10px 12px; text-align: left; vertical-align: middle; }
+th { background: #f0f0f0; }
+tr[id] { scroll-margin-top: 24px; }
+tr:target { background: #fff8d6; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a { color: #0066cc; }
+code { background: #eee; padding: 2px 5px; }
+.files a { margin-right: 8px; margin-bottom: 4px; }
+.box { background: #fff; border: 1px solid #ccc; padding: 24px; display: inline-block; min-width: 320px; }
+label { display: inline-block; width: 90px; }
+.row { margin: 10px 0; }
+input[type=submit] { padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; font-size: 16px; cursor: pointer; }
+.syllabus { background:#fff; border:1px solid #ccc; padding:14px; margin-bottom:18px; }
+
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.num { color:#098658; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#ff0000; }
+.aval { color:#0000ff; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<h1>Source: AttributeDemoServlet</h1>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> Request attributes vs context attributes</p>
+<p>Request attributes live for one request. Context attributes live for the whole application.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Open attributes?action=set and print studentName, rollNo, message.</li><li>Refresh without action=set. Request attributes become null. Context attributes stay.</li><li>Write complete Java and complete web.xml.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">Request Attribute vs Context Attribute
+studentName = Rahul
+rollNo = 101
+message = PASS</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Request attributes live for one request. Context attributes live for the whole application.</p>
+<div class="pflow-lab">Set attributes</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Open attributes?action=set</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>setAttribute on request<br>and ServletContext</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>studentName = Rahul<br>rollNo = 101</span></div></div><div class="pflow-lab">Refresh (new request)</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Open /attributes again</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>request attrs gone<br>context attrs remain</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>request values null<br>context still shared</span></div></div></div>
+<p><a class="btn" href="../index.html">Return to Index</a></p>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="cmt">// comment</span>
+    <span class="tag">&lt;xml-tag&gt;</span>
+  </div>
+</div>
+<h2>1) Java code - AttributeDemoServlet.java</h2>
+<pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletContext</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="cmt">/**
+ * Practical 13: Request Attribute and Context Attribute Demo
+ * setAttribute/getAttribute on request (request scope) and ServletContext (application scope).
+ */</span>
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">AttributeDemoServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1<span class="cls">L</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+
+        <span class="cls">String</span> action = request.<span class="mtd">getParameter</span>(<span class="str">&quot;action&quot;</span>);
+        <span class="cls">ServletContext</span> context = <span class="mtd">getServletContext</span>();
+
+        <span class="kw">if</span> (<span class="str">&quot;set&quot;</span>.<span class="mtd">equals</span>(action)) {
+            <span class="cmt">// Request attribute - lives only for this request (useful for forward/include)</span>
+            request.<span class="mtd">setAttribute</span>(<span class="str">&quot;studentName&quot;</span>, <span class="str">&quot;Rahul Patil&quot;</span>);
+            request.<span class="mtd">setAttribute</span>(<span class="str">&quot;rollNo&quot;</span>, <span class="str">&quot;CS2024001&quot;</span>);
+            request.<span class="mtd">setAttribute</span>(<span class="str">&quot;message&quot;</span>, <span class="str">&quot;Request attribute set - visible during forward/include only&quot;</span>);
+
+            <span class="cmt">// Context attribute - lives for entire application (all users share)</span>
+            context.<span class="mtd">setAttribute</span>(<span class="str">&quot;visitCount&quot;</span>,
+                    context.<span class="mtd">getAttribute</span>(<span class="str">&quot;visitCount&quot;</span>) == <span class="kw">null</span> ? <span class="num">1</span>
+                            : (<span class="cls">Integer</span>) context.<span class="mtd">getAttribute</span>(<span class="str">&quot;visitCount&quot;</span>) + <span class="num">1</span>);
+            context.<span class="mtd">setAttribute</span>(<span class="str">&quot;appMessage&quot;</span>, <span class="str">&quot;Context attribute - shared across all users/sessions&quot;</span>);
+
+            <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;[AttributeDemoServlet] Attributes set on request and context.&quot;</span>);
+        }
+
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html;charset=UTF-8&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;Attribute Demo&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;Request Attribute vs Context Attribute&lt;/h2&gt;&quot;</span>);
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h3&gt;Request Attributes (request scope - this request only)&lt;/h3&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;table border=&#x27;1&#x27; cellpadding=&#x27;6&#x27;&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;th&gt;Attribute&lt;/th&gt;&lt;th&gt;Value&lt;/th&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;studentName&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getAttribute</span>(<span class="str">&quot;studentName&quot;</span>) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;rollNo&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getAttribute</span>(<span class="str">&quot;rollNo&quot;</span>) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;message&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getAttribute</span>(<span class="str">&quot;message&quot;</span>) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/table&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;i&gt;Request attributes are used to pass data during forward/include. Lost after response is sent.&lt;/i&gt;&lt;/p&gt;&quot;</span>);
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h3&gt;Context Attributes (application scope - entire web app)&lt;/h3&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;table border=&#x27;1&#x27; cellpadding=&#x27;6&#x27;&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;th&gt;Attribute&lt;/th&gt;&lt;th&gt;Value&lt;/th&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;visitCount&lt;/td&gt;&lt;td&gt;&quot;</span> + context.<span class="mtd">getAttribute</span>(<span class="str">&quot;visitCount&quot;</span>) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;appMessage&lt;/td&gt;&lt;td&gt;&quot;</span> + context.<span class="mtd">getAttribute</span>(<span class="str">&quot;appMessage&quot;</span>) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/table&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;i&gt;Context attributes persist until server restart. Shared by all users.&lt;/i&gt;&lt;/p&gt;&quot;</span>);
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;a href=&#x27;attributes?action=set&#x27;&gt;Set Attributes&lt;/a&gt; | &quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;a href=&#x27;attributes&#x27;&gt;Refresh (request attrs will be null after new request)&lt;/a&gt; | &quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;a href=&#x27;forward&#x27;&gt;See forward using request attributes&lt;/a&gt; | &quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;a href=&#x27;index.html#ex-attributes&#x27;&gt;Index&lt;/a&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+    }
+}
+</pre>
+<p><a href="../index.html">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;AttributeDemoServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;AttributeDemoServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;AttributeDemoServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/attributes&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

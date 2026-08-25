@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>URL Rewriting (Url2)</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; scroll-margin-top: 20px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+ol.cat { margin: 0; padding-left: 22px; }
+ol.cat > li { margin: 10px 0 18px 0; }
+table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 8px; }
+th, td { border: 1px solid #ccc; padding: 10px 12px; text-align: left; vertical-align: middle; }
+th { background: #f0f0f0; }
+tr[id] { scroll-margin-top: 24px; }
+tr:target { background: #fff8d6; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a.btn:hover { opacity: 0.9; }
+a { color: #0066cc; }
+code { background: #eee; padding: 2px 5px; }
+.files a { margin-right: 8px; margin-bottom: 4px; }
+.box { background: #fff; border: 1px solid #ccc; padding: 24px; display: inline-block; min-width: 280px; }
+label { display: inline-block; width: 90px; }
+.row { margin: 10px 0; }
+input[type=submit] { padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; font-size: 16px; cursor: pointer; }
+.ps{background:#e8f6f4;border:2px solid #0d7377;padding:14px 16px;margin:16px 0;max-width:920px}.ps h2{margin:0 0 10px;font-size:18px;color:#0d7377;border:0;padding:0}.ps ol{margin:8px 0 10px 22px}.sample-out{background:#fff;border:1px solid #ccc;padding:10px 12px;font:15px Consolas,'Courier New',monospace;white-space:pre-wrap;overflow:auto;margin:8px 0 0}
+.pflow{background:#fffdf8;border:1px solid #d8cfc2;border-left:6px solid #0e5f5b;border-radius:14px;padding:14px 16px;margin:16px 0 22px}.pflow h2{margin:0 0 6px;border:0;padding:0;font-size:18px;color:#0e5f5b}.pflow-cap{margin:0 0 10px;color:#5b6570;font-size:14px}.pflow-lab{width:100%;font-size:12px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#c45c26;margin:8px 0 2px}.pflow-row{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:0 0 12px}.pflow-n{background:#dceeed;border:2px solid #0e5f5b;border-radius:12px;padding:8px 10px;min-width:118px;flex:1 1 118px;max-width:220px;text-align:center;font-size:13px}.pflow-n b{display:block;margin-bottom:4px;color:#0e5f5b}.pflow-n span{display:block;font-weight:500;font-size:12px;line-height:1.4}.pflow-n.out{background:#fff8e6;border-color:#c45c26}.pflow-n.out b{color:#c45c26}.pflow-a{align-self:center;font-size:22px;font-weight:800;color:#c45c26}
+</style>
+</head>
+<body>
+<h1>URL Rewriting (Url2)</h1>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> Second page of URL rewriting</p>
+<p>Url2 only reads s_id1 and s_id2 from the query string.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Open Url2 from the Url1 link (do not type a new form).</li><li>Print both ids. Address bar must show s_id1 and s_id2.</li><li>Write complete Java and complete web.xml.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">Url2
+s_id1=054
+s_id2=055</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Identity travels in the next-page link. No cookie needed.</p>
+<div class="pflow-lab">Url1 builds the link</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>GET form 054 and 055</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET <code>/Url1?s_id1=054&amp;s_id2=055</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>Url1 encodeURL to Url2</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Url1 page with<br>next page link</span></div></div><div class="pflow-lab">Url2 reads both ids</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click next page</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET <code>/Url2?s_id1=054&amp;s_id2=055</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>Url2 getParameter both ids</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>s_id1=054<br>s_id2=055</span></div></div></div>
+<div class="box">
+<a class="btn" href="Url2?s_id1=054&s_id2=055">Execute</a>
+</div>
+<p style="margin-top:18px;"><a href="index.html#ex-url2" id="backLink">Return to Index</a></p>
+<script>
+(function() {
+  var p = new URLSearchParams(location.search);
+  var b = p.get('back');
+  if (b) document.getElementById('backLink').href = 'index.html#' + b;
+})();
+</script>
+<script src="online-lab.js?v=2200"></script>
+</body>
+</html>

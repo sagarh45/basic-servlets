@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>ICA 3 · MyMail + PayNow — run this small project</title>
+<link rel="stylesheet" href="portal.css?v=2500">
+<script src="portal.js?v=2500" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Small project: MyMail + PayNow</h1>
+<p>One HTML page. Three Java classes for forward and redirect. Include uses two more classes and <b>runs</b> from the button below. Watch the address bar every time.</p>
+<div class="nav">
+<a class="btn ghost" href="practicals.html#ica-3">ICA journal</a>
+<a class="btn active" href="forward.html">Run project</a>
+<a class="btn source" href="source/ForwardServlet.html">Source</a>
+</div>
+
+<div class="ps">
+<h2>What this project does</h2>
+<p><b>Forward</b> = open a Gmail mail in the same tab. Address bar stays <code>/forward</code>. The PASS message travels in a request attribute.</p>
+<p><b>Redirect</b> = PayNow sends you to the bank. Address bar changes to <code>/target</code>. Attributes are lost.</p>
+<p><b>Include</b> = MyMail page pastes a help footer into this page, then prints a green line. Address bar stays <code>/include</code>.</p>
+<ol>
+<li>Open mail (forward). URL stays <code>/forward</code>. Page shows PASS for Rahul.</li>
+<li>Pay now (redirect). URL becomes <code>/target?from=RedirectServlet&amp;student=Rahul</code>.</li>
+<li>Open page with footer (include). URL stays <code>/include</code>. The green line after include still runs.</li>
+</ol>
+<pre class="sample-out">TargetServlet
+FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
+</div>
+
+<div class="card">
+<h3>1) Open this mail (forward)</h3>
+<p>Like clicking a mail in Gmail. Same request. URL does not change. Java: <code>forward</code> to TargetServlet.</p>
+<form method="post" action="forward">
+<div class="row"><label class="f">Name</label><input name="student" value="Rahul"></div>
+<input type="submit" value="Open mail (forward)">
+</form>
+</div>
+
+<div class="card">
+<h3>2) Pay now (redirect)</h3>
+<p>Like Amazon Pay / net-banking. The browser opens a new URL. Java: <code>sendRedirect</code>.</p>
+<form method="post" action="redirect">
+<div class="row"><label class="f">Name</label><input name="student" value="Rahul"></div>
+<input type="submit" value="Pay now (redirect)">
+</form>
+</div>
+
+<div class="card">
+<h3>3) Open page with help footer (include)</h3>
+<p>Like a MyMail page that pastes a footer, then continues. Click Run. Address bar stays <code>/include</code>. A green line after include proves the method did not stop.</p>
+<p><a class="btn" href="include">Run include (GET)</a></p>
+</div>
+
+<p style="margin-top:18px;"><a href="practicals.html#ica-3">Back to ICA 3</a></p>
+</div>
+</body>
+</html>

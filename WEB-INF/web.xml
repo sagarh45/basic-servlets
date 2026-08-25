@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Complete deployment descriptor for Unit-II Basic Servlets (WIT Solapur).
+  Container: Apache Tomcat 11.0.24  |  API: Jakarta Servlet 6.1 (jakarta.servlet.*)
+  Each <servlet> registers a Java class. Each <servlet-mapping> binds a URL.
+  The two <servlet-name> values must be identical. url-pattern is the path after /basic-servlets.
+-->
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         version="6.1">
+
+    <display-name>Unit-II Basic Servlet Programs</display-name>
+    <!-- reload-token: notes-complete-1500 -->
+
+    <!-- ServletContext: shared by EVERY servlet (college letterhead). Read: getServletContext().getInitParameter(name) -->
+    <context-param>
+        <param-name>collegeName</param-name>
+        <param-value>Walchand Institute of Technology, Solapur</param-value>
+    </context-param>
+    <context-param>
+        <param-name>department</param-name>
+        <param-value>Computer Science and Engineering</param-value>
+    </context-param>
+    <context-param>
+        <param-name>subject</param-name>
+        <param-value>Advanced Java (Unit-II Servlets)</param-value>
+    </context-param>
+    <!-- Notes PDF examples use context-param name -->
+    <context-param>
+        <param-name>name</param-name>
+        <param-value>Walchand Institute of Technology</param-value>
+    </context-param>
+
+    <!-- Servlet 1: Hello Servlet. Logical name HelloServlet maps URL /hello to class HelloServlet -->
+    <servlet>
+        <servlet-name>HelloServlet</servlet-name>
+        <servlet-class>HelloServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HelloServlet</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 2: GET vs POST Demo -->
+    <servlet>
+        <servlet-name>GetPostDemoServlet</servlet-name>
+        <servlet-class>GetPostDemoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetPostDemoServlet</servlet-name>
+        <url-pattern>/getpost</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 01 / Chapter 2: one URL /httpmethods, six HTTP verbs (GET search, POST register, PUT city, DELETE, OPTIONS, TRACE) -->
+    <servlet>
+        <servlet-name>HttpMethodsServlet</servlet-name>
+        <servlet-class>HttpMethodsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HttpMethodsServlet</servlet-name>
+        <url-pattern>/httpmethods</url-pattern>
+    </servlet-mapping>
+
+    <!-- Sample registration form only (POST). Not mixed with HttpMethodsServlet. -->
+    <servlet>
+        <servlet-name>SampleRegisterServlet</servlet-name>
+        <servlet-class>SampleRegisterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SampleRegisterServlet</servlet-name>
+        <url-pattern>/sampleregister</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 03 / Chapter 4: lifecycle. load-on-startup 1 = call init when the app starts, not only on first hit -->
+    <servlet>
+        <servlet-name>LifecycleServlet</servlet-name>
+        <servlet-class>LifecycleServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LifecycleServlet</servlet-name>
+        <url-pattern>/lifecycle</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 04 / Chapter 5: ServletConfig init-param (this servlet only) vs context-param (whole app, above) -->
+    <servlet>
+        <servlet-name>ConfigContextServlet</servlet-name>
+        <servlet-class>ConfigContextServlet</servlet-class>
+        <init-param>
+            <param-name>author</param-name>
+            <param-value>Student Name</param-value>
+        </init-param>
+        <init-param>
+            <param-name>practicalNo</param-name>
+            <param-value>5</param-value>
+        </init-param>
+        <init-param>
+            <param-name>topic</param-name>
+            <param-value>ServletConfig and ServletContext</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConfigContextServlet</servlet-name>
+        <url-pattern>/configcontext</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 05 / Chapter 6: forward keeps URL /forward; sendRedirect changes URL to /target -->
+    <servlet>
+        <servlet-name>ForwardServlet</servlet-name>
+        <servlet-class>ForwardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ForwardServlet</servlet-name>
+        <url-pattern>/forward</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 7: Redirect -->
+    <servlet>
+        <servlet-name>RedirectServlet</servlet-name>
+        <servlet-class>RedirectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RedirectServlet</servlet-name>
+        <url-pattern>/redirect</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 8: Target (for forward/redirect) -->
+    <servlet>
+        <servlet-name>TargetServlet</servlet-name>
+        <servlet-class>TargetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TargetServlet</servlet-name>
+        <url-pattern>/target</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 9: GenericServlet Demo -->
+    <servlet>
+        <servlet-name>GenericServletDemo</servlet-name>
+        <servlet-class>GenericServletDemo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GenericServletDemo</servlet-name>
+        <url-pattern>/generic</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 10: Request Info -->
+    <servlet>
+        <servlet-name>RequestInfoServlet</servlet-name>
+        <servlet-class>RequestInfoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RequestInfoServlet</servlet-name>
+        <url-pattern>/requestinfo</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 11: Response Demo -->
+    <servlet>
+        <servlet-name>ResponseDemoServlet</servlet-name>
+        <servlet-class>ResponseDemoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResponseDemoServlet</servlet-name>
+        <url-pattern>/response</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 12: Include Demo -->
+    <servlet>
+        <servlet-name>IncludeServlet</servlet-name>
+        <servlet-class>IncludeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IncludeServlet</servlet-name>
+        <url-pattern>/include</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 12b: Include Footer -->
+    <servlet>
+        <servlet-name>IncludeFooterServlet</servlet-name>
+        <servlet-class>IncludeFooterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IncludeFooterServlet</servlet-name>
+        <url-pattern>/includefooter</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet 13: Attribute Demo -->
+    <servlet>
+        <servlet-name>AttributeDemoServlet</servlet-name>
+        <servlet-class>AttributeDemoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AttributeDemoServlet</servlet-name>
+        <url-pattern>/attributes</url-pattern>
+    </servlet-mapping>
+
+    <!-- ========== Notes PDF examples ========== -->
+
+    <servlet>
+        <servlet-name>HyperLinkDemo</servlet-name>
+        <servlet-class>HyperLinkDemo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HyperLinkDemo</servlet-name>
+        <url-pattern>/HyperLinkDemo</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DoGetDemo</servlet-name>
+        <servlet-class>DoGetDemo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DoGetDemo</servlet-name>
+        <url-pattern>/DoGetDemo</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Max</servlet-name>
+        <servlet-class>Max</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Max</servlet-name>
+        <url-pattern>/Max</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CounterServlet</servlet-name>
+        <servlet-class>CounterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CounterServlet</servlet-name>
+        <url-pattern>/CounterServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MyServlet</servlet-name>
+        <servlet-class>MyServlet</servlet-class>
+        <init-param>
+            <param-name>name</param-name>
+            <param-value>Hello from ServletConfig init-param</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MyServlet</servlet-name>
+        <url-pattern>/MyServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ServletContextDemo</servlet-name>
+        <servlet-class>ServletContextDemo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServletContextDemo</servlet-name>
+        <url-pattern>/ServletContextDemo</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ConcatServlet</servlet-name>
+        <servlet-class>ConcatServlet</servlet-class>
+        <init-param>
+            <param-name>part1</param-name>
+            <param-value>Welcome to</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConcatServlet</servlet-name>
+        <url-pattern>/ConcatServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CallServlet</servlet-name>
+        <servlet-class>CallServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CallServlet</servlet-name>
+        <url-pattern>/CallServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FwdDemo</servlet-name>
+        <servlet-class>FwdDemo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FwdDemo</servlet-name>
+        <url-pattern>/FwdDemo</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Redirect</servlet-name>
+        <servlet-class>Redirect</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Redirect</servlet-name>
+        <url-pattern>/Redirect</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RedirectOk</servlet-name>
+        <servlet-class>RedirectOk</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RedirectOk</servlet-name>
+        <url-pattern>/RedirectOk</url-pattern>
+    </servlet-mapping>
+
+    <!-- Chapter 7: YouTube Remember me — Cookie1 user, Cookie2 lastVideo, Cookie3 list, CookieDelete setMaxAge(0) -->
+    <servlet>
+        <servlet-name>Cookie1</servlet-name>
+        <servlet-class>Cookie1</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Cookie1</servlet-name>
+        <url-pattern>/Cookie1</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Cookie2</servlet-name>
+        <servlet-class>Cookie2</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Cookie2</servlet-name>
+        <url-pattern>/Cookie2</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Cookie3</servlet-name>
+        <servlet-class>Cookie3</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Cookie3</servlet-name>
+        <url-pattern>/Cookie3</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CookieDelete</servlet-name>
+        <servlet-class>CookieDelete</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CookieDelete</servlet-name>
+        <url-pattern>/CookieDelete</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 07 / Chapter 8: HttpSession login java/servlet → Welcome → logout invalidate -->
+    <servlet>
+        <servlet-name>NotesSessionLogin</servlet-name>
+        <servlet-class>NotesSessionLogin</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NotesSessionLogin</servlet-name>
+        <url-pattern>/NotesSessionLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>NotesSessionWelcome</servlet-name>
+        <servlet-class>NotesSessionWelcome</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NotesSessionWelcome</servlet-name>
+        <url-pattern>/NotesSessionWelcome</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>NotesSessionLogout</servlet-name>
+        <servlet-class>NotesSessionLogout</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NotesSessionLogout</servlet-name>
+        <url-pattern>/NotesSessionLogout</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 08 / Chapter 9: URL rewriting encodeURL Url1 → Url2 -->
+    <servlet>
+        <servlet-name>Url1</servlet-name>
+        <servlet-class>Url1</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Url1</servlet-name>
+        <url-pattern>/Url1</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Url2</servlet-name>
+        <servlet-class>Url2</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Url2</servlet-name>
+        <url-pattern>/Url2</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 09 / Chapter 10: hidden field session_id + Valid forward Welcome -->
+    <servlet>
+        <servlet-name>Valid</servlet-name>
+        <servlet-class>Valid</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Valid</servlet-name>
+        <url-pattern>/Valid</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Welcome</servlet-name>
+        <servlet-class>Welcome</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Welcome</servlet-name>
+        <url-pattern>/Welcome</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>ServletIntroWorking</servlet-name>
+        <servlet-class>ServletIntroWorking</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServletIntroWorking</servlet-name>
+        <url-pattern>/intro</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 02 / Chapter 3: GET vs POST — same servlet, proof is the address bar -->
+    <servlet>
+        <servlet-name>GetPostDiffServlet</servlet-name>
+        <servlet-class>GetPostDiffServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetPostDiffServlet</servlet-name>
+        <url-pattern>/getpostdiff</url-pattern>
+    </servlet-mapping>
+
+    <!-- ICA 10 / Chapter 11: capstone portal — POST + session + remember cookie + forward/include + logout -->
+    <servlet>
+        <servlet-name>CapstoneLogin</servlet-name>
+        <servlet-class>CapstoneLogin</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CapstoneLogin</servlet-name>
+        <url-pattern>/CapstoneLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CapstoneWelcome</servlet-name>
+        <servlet-class>CapstoneWelcome</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CapstoneWelcome</servlet-name>
+        <url-pattern>/CapstoneWelcome</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CapstoneLogout</servlet-name>
+        <servlet-class>CapstoneLogout</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CapstoneLogout</servlet-name>
+        <url-pattern>/CapstoneLogout</url-pattern>
+    </servlet-mapping>
+
+    <!-- Welcome file -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <!-- reload-trigger: updated on request to sync servlet HTML output (v2) -->
+</web-app>

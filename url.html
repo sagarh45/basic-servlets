@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Execute - Session Management - URL Rewriting</title>
+<link rel="stylesheet" href="portal.css?v=2300">
+<script src="portal.js?v=2300" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Execute: 9. URL Rewriting — two student ids in the next URL</h1>
+<div class="match" style="background:#e8ffe8;border:2px solid #3a7a3a;padding:12px;margin:12px 0;">
+<b>Matched example:</b> <code>Url1</code> &nbsp; URL <code>/Url1</code><br>
+<a href="topics/09-urlrewrite/theory.html?v=1127">Open matching Theory</a>
+</div>
+<div class="nav">
+<a class="btn ghost" href="topics/09-urlrewrite/theory.html?v=1127">Theory</a>
+<a class="btn active" href="url.html?back=ch-url">Execute</a>
+<a class="btn source" href="source/Url1.html">Source</a>
+<a class="btn secondary" href="index.html#ch-url">Index</a>
+</div>
+
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> URL rewriting: put two ids in the next-page link</p>
+<p>When cookies are off, identity can travel in the URL. Url1 builds a link. Url2 reads both numbers.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>GET form: enter 054 and 055. Submit to Url1.</li><li>Url1 prints a next page link that already contains both ids.</li><li>Click it. Url2 prints s_id1=054 and s_id2=055. Address bar shows both ids.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">Url1
+next page</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Identity travels in the next-page link. No cookie needed.</p>
+<div class="pflow-lab">Url1 builds the link</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>GET form 054 and 055</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET <code>/Url1?s_id1=054&amp;s_id2=055</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>Url1 encodeURL to Url2</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Url1 page with<br>next page link</span></div></div><div class="pflow-lab">Url2 reads both ids</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click next page</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET <code>/Url2?s_id1=054&amp;s_id2=055</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>Url2 getParameter both ids</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>s_id1=054<br>s_id2=055</span></div></div></div>
+
+<div class="card">
+<h3>GET — Put two student ids into the next URL</h3>
+<form method="get" action="Url1">
+<div class="row"><label class="f">Student 1 roll</label><input name="s_id1" value="054"></div>
+<div class="row"><label class="f">Student 2 roll</label><input name="s_id2" value="055"></div>
+<input type="submit" value="Carry these ids to next page (GET)">
+</form>
+</div>
+
+<p style="margin-top:18px;"><a href="index.html#ch-url" id="backLink">Return to Index</a></p>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);
+  var b=p.get('back');
+  if(b) document.getElementById('backLink').href='index.html#'+b;
+})();
+</script>
+</div>
+</body>
+</html>

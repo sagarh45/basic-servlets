@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Lab Setup - Tomcat 11 for Unit-II</title>
+<link rel="stylesheet" href="portal.css?v=1700">
+<script src="portal.js?v=1700" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Lab Setup: Apache Tomcat 11.0.24 (latest)</h1>
+<p><a class="btn secondary" href="index.html">Back to Index</a></p>
+
+<div class="labstack">
+<p><b>This lab is written for Apache Tomcat 11.0.24</b> (latest Tomcat as of July 2026).</p>
+<p>Tomcat 11 implements <b>Jakarta EE 11 / Servlet 6.1</b>. Every program uses <code>jakarta.servlet.*</code> (not <code>javax.servlet.*</code>).</p>
+<p>After you install Tomcat 11 and deploy this folder, open:
+<a href="http://localhost:8080/basic-servlets/">http://localhost:8080/basic-servlets/</a></p>
+</div>
+
+<div class="section">
+<h2>1) Software you must install</h2>
+<table>
+<tr><th>Software</th><th>This lab uses</th><th>Download</th></tr>
+<tr><td>JDK</td><td><b>JDK 17 or later</b> (21 is also fine)</td><td><a href="https://adoptium.net/" target="_blank" rel="noopener">adoptium.net</a> (Temurin 17 / 21)</td></tr>
+<tr><td>Servlet container</td><td><b>Apache Tomcat 11.0.24</b></td><td><a href="https://tomcat.apache.org/download-11.cgi" target="_blank" rel="noopener">tomcat.apache.org/download-11.cgi</a></td></tr>
+<tr><td>Browser</td><td>Chrome / Edge / Firefox</td><td>Open Execute pages</td></tr>
+<tr><td>Editor</td><td>Notepad / VS Code / Cursor</td><td>Read Java + web.xml</td></tr>
+</table>
+<p>Tomcat 11 will not start on JDK 8. Install JDK 17+ first, then Tomcat.</p>
+</div>
+
+<div class="section">
+<h2>2) How to install Tomcat 11 on Windows</h2>
+<ol class="steps-n">
+<li>Install JDK 17 or 21. Confirm in Command Prompt: <code>java -version</code> shows 17 or higher.</li>
+<li>Open <a href="https://tomcat.apache.org/download-11.cgi" target="_blank" rel="noopener">Tomcat 11 download page</a>.</li>
+<li>Under <b>11.0.24</b> download the Windows installer <code>apache-tomcat-11.0.24.exe</code>
+    or the zip <code>apache-tomcat-11.0.24-windows-x64.zip</code>.</li>
+<li>Installer typical folder:
+    <code>C:\Program Files\Apache Software Foundation\Tomcat 11.0\</code></li>
+<li>If you use the zip, extract it (example <code>C:\apache-tomcat-11.0.24</code>) and set
+    environment variable <code>CATALINA_HOME</code> to that folder.</li>
+<li>Start Tomcat: <code>bin\startup.bat</code> or the Start Menu shortcut.</li>
+<li>Test: <a href="http://localhost:8080/">http://localhost:8080/</a> should show the Tomcat home page.</li>
+</ol>
+<p>If port 8080 is already used by old Tomcat 9, stop Tomcat 9 first (Windows Services, or <code>bin\shutdown.bat</code> in the Tomcat 9 folder).</p>
+</div>
+
+<div class="section">
+<h2>3) Tomcat versions (read this once)</h2>
+<table class="compare">
+<tr><th>Tomcat</th><th>API package</th><th>Java needed</th><th>Use in this Unit-II lab?</th></tr>
+<tr><td>9.0.x</td><td><code>javax.servlet.*</code></td><td>Java 8+</td><td>No - old package name. Do not deploy these programs there.</td></tr>
+<tr><td>10.1.x</td><td><code>jakarta.servlet.*</code></td><td>Java 11+</td><td>No - this lab targets Tomcat 11 / Servlet 6.1</td></tr>
+<tr><td><b>11.0.24</b> (this lab)</td><td><code>jakarta.servlet.*</code></td><td>Java 17+</td><td><b>YES</b> - all programs and notes match this</td></tr>
+</table>
+<div class="diag-cap">
+<b>Description:</b> Servlet ideas (doGet, session, cookie, forward) are the same on Tomcat 9, 10 and 11.
+Only the package name changed from <code>javax.servlet</code> to <code>jakarta.servlet</code> after Tomcat 9.
+This portal uses <b>jakarta.servlet</b> on Tomcat 11.0.24.
+</div>
+</div>
+
+<div class="section">
+<h2>4) How a request reaches your servlet</h2>
+<div class="diag">
+<h3>Diagram: Browser to Tomcat 11 to Servlet</h3>
+<div class="flow">
+  <div class="box">1. Browser</div><div class="arrow">&rarr;</div>
+  <div class="box">2. http://localhost:8080/basic-servlets/...</div><div class="arrow">&rarr;</div>
+  <div class="box">3. Tomcat 11.0.24</div><div class="arrow">&rarr;</div>
+  <div class="box">4. web.xml mapping</div><div class="arrow">&rarr;</div>
+  <div class="box">5. Your Java servlet</div><div class="arrow">&rarr;</div>
+  <div class="box">6. HTML response</div>
+</div>
+</div>
+<ol class="steps-n">
+<li><b>Browser</b> sends an HTTP request (GET or POST, etc.).</li>
+<li>URL starts with <code>/basic-servlets</code> because the folder name inside Tomcat <code>webapps</code> is <code>basic-servlets</code>.</li>
+<li><b>Tomcat 11</b> is the servlet container. It loads classes from <code>WEB-INF/classes</code>.</li>
+<li><b>web.xml</b> maps a URL pattern (example <code>/httpmethods</code>) to a Java class (example <code>HttpMethodsServlet</code>).</li>
+<li>Tomcat calls <code>doGet</code> / <code>doPost</code> / ... on that class.</li>
+<li>The servlet writes HTML with <code>PrintWriter</code>. The browser shows the page.</li>
+</ol>
+</div>
+
+<div class="section">
+<h2>5) How to compile and deploy this lab</h2>
+<ol class="steps-n">
+<li>Open folder: <code>2. Unit 2 Practicals\1. Unit-II Basic Programs</code></li>
+<li>Run <b>compile.bat</b> (needs JDK 17+ and Tomcat 11 <code>lib\servlet-api.jar</code>, or the jar already in this folder's <code>lib</code>).</li>
+<li>Run <b>deploy-full.bat</b>. It copies the app to
+    <code>C:\Program Files\Apache Software Foundation\Tomcat 11.0\webapps\basic-servlets\</code>
+    (or <code>%CATALINA_HOME%\webapps\basic-servlets</code> if you set that variable).</li>
+<li>Start Tomcat 11 if it is not running.</li>
+<li>Open <a href="http://localhost:8080/basic-servlets/">http://localhost:8080/basic-servlets/</a></li>
+<li>If the browser shows an old page, press <b>Ctrl+F5</b>. If a servlet still looks old, restart Tomcat once.</li>
+</ol>
+<p>Login for session demos: user <b>java</b> / password <b>servlet</b> (or as shown on that Execute page).</p>
+</div>
+
+<div class="section">
+<h2>6) How to study each chapter</h2>
+<ol class="steps-n">
+<li><b>Theory</b> - concept, diagram, description, method prototypes (simple English).</li>
+<li><b>Execute</b> - problem statement, then run the real program on Tomcat 11.</li>
+<li><b>Source</b> - the matching Java file(s) and <code>web.xml</code> mapping (imports are <code>jakarta.servlet.*</code>).</li>
+<li><b>Project</b> - only for the Capstone mini project.</li>
+</ol>
+</div>
+
+<div class="footer"><a href="index.html">Return to Index</a></div>
+</div>
+</body>
+</html>

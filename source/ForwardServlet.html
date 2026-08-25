@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Source - ForwardServlet.java + HTML + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+.prob { background:#fff8e6; border:1px solid #e6d59a; padding:14px; margin:12px 0; max-width:980px; }
+.why { background:#f0f7ff; border-left:4px solid #336699; padding:10px 14px; margin:10px 0; max-width:980px; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a.btn.ghost { background:#fff; color:#336699; }
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+.legend .attr { color:#0000ff; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#0000ff; }
+.js { color:#333; }
+.synexp { width:100%; max-width:980px; border-collapse:collapse; background:#fff; margin:12px 0 18px; }
+.synexp th, .synexp td { border:1px solid #ccc; padding:10px 12px; text-align:left; vertical-align:top; }
+.synexp th { background:#eef8ee; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<p class="icatag">ICA PRACTICAL 03 · MYMAIL + PAYNOW</p>
+<div class="rel"><b>One HTML page:</b> <code>forward.html</code> — do not add extra HTML files.
+Java: <a href="ForwardServlet.html">ForwardServlet</a> · <a href="RedirectServlet.html">RedirectServlet</a> · <a href="TargetServlet.html">TargetServlet</a> · <a href="IncludeServlet.html">IncludeServlet</a>.
+<a href="../practicals.html#ica-3">ICA journal</a>
+<a class="btn" href="../forward.html">Run MyMail + PayNow</a></div>
+<div class="realex"><b>Real examples:</b> Forward = Gmail opens a mail in the same tab (URL stays).
+Redirect = Amazon Pay / PhonePe / net-banking (URL must change).
+Include = Gmail “Wrong password” still shows the form on the same page.</div>
+
+<div class="ps">
+<h2>Problem statement (ICA 3 · MyMail + PayNow)</h2>
+<p><b>Title:</b> Open mail (forward) keeps the URL; Pay now (redirect) changes it</p>
+<p>Forward = Gmail: mail opens in the same tab. Redirect = Amazon Pay: browser must open a new bank URL. Include = wrong-password line + form still on this page.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Open mail (forward). Address bar stays <code>/forward</code>. Page shows FORWARD / PASS.</li>
+<li>Pay now (redirect). Address bar becomes <code>/target?from=RedirectServlet&amp;student=Rahul</code>.</li>
+<li>Write ForwardServlet, RedirectServlet, TargetServlet (and include) plus web.xml. One HTML: <code>forward.html</code>.</li>
+</ol>
+<p><b>Sample output:</b></p>
+<pre class="sample-out">TargetServlet
+FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Forward is an inside hand-off (URL stays). Redirect tells the browser to open a new URL.</p>
+<div class="pflow-lab">FORWARD — open mail (Gmail)</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Open mail<br>student=Rahul</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/forward</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>ForwardServlet<br>setAttribute + forward</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. TargetServlet</b><span>reads attribute<br>URL still /forward</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>FORWARD: Result for Rahul: PASS<br>(URL still /forward)</span></div></div><div class="pflow-lab">REDIRECT — Pay now (Amazon Pay)</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Pay now</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/redirect</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>RedirectServlet<br>sendRedirect</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Browser again</b><span>GET <code>/target?from=RedirectServlet</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>REDIRECT from RedirectServlet<br>student=Rahul (URL changed)</span></div></div></div>
+<p>
+<a class="btn ghost" href="../topics/06-forward-redirect/theory.html">Theory</a>
+<a class="btn" href="../forward.html">Execute</a>
+<a class="btn source" href="ForwardServlet.html">Source</a>
+<a class="btn ghost" href="../index.html#ch-fwd">Index</a>
+</p>
+<h1>Source: ForwardServlet</h1>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="tag">&lt;form&gt;</span>
+    <span class="attr">method=</span>
+    <span class="str">"post"</span>
+    <span class="cmt">&lt;!-- comment --&gt;</span>
+  </div>
+</div>
+<h2>1. HTML — one ICA page (forward.html) — MyMail + PayNow</h2><div class="why"><b>Simple meaning:</b> Two forms. action=forward stays on /forward. action=redirect changes the address bar to /target. No script needed.</div><div class="why"><b>Is &lt;script&gt; required?</b> <b>No.</b> Both forms submit by themselves.</div><table class="synexp"><tr><th>HTML / line</th><th>Simple meaning</th></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;forward&quot;&gt;</code></td><td>POST to /forward. Servlet forwards to TargetServlet. Address bar still shows /forward.</td></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;redirect&quot;&gt;</code></td><td>POST to /redirect. Servlet sendRedirect to /target. Address bar changes.</td></tr><tr><td><code>&lt;input name=&quot;student&quot;&gt;</code></td><td>Both servlets read request.getParameter("student").</td></tr></table><p>Copy this small page. <code>name=</code> must match <code>getParameter</code> in Java.</p><pre class="code">&lt;!DOCTYPE html&gt;
+&lt;<span class="tag">html</span>&gt;
+&lt;<span class="tag">head</span>&gt;
+&lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
+&lt;<span class="tag">title</span>&gt;Forward vs Redirect&lt;/<span class="tag">title</span>&gt;
+&lt;/<span class="tag">head</span>&gt;
+&lt;<span class="tag">body</span>&gt;
+&lt;<span class="tag">h2</span>&gt;FORWARD - exam result&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;forward&quot;</span>&gt;
+  Student: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;student&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Submit exam&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;REDIRECT - fee receipt&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;redirect&quot;</span>&gt;
+  Student: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;student&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Pay fees&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+&lt;/<span class="tag">body</span>&gt;
+&lt;/<span class="tag">html</span>&gt;</pre><h2>2. Java program — ForwardServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">RequestDispatcher</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">ForwardServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> student = request.<span class="mtd">getParameter</span>(<span class="str">&quot;student&quot;</span>);
+        request.<span class="mtd">setAttribute</span>(<span class="str">&quot;message&quot;</span>, <span class="str">&quot;Result for &quot;</span> + student + <span class="str">&quot;: PASS&quot;</span>);
+        request.<span class="mtd">setAttribute</span>(<span class="str">&quot;source&quot;</span>, <span class="str">&quot;ForwardServlet&quot;</span>);
+        <span class="cls">RequestDispatcher</span> rd = request.<span class="mtd">getRequestDispatcher</span>(<span class="str">&quot;/target&quot;</span>);
+        rd.<span class="mtd">forward</span>(request, response);
+    }
+}
+</pre><h2>3. Java program — RedirectServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">RedirectServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> student = request.<span class="mtd">getParameter</span>(<span class="str">&quot;student&quot;</span>);
+        <span class="kw">if</span> (student == <span class="kw">null</span>) {
+            student = <span class="str">&quot;Rahul&quot;</span>;
+        }
+        response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;target?from=RedirectServlet&amp;student=&quot;</span>
+                + java.net.<span class="cls">URLEncoder</span>.<span class="mtd">encode</span>(student, <span class="str">&quot;UTF-8&quot;</span>));
+    }
+}
+</pre><h2>4. Java program — TargetServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">TargetServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="cmt">// Redirect creates a new GET, so doGet is required here.</span>
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">show</span>(request, response);
+    }
+
+    <span class="cmt">// Forward keeps POST, so doPost is required here.</span>
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">show</span>(request, response);
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> <span class="mtd">show</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response) <span class="kw">throws</span> <span class="cls">IOException</span> {
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        <span class="cls">String</span> msg = (<span class="cls">String</span>) request.<span class="mtd">getAttribute</span>(<span class="str">&quot;message&quot;</span>);
+        <span class="cls">String</span> from = request.<span class="mtd">getParameter</span>(<span class="str">&quot;from&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;TargetServlet&lt;/h2&gt;&quot;</span>);
+        <span class="kw">if</span> (msg != <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;FORWARD: &quot;</span> + msg + <span class="str">&quot; (URL still /forward)&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> <span class="kw">if</span> (from != <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;REDIRECT from &quot;</span> + from + <span class="str">&quot; student=&quot;</span>
+                    + request.<span class="mtd">getParameter</span>(<span class="str">&quot;student&quot;</span>) + <span class="str">&quot; (URL changed)&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Direct access&lt;/p&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;forward.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+    }
+}
+</pre>
+<p><a class="btn" href="../index.html#ch-fwd">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;ForwardServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/forward&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;RedirectServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/redirect&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;TargetServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/target&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

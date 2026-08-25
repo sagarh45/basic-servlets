@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>ICA 1 · ShopEasy — run this small project</title>
+<link rel="stylesheet" href="portal.css?v=2500">
+<script src="portal.js?v=2500" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Small project: ShopEasy (like Amazon)</h1>
+<p>One saved order: name, order no, city. One HTML page. Two Java classes are allowed. Click every button and watch the address bar.</p>
+<div class="nav">
+<a class="btn ghost" href="practicals.html#ica-1">ICA journal</a>
+<a class="btn active" href="httpmethods.html">Run project</a>
+<a class="btn source" href="source/HttpMethodsServlet.html">Source</a>
+</div>
+
+<div class="ps">
+<h2>What this project does</h2>
+<p>ShopEasy is a tiny shop. You track an order, place an order, change the city, or cancel. Search uses GET (data in the URL). Checkout and a product review use POST (data not in the URL).</p>
+<ol>
+<li>Place order Rahul / 101 / Solapur (POST). Address bar stays <code>/httpmethods</code>.</li>
+<li>Track order 101 (GET). Address bar shows <code>?roll=101</code>.</li>
+<li>Change city to Pune (PUT). Cancel order 101 (DELETE). Track again — not found.</li>
+<li>On this same page: search product Java (GET) then post a review (POST).</li>
+</ol>
+<pre class="sample-out">request.getMethod() = GET
+GET found roll 101
+Saved: Rahul / 101 / Solapur</pre>
+</div>
+
+<div class="card">
+<h3>1) Track my order (GET)</h3>
+<p>Like Amazon Track. After submit, the address bar shows <code>?roll=101</code>.</p>
+<form method="get" action="httpmethods">
+<div class="row"><label class="f">Order no</label><input name="roll" value="101"></div>
+<input type="submit" value="Track order (GET)">
+</form>
+</div>
+
+<div class="card">
+<h3>2) Place a new order (POST)</h3>
+<p>Like Amazon Checkout. Name and city stay out of the URL.</p>
+<form method="post" action="httpmethods">
+<div class="row"><label class="f">Name</label><input name="name" value="Rahul"></div>
+<div class="row"><label class="f">Order no</label><input name="roll" value="101"></div>
+<div class="row"><label class="f">City</label><input name="city" value="Solapur"></div>
+<input type="submit" value="Place order (POST)">
+</form>
+</div>
+
+<div class="card">
+<h3>3) Change delivery city (PUT)</h3>
+<p>Like Edit address. Place the order first.</p>
+<div class="row"><label class="f">Order no</label><input id="putRoll" value="101"></div>
+<div class="row"><label class="f">New city</label><input id="putCity" value="Pune"></div>
+<button class="btn" type="button" onclick="sendPut()">Update city (PUT)</button>
+</div>
+
+<div class="card">
+<h3>4) Cancel the order (DELETE)</h3>
+<p>Like Cancel order. Then Track must not find it.</p>
+<div class="row"><label class="f">Order no</label><input id="delRoll" value="101"></div>
+<button class="btn" type="button" onclick="sendDelete()">Cancel order (DELETE)</button>
+</div>
+
+<div class="card">
+<h3>5) What can this window do? (OPTIONS)</h3>
+<p>Like asking Amazon “what actions are allowed?”. A form cannot send OPTIONS, so this button uses fetch.</p>
+<button class="btn" type="button" onclick="sendMethod('OPTIONS')">Ask allowed methods (OPTIONS)</button>
+</div>
+
+<div class="card">
+<h3>6) Debug echo (TRACE)</h3>
+<p>Only for debug. Tomcat 11 may block it. That is normal. Write “TRACE blocked” in the journal if it fails.</p>
+<button class="btn" type="button" onclick="sendMethod('TRACE')">Debug TRACE</button>
+<p id="msg" class="note"></p>
+</div>
+
+<div class="card" id="getpost">
+<h3>7) Search a product (GET) vs write a review (POST)</h3>
+<p>Same ShopEasy page. Second Java class: <code>GetPostDiffServlet</code>.</p>
+<p><b>GET</b> = search. Address bar will show <code>?q=Java</code>.</p>
+<form method="get" action="getpostdiff">
+<div class="row"><label class="f">Product</label><input name="q" value="Java"></div>
+<input type="submit" value="Search product (GET)">
+</form>
+<p style="margin-top:14px;"><b>POST</b> = review. The text is not in the URL.</p>
+<form method="post" action="getpostdiff">
+<div class="row"><label class="f">Name</label><input name="name" value="Rahul"></div>
+<div class="row"><label class="f">Review</label><input name="message" value="Fast delivery" size="30"></div>
+<input type="submit" value="Post review (POST)">
+</form>
+</div>
+
+<p style="margin-top:18px;"><a href="practicals.html#ica-1">Back to ICA 1</a></p>
+<script>
+function sendMethod(m){
+  fetch('httpmethods',{method:m}).then(r=>r.text()).then(t=>{document.open();document.write(t);document.close();})
+  .catch(e=>{document.getElementById('msg').innerText='Error: '+e+' (TRACE may be disabled)';});
+}
+function sendPut(){
+  var roll=document.getElementById('putRoll').value;
+  var city=document.getElementById('putCity').value;
+  fetch('httpmethods?roll='+encodeURIComponent(roll)+'&city='+encodeURIComponent(city),{method:'PUT'})
+    .then(r=>r.text()).then(t=>{document.open();document.write(t);document.close();});
+}
+function sendDelete(){
+  var roll=document.getElementById('delRoll').value;
+  fetch('httpmethods?roll='+encodeURIComponent(roll),{method:'DELETE'})
+    .then(r=>r.text()).then(t=>{document.open();document.write(t);document.close();});
+}
+</script>
+<script src="online-lab.js?v=2500"></script>
+</div>
+</body>
+</html>

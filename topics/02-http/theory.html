@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>2. HTTP Methods: GET, POST, PUT, DELETE, TRACE, OPTIONS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>2. HTTP Methods: GET, POST, PUT, DELETE, TRACE, OPTIONS</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1129">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-http">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>A hospital keeps <b>one current patient file</b> (name, id, city). Staff do different jobs on that same file: search, register, update city, remove, ask which jobs are allowed, and (rarely) echo a request for debugging. HTTP already has a verb for each of those jobs. You must not invent six different URLs; you use one URL <code>/httpmethods</code> and six methods.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> One hospital counter (<code>/httpmethods</code>). Six different jobs. The job name is the HTTP method, not a new URL.</p>
+<h3>The story (one counter, many verbs)</h3>
+<p>The OPD has <b>one window</b>. Patients do not go to six different rooms. They stand at the same window and say what they want:</p>
+<ol>
+<li><b>GET</b> — “Show me patient 101.” Search. Anyone can repeat the same question. The id is visible (like writing it on a token).</li>
+<li><b>POST</b> — “Register this new patient.” Fill a form. The paper goes in an envelope (request body), not written on the token.</li>
+<li><b>PUT</b> — “This patient moved to Pune. Keep id 101. Change only the city.” Update, do not create a second file.</li>
+<li><b>DELETE</b> — “Discharge / remove this file.” Later search must say not found.</li>
+<li><b>OPTIONS</b> — A new nurse asks “what jobs does this window do?” The answer is a list (Allow header). Nobody’s file is opened.</li>
+<li><b>TRACE</b> — “Repeat what I just said” (debug echo). Real Tomcat often refuses this for security. That refusal is still the correct observation.</li>
+</ol>
+<p>HTML forms in a browser can only say GET and POST. PUT / DELETE / OPTIONS / TRACE in this lab use the Execute buttons (<code>fetch</code>), like an internal slip, not the public form.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Person says</th><th>Tomcat calls</th></tr>
+<tr><td>Search / open</td><td><code>doGet</code></td></tr>
+<tr><td>Register / save form</td><td><code>doPost</code></td></tr>
+<tr><td>Correct city</td><td><code>doPut</code></td></tr>
+<tr><td>Remove record</td><td><code>doDelete</code></td></tr>
+<tr><td>What is allowed?</td><td><code>doOptions</code></td></tr>
+<tr><td>Echo for debug</td><td><code>doTrace</code></td></tr>
+</table>
+<h3>What you will see</h3>
+<p>After GET search, the address bar shows <code>?roll=101</code>. After POST register, the address bar stays <code>/httpmethods</code>. Same servlet. Different verb. That is the whole chapter.</p>
+<h3>Easy mistake</h3>
+<p>Making six URLs (<code>/get</code>, <code>/post</code>, …). The syllabus point is <b>one URL, six methods</b>.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>GET — Google / IRCTC PNR search</h3>
+<p>You search a PNR. The URL becomes <code>/httpmethods?roll=101</code>. Anyone with that link can repeat the search. That is GET: read, bookmarkable, visible in the address bar.</p>
+<h3>POST — Amazon checkout / Gmail login</h3>
+<p>You fill name, id, city and click Save. Details must not hang in the address bar. That is POST: write, body not URL.</p>
+<h3>PUT — change only the city</h3>
+<p>The person moved from Solapur to Pune. The id stays 101; only city changes. PUT means “replace this field of the existing resource”, not “create a second person”.</p>
+<h3>DELETE — remove the file</h3>
+<p>The hospital removes id 101. Later GET for 101 must say not found.</p>
+<h3>OPTIONS — “what can this counter do?”</h3>
+<p>OPTIONS answers with the Allow list. It does not open a patient file.</p>
+<h3>TRACE — debug mirror</h3>
+<p>A network engineer asks the server to echo the request. Production Tomcat often disables TRACE (Cross-Site Tracing). In the lab, if TRACE fails, write that observation; it is still the correct theory.</p>
+</div>
+
+<div class="section">
+<div class="card">
+<h2>What is an HTTP method? (read this first)</h2>
+<p>HTTP is the language between the <b>browser</b> and <b>Tomcat</b>. Every request has a <b>method</b>
+(a verb such as GET or POST). The method tells the server <b>what the client wants to do</b>
+with a resource (here: one student record).</p>
+<p>Class <code>HttpServlet</code> already has one Java method for each HTTP method:
+<code>doGet</code>, <code>doPost</code>, <code>doPut</code>, <code>doDelete</code>, <code>doOptions</code>, <code>doTrace</code>.
+You <b>override</b> only the methods you need. Tomcat reads the incoming HTTP method and calls the matching
+<code>doXxx</code>. If you did not override it, Tomcat usually answers <b>HTTP 405 Method Not Allowed</b>.</p>
+<p>HTML forms can send only <b>GET</b> and <b>POST</b>. PUT, DELETE, OPTIONS and TRACE are sent in this lab
+with a small JavaScript <code>fetch()</code> button (or with Postman / curl).</p>
+<p>Live check: <code>request.getMethod()</code> returns the method name as a String (<code>GET</code>, <code>POST</code>, ...).</p>
+</div>
+</div>
+
+<div class="diag">
+<h3>Fig. 2.1 — How Tomcat chooses doGet / doPost / …</h3>
+<div class="flow"><div class="box">1. Fill form or click</div><div class="arrow">&rarr;</div><div class="box">2. HTTP method + URL /httpmethods</div><div class="arrow">&rarr;</div><div class="box">3. Tomcat 11 + web.xml</div><div class="arrow">&rarr;</div><div class="box">4. Matching doXxx()</div><div class="arrow">&rarr;</div><div class="box">5. HTML result in browser</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> One Java class. Six HTTP methods. The URL stays /httpmethods. Only the method (and the job) changes.</div>
+<ol class="steps-n"><li>On Execute you search (GET), register (POST), update city (PUT), or remove (DELETE).</li><li>The browser sends that HTTP method to the same URL <code>/httpmethods</code>.</li><li>Tomcat 11 maps the URL to class <code>HttpMethodsServlet</code>.</li><li>Tomcat calls only the matching Java method: doGet, doPost, doPut, doDelete, doOptions or doTrace.</li><li>The servlet does the real job (search / save / update / remove) and writes HTML. Look at the address bar to see if data is in the URL.</li></ol>
+
+<div class="section">
+<div class="card">
+<h2>1. GET — search / read (Java: doGet)</h2>
+
+<p><b>Simple meaning:</b> GET means <b>please show me this data</b>. It is a read. It should not create a new student.</p>
+<p><b>How it works:</b> The browser puts extra data in the <b>address bar</b> as a query string.
+Example: <code>/httpmethods?roll=101</code>. Anyone who copies the URL can repeat the same search.
+Refresh and bookmarks also use GET.</p>
+<p><b>Lab example:</b> Fill roll <code>101</code> and click <b>Search student (GET)</b>.
+The servlet looks up the saved student. If the roll matches, it shows name, roll and city.
+If not, it says the student was not found. After submit, look at the address bar: <code>?roll=101</code> is visible.</p>
+<p><b>Choose GET when</b> you open a page, click a link, refresh, search, or want a URL that can be bookmarked.</p>
+<p><b>Do not choose GET when</b> you send a password, a large form, or any data that must stay hidden.
+GET data appears in the URL, in history, and in server logs.</p>
+<p><b>HTML:</b> <code>&lt;form method="get" action="httpmethods"&gt;</code>
+or a normal link <code>&lt;a href="httpmethods?roll=101"&gt;</code>.</p>
+
+<h3>Syntax</h3>
+<pre class="syntax">@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    String roll = request.getParameter(&quot;roll&quot;);
+    // Search the saved student by roll. Do not insert a new record here.
+    String method = request.getMethod();  // &quot;GET&quot;
+}</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>@Override</code></td><td>You replace HttpServlet.doGet. The signature must match exactly.</td></tr><tr><td><code>protected void doGet(...)</code></td><td>Tomcat calls this only when the HTTP method is GET.</td></tr><tr><td><code>HttpServletRequest request</code></td><td>Incoming data: method name, query string, parameters.</td></tr><tr><td><code>HttpServletResponse response</code></td><td>Outgoing HTML page.</td></tr><tr><td><code>throws ServletException, IOException</code></td><td>Required on the servlet method signature.</td></tr><tr><td><code>getParameter(&quot;roll&quot;)</code></td><td>Reads ?roll=101 from the URL (query string).</td></tr><tr><td><code>getMethod()</code></td><td>Returns the live name GET so the student can see it on the result page.</td></tr></table>
+<table class='proto'><tr><th colspan='2'><code>protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException</code></th></tr><tr><td><b>Meaning</b></td><td>Runs when the browser sends GET. Use it to open a page or search / read a record.</td></tr><tr><td><b>Parameters</b></td><td>HttpServletRequest request, HttpServletResponse response</td></tr><tr><td><b>Returns</b></td><td>void</td></tr><tr><td><b>Detail</b></td><td>Lab: search student by roll. Data is in the URL.</td></tr></table>
+</div>
+</div>
+
+<div class="section">
+<div class="card">
+<h2>2. POST — fill a form and save (Java: doPost)</h2>
+
+<p><b>Simple meaning:</b> POST means <b>please accept this form and save it</b>. It is a write.
+In the lab it registers a new student (name, roll, city) in server memory.</p>
+<p><b>How it works:</b> The browser puts the fields in the <b>request body</b>, not in the address bar.
+After submit the URL usually stays the same. You cannot see name or password in the URL.
+That is why login and register use POST.</p>
+<p><b>Lab example (student office — do not mix with the sample below):</b>
+On Execute, fill Name / Roll / City and click <b>Register student (POST)</b>.
+That office form is only three boxes. It is a different page from the sample registration form.</p>
+<p><b>Choose POST when</b> the student fills a form: register, login, feedback, any data that should not sit in the URL.</p>
+<p><b>Do not choose POST when</b> you only want to open or bookmark a search.
+POST is not meant to be a shareable link. Refresh after POST may ask the browser to send the form again.</p>
+<div class="why"><b>Sample registration form (HTML teaching page only):</b>
+This sample is <b>not</b> mixed with GET, PUT, DELETE, OPTIONS or TRACE.
+It is only to show a real registration page: text, password, radio, checkbox, dropdown, textarea.
+Open: <a href="../../sample-registration.html">sample-registration.html</a>
+&nbsp; Submit goes to <code>/sampleregister</code> (POST). Look at the address bar after submit.</div>
+<table>
+<tr><th>What you see</th><th>HTML control</th><th>Student rule</th><th>Java</th></tr>
+<tr><td>Full name, roll, mobile</td><td><code>&lt;input type="text"&gt;</code></td><td>One line of typing</td><td><code>getParameter("fullname")</code></td></tr>
+<tr><td>Email</td><td><code>type="email"</code></td><td>Browser checks @</td><td><code>getParameter("email")</code></td></tr>
+<tr><td>Password</td><td><code>type="password"</code></td><td>Dots while typing. Must use POST</td><td><code>getParameter("pwd")</code></td></tr>
+<tr><td>Age / DOB</td><td><code>type="number"</code> / <code>type="date"</code></td><td>Number or calendar</td><td><code>getParameter("age")</code></td></tr>
+<tr><td>Gender</td><td><code>type="radio"</code> same <code>name="gender"</code></td><td>Only <b>one</b> choice</td><td><code>getParameter("gender")</code></td></tr>
+<tr><td>Hobbies</td><td><code>type="checkbox"</code> same <code>name="hobby"</code></td><td>Zero or more choices</td><td><code>getParameterValues("hobby")</code></td></tr>
+<tr><td>Course, city</td><td><code>&lt;select&gt;</code> + <code>&lt;option&gt;</code></td><td>Dropdown, one value</td><td><code>getParameter("course")</code></td></tr>
+<tr><td>Address</td><td><code>&lt;textarea&gt;</code></td><td>Many lines</td><td><code>getParameter("address")</code></td></tr>
+</table>
+<p>Complete sample HTML (copy this file). <code>name=</code> on each control must match the Java <code>getParameter</code> name.</p>
+<pre class="syntax">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;Sample Registration Form (POST only)&lt;/title&gt;
+&lt;style&gt;
+body { font-family: Arial, Helvetica, sans-serif; background: #f5f7fa; margin: 0; color: #222; }
+.wrap { max-width: 640px; margin: 24px auto; background: #fff; border: 1px solid #ccc; padding: 22px 24px 28px; }
+h1 { font-size: 22px; margin: 0 0 8px; }
+.note { background: #f0f7ff; border-left: 4px solid #336699; padding: 10px 12px; margin: 0 0 16px; font-size: 15px; }
+label { display: block; font-weight: bold; margin: 12px 0 4px; }
+.hint { font-weight: normal; color: #555; font-size: 13px; }
+input[type=text], input[type=email], input[type=tel], input[type=password],
+input[type=number], input[type=date], select, textarea {
+  width: 100%; padding: 8px; font-size: 16px; border: 1px solid #bbb;
+}
+textarea { height: 70px; }
+.inline label { display: inline; font-weight: normal; margin-right: 14px; }
+.row { margin: 6px 0; }
+input[type=submit], input[type=reset] {
+  padding: 8px 18px; font-size: 16px; margin-right: 8px; margin-top: 16px; cursor: pointer;
+}
+input[type=submit] { background: #336699; color: #fff; border: 1px solid #336699; }
+input[type=reset] { background: #fff; color: #336699; border: 1px solid #336699; }
+a { color: #0066cc; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;wrap&quot;&gt;
+&lt;h1&gt;Student Registration (sample form)&lt;/h1&gt;
+&lt;div class=&quot;note&quot;&gt;
+&lt;b&gt;Teaching sample only.&lt;/b&gt; This page is a full HTML registration form.
+It is &lt;b&gt;not&lt;/b&gt; mixed with GET / PUT / DELETE / OPTIONS / TRACE.
+&lt;code&gt;method=&quot;post&quot;&lt;/code&gt; so name, password and all fields go in the &lt;b&gt;body&lt;/b&gt;, not in the URL.
+&lt;/div&gt;
+
+&lt;form method=&quot;post&quot; action=&quot;sampleregister&quot;&gt;
+
+&lt;label&gt;Full name &lt;span class=&quot;hint&quot;&gt;(text)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;text&quot; name=&quot;fullname&quot; value=&quot;Rahul Patil&quot;&gt;
+
+&lt;label&gt;Roll number &lt;span class=&quot;hint&quot;&gt;(text)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;text&quot; name=&quot;roll&quot; value=&quot;101&quot;&gt;
+
+&lt;label&gt;Email &lt;span class=&quot;hint&quot;&gt;(email)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;email&quot; name=&quot;email&quot; value=&quot;rahul@college.edu&quot;&gt;
+
+&lt;label&gt;Mobile &lt;span class=&quot;hint&quot;&gt;(tel)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;tel&quot; name=&quot;mobile&quot; value=&quot;9876543210&quot;&gt;
+
+&lt;label&gt;Password &lt;span class=&quot;hint&quot;&gt;(password - hidden while typing)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;password&quot; name=&quot;pwd&quot; value=&quot;secret123&quot;&gt;
+
+&lt;label&gt;Confirm password &lt;span class=&quot;hint&quot;&gt;(password)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;password&quot; name=&quot;pwd2&quot; value=&quot;secret123&quot;&gt;
+
+&lt;label&gt;Age &lt;span class=&quot;hint&quot;&gt;(number)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;number&quot; name=&quot;age&quot; value=&quot;19&quot; min=&quot;16&quot; max=&quot;40&quot;&gt;
+
+&lt;label&gt;Date of birth &lt;span class=&quot;hint&quot;&gt;(date)&lt;/span&gt;&lt;/label&gt;
+&lt;input type=&quot;date&quot; name=&quot;dob&quot; value=&quot;2006-06-15&quot;&gt;
+
+&lt;label&gt;Gender &lt;span class=&quot;hint&quot;&gt;(radio - only one choice)&lt;/span&gt;&lt;/label&gt;
+&lt;div class=&quot;inline&quot;&gt;
+&lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;gender&quot; value=&quot;Male&quot; checked&gt; Male&lt;/label&gt;
+&lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;gender&quot; value=&quot;Female&quot;&gt; Female&lt;/label&gt;
+&lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;gender&quot; value=&quot;Other&quot;&gt; Other&lt;/label&gt;
+&lt;/div&gt;
+
+&lt;label&gt;Course &lt;span class=&quot;hint&quot;&gt;(dropdown / select)&lt;/span&gt;&lt;/label&gt;
+&lt;select name=&quot;course&quot;&gt;
+  &lt;option value=&quot;BCA&quot;&gt;BCA&lt;/option&gt;
+  &lt;option value=&quot;BSc CS&quot; selected&gt;BSc Computer Science&lt;/option&gt;
+  &lt;option value=&quot;MCA&quot;&gt;MCA&lt;/option&gt;
+  &lt;option value=&quot;BE CSE&quot;&gt;BE CSE&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;label&gt;City &lt;span class=&quot;hint&quot;&gt;(dropdown / select)&lt;/span&gt;&lt;/label&gt;
+&lt;select name=&quot;city&quot;&gt;
+  &lt;option value=&quot;Solapur&quot; selected&gt;Solapur&lt;/option&gt;
+  &lt;option value=&quot;Pune&quot;&gt;Pune&lt;/option&gt;
+  &lt;option value=&quot;Mumbai&quot;&gt;Mumbai&lt;/option&gt;
+  &lt;option value=&quot;Other&quot;&gt;Other&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;label&gt;Hobbies &lt;span class=&quot;hint&quot;&gt;(checkbox - zero or more)&lt;/span&gt;&lt;/label&gt;
+&lt;div class=&quot;inline&quot;&gt;
+&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;hobby&quot; value=&quot;Sports&quot; checked&gt; Sports&lt;/label&gt;
+&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;hobby&quot; value=&quot;Music&quot;&gt; Music&lt;/label&gt;
+&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;hobby&quot; value=&quot;Coding&quot; checked&gt; Coding&lt;/label&gt;
+&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;hobby&quot; value=&quot;Reading&quot;&gt; Reading&lt;/label&gt;
+&lt;/div&gt;
+
+&lt;label&gt;Address &lt;span class=&quot;hint&quot;&gt;(textarea - many lines)&lt;/span&gt;&lt;/label&gt;
+&lt;textarea name=&quot;address&quot;&gt;WIT campus, Solapur&lt;/textarea&gt;
+
+&lt;div class=&quot;row&quot;&gt;
+&lt;label class=&quot;inline&quot;&gt;&lt;input type=&quot;checkbox&quot; name=&quot;agree&quot; value=&quot;yes&quot; checked&gt;
+ I agree to the college rules &lt;span class=&quot;hint&quot;&gt;(checkbox)&lt;/span&gt;&lt;/label&gt;
+&lt;/div&gt;
+
+&lt;input type=&quot;submit&quot; value=&quot;Register (POST)&quot;&gt;
+&lt;input type=&quot;reset&quot; value=&quot;Clear&quot;&gt;
+&lt;/form&gt;
+
+&lt;p&gt;&lt;a href=&quot;topics/02-http/theory.html?v=1129&quot;&gt;Back to Theory (POST)&lt;/a&gt; |
+&lt;a href=&quot;index.html#ch-http&quot;&gt;Index&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+<h3>Syntax</h3>
+<pre class="syntax">@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    String name = request.getParameter(&quot;name&quot;);
+    String roll = request.getParameter(&quot;roll&quot;);
+    String city = request.getParameter(&quot;city&quot;);
+    // Save the student. Form fields came in the request body, not in the URL.
+}</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>@Override</code></td><td>You replace HttpServlet.doPost.</td></tr><tr><td><code>protected void doPost(...)</code></td><td>Tomcat calls this only when the HTTP method is POST.</td></tr><tr><td><code>getParameter(&quot;name&quot;)</code></td><td>Reads the form box named name. Same API as GET, but the data is in the body.</td></tr><tr><td><code>request body</code></td><td>POST fields do not appear as ?name=Rahul in the address bar.</td></tr><tr><td><code>getMethod()</code></td><td>Returns POST on the result page.</td></tr></table>
+<table class='proto'><tr><th colspan='2'><code>protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException</code></th></tr><tr><td><b>Meaning</b></td><td>Runs when the browser submits a form with method=post. Use it to save / register / login.</td></tr><tr><td><b>Parameters</b></td><td>HttpServletRequest request, HttpServletResponse response</td></tr><tr><td><b>Returns</b></td><td>void</td></tr><tr><td><b>Detail</b></td><td>Lab: register student (name, roll, city). Data is in the body.</td></tr></table>
+</div>
+</div>
+
+<div class="section">
+<div class="card">
+<h2>3. PUT — update an existing record (Java: doPut)</h2>
+
+<p><b>Simple meaning:</b> PUT means <b>please replace this resource with the new data</b>.
+The record must already exist. In the lab, PUT changes the <b>city</b> of the saved student.</p>
+<p><b>How it works:</b> PUT is idempotent: sending the same update twice should leave the same final city.
+It is used in REST APIs. A normal HTML <code>&lt;form&gt;</code> <b>cannot</b> send PUT
+(browsers only submit GET or POST). This lab uses a button that calls JavaScript <code>fetch(..., {method:'PUT'})</code>.</p>
+<p><b>Lab example:</b> First register with POST. Then type the same roll and a new city (example Pune) and click
+<b>Update city (PUT)</b>. The name and roll stay. Only the city is replaced. If the roll does not match, PUT refuses.</p>
+<p><b>Choose PUT when</b> you update / replace a record that already exists (REST update).</p>
+<p><b>Do not choose PUT when</b> you create the first record (that is POST), or when you only have a normal HTML form
+without JavaScript / Postman.</p>
+
+<h3>Syntax</h3>
+<pre class="syntax">@Override
+protected void doPut(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    String roll = request.getParameter(&quot;roll&quot;);
+    String city = request.getParameter(&quot;city&quot;);
+    // If roll matches the saved student, replace the city. Do not insert a new student.
+}</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>protected void doPut(...)</code></td><td>Tomcat calls this only for HTTP PUT.</td></tr><tr><td><code>getParameter(&quot;roll&quot;) / getParameter(&quot;city&quot;)</code></td><td>In this lab the Execute page sends them on the URL of the fetch call.</td></tr><tr><td><code>Replace, do not insert</code></td><td>PUT updates an existing student. Empty office → tell the user to POST first.</td></tr><tr><td><code>HTML form cannot send PUT</code></td><td>Use fetch, curl or Postman in the lab.</td></tr></table>
+<table class='proto'><tr><th colspan='2'><code>protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException</code></th></tr><tr><td><b>Meaning</b></td><td>Runs for PUT. Use it to replace a field / resource that already exists.</td></tr><tr><td><b>Parameters</b></td><td>HttpServletRequest request, HttpServletResponse response</td></tr><tr><td><b>Returns</b></td><td>void</td></tr><tr><td><b>Detail</b></td><td>Lab: update city of the saved roll. HTML forms do not send PUT.</td></tr></table>
+</div>
+</div>
+
+<div class="section">
+<div class="card">
+<h2>4. DELETE — remove the record (Java: doDelete)</h2>
+
+<p><b>Simple meaning:</b> DELETE means <b>please remove this resource</b>.
+After a successful DELETE, GET search for that roll should not find the student.</p>
+<p><b>How it works:</b> Like PUT, a normal HTML form cannot send DELETE. The Execute page uses
+<code>fetch(..., {method:'DELETE'})</code> with the roll number.</p>
+<p><b>Lab example:</b> Type roll <code>101</code> and click <b>Remove student (DELETE)</b>.
+The saved record is cleared. Search GET for 101 then says not found. Register with POST if you need the student again.</p>
+<p><b>Choose DELETE when</b> you remove a resource (REST delete).</p>
+<p><b>Do not choose DELETE</b> from a plain college HTML form. If the browser can only submit a form, teachers often
+use POST with a hidden field such as <code>action=delete</code>. In this lab we send a real DELETE so you see <code>doDelete</code>.</p>
+
+<h3>Syntax</h3>
+<pre class="syntax">@Override
+protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    String roll = request.getParameter(&quot;roll&quot;);
+    // If roll matches, remove the saved student from memory.
+}</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>protected void doDelete(...)</code></td><td>Tomcat calls this only for HTTP DELETE.</td></tr><tr><td><code>getParameter(&quot;roll&quot;)</code></td><td>Which student to remove.</td></tr><tr><td><code>After DELETE</code></td><td>GET search for that roll must fail until someone registers again with POST.</td></tr><tr><td><code>HTML form cannot send DELETE</code></td><td>Lab uses fetch. Production college forms sometimes fake delete with POST.</td></tr></table>
+<table class='proto'><tr><th colspan='2'><code>protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException</code></th></tr><tr><td><b>Meaning</b></td><td>Runs for DELETE. Use it to remove a resource.</td></tr><tr><td><b>Parameters</b></td><td>HttpServletRequest request, HttpServletResponse response</td></tr><tr><td><b>Returns</b></td><td>void</td></tr><tr><td><b>Detail</b></td><td>Lab: remove the saved student by roll. Test with fetch / Postman.</td></tr></table>
+</div>
+</div>
+
+<div class="section">
+<div class="card">
+<h2>5. OPTIONS — ask which methods are allowed (Java: doOptions)</h2>
+
+<p><b>Simple meaning (remember this):</b> OPTIONS is <b>not a student job</b>.
+It is only a question: <b>&quot;On this URL, which HTTP methods are allowed?&quot;</b>
+The server answers with a list of verbs. It does <b>not</b> search a roll, register a name, change a city, or delete a record.</p>
+
+<div class="why"><b>College-office picture:</b> You walk to the student office counter and ask:
+<i>&quot;What can I do at this window?&quot;</i>
+The clerk does not open Rahul's file. The clerk only points to the notice board:
+<b>Search (GET), Register (POST), Update city (PUT), Remove (DELETE), Ask this list (OPTIONS), Debug (TRACE).</b>
+That notice board is the HTTP header named <code>Allow</code>.
+OPTIONS = reading the notice board. GET = opening one student's file.</div>
+
+<p><b>How it works, step by step:</b></p>
+<ol class="steps-n">
+<li>The browser (or Postman) sends HTTP method <b>OPTIONS</b> to the same URL <code>/httpmethods</code>.</li>
+<li>Tomcat sees OPTIONS and calls <code>doOptions</code> (not <code>doGet</code>).</li>
+<li>Your Java code sets a response header:
+<code>Allow: GET, POST, PUT, DELETE, TRACE, OPTIONS</code>.</li>
+<li>The important answer is in that <b>header</b>. The HTML page is only for the student to read in the lab.</li>
+<li>The saved student (Rahul / 101 / Solapur) is <b>not</b> changed.</li>
+</ol>
+
+<p><b>What is the Allow header?</b>
+HTTP has two parts: <b>headers</b> (small labels) and <b>body</b> (the HTML page).
+<code>Allow</code> is a header. It is a comma-separated list of method names.
+A program (browser, Postman, another website) can read <code>Allow</code> without looking at the HTML.
+In Chrome: Execute the OPTIONS button &rarr; press F12 &rarr; <b>Network</b> &rarr; click the <code>httpmethods</code> row
+&rarr; <b>Headers</b> &rarr; Response Headers &rarr; find <code>Allow</code>.</p>
+
+<p><b>Why can't a normal HTML form send OPTIONS?</b>
+A form has only <code>method=&quot;get&quot;</code> or <code>method=&quot;post&quot;</code>.
+There is no <code>method=&quot;options&quot;</code> in HTML.
+So this lab uses a button and JavaScript <code>fetch('/httpmethods', {method:'OPTIONS'})</code>.
+You can also test with Postman: method = OPTIONS, URL = <code>http://localhost:8080/basic-servlets/httpmethods</code>.</p>
+
+<p><b>CORS in one line (viva extra, not the main lab job):</b>
+If website A wants to call a servlet on website B, the browser first sends OPTIONS
+(&quot;preflight&quot;) to ask: is this call allowed?
+That is another use of OPTIONS. In <b>this lab</b> we only show the <code>Allow</code> list for the student office URL.
+You do not need CORS code to pass the practical.</p>
+
+<p><b>Lab example:</b> On Execute click <b>Ask allowed methods (OPTIONS)</b>.
+You should see a teaching page plus <code>request.getMethod()</code> = OPTIONS.
+Then open Network tab and copy the <code>Allow</code> value into your journal.
+Compare: GET search still shows Rahul; OPTIONS did not search.</p>
+
+<p><b>Choose OPTIONS when</b></p>
+<ul>
+<li>a client / API tool must discover which methods this URL supports;</li>
+<li>you are teaching <code>doOptions</code> and the <code>Allow</code> header;</li>
+<li>(later in industry) a browser sends a CORS preflight.</li>
+</ul>
+<p><b>Do not choose OPTIONS when</b></p>
+<ul>
+<li>you want to open or bookmark a page &rarr; use <b>GET</b>;</li>
+<li>you want to register / login &rarr; use <b>POST</b>;</li>
+<li>you want to change city or remove the student &rarr; use <b>PUT</b> / <b>DELETE</b>.</li>
+</ul>
+<table>
+<tr><th></th><th>GET</th><th>OPTIONS</th></tr>
+<tr><td>Question the client is asking</td><td>Show me student 101</td><td>What am I allowed to do on this URL?</td></tr>
+<tr><td>Answer lives in</td><td>HTML body (name, roll, city)</td><td>Header <code>Allow</code> (list of methods)</td></tr>
+<tr><td>Changes saved student?</td><td>No</td><td>No</td></tr>
+<tr><td>HTML form can send it?</td><td>Yes</td><td>No (use fetch / Postman)</td></tr>
+</table>
+
+<h3>Syntax</h3>
+<pre class="syntax">@Override
+protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    response.setHeader(&quot;Allow&quot;, &quot;GET, POST, PUT, DELETE, TRACE, OPTIONS&quot;);
+    // This header IS the OPTIONS answer. Do not search or save a student here.
+}</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>protected void doOptions(...)</code></td><td>Tomcat calls this only when the HTTP method is OPTIONS.</td></tr><tr><td><code>setHeader(&quot;Allow&quot;, &quot;GET, POST, PUT, DELETE, TRACE, OPTIONS&quot;)</code></td><td>Writes the notice-board list. Programs read this header. This is the real OPTIONS result.</td></tr><tr><td><code>Allow</code></td><td>Response header name. Value = comma-separated HTTP methods this URL supports.</td></tr><tr><td><code>No getParameter for name/roll/city</code></td><td>OPTIONS is not a form. There is nothing to save.</td></tr><tr><td><code>HTML form cannot send OPTIONS</code></td><td>Lab button uses fetch({method:'OPTIONS'}). Postman method = OPTIONS also works.</td></tr></table>
+<table class='proto'><tr><th colspan='2'><code>protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException</code></th></tr><tr><td><b>Meaning</b></td><td>Runs for OPTIONS. Answer the question: which HTTP methods does this URL allow?</td></tr><tr><td><b>Parameters</b></td><td>HttpServletRequest request, HttpServletResponse response</td></tr><tr><td><b>Returns</b></td><td>void</td></tr><tr><td><b>Detail</b></td><td>Set response header Allow. Do not change student data. HTML forms cannot send OPTIONS.</td></tr></table>
+</div>
+</div>
+
+<div class="section">
+<div class="card">
+<h2>6. TRACE — debug echo (Java: doTrace)</h2>
+
+<p><b>Simple meaning (remember this):</b> TRACE means <b>&quot;send my request back to me, exactly as you received it.&quot;</b>
+It is a <b>debug mirror</b>. The server echoes (repeats) the request.
+It is <b>not</b> search, not register, not update, not delete, and not the Allow list.</p>
+
+<div class="why"><b>Easy picture:</b> You shout a sentence into a valley. The echo comes back so you can hear
+what you shouted. TRACE is that echo for HTTP.
+You are not asking for Rahul's city. You are asking: <i>&quot;Tomcat, what request did you actually receive from me?&quot;</i>
+A teacher uses this to check if a proxy or firewall changed headers on the way.</div>
+
+<p><b>How it is supposed to work:</b></p>
+<ol class="steps-n">
+<li>The client sends HTTP method <b>TRACE</b> to <code>/httpmethods</code> (again: no HTML form can do this).</li>
+<li>If the server allows TRACE, it copies the incoming request (method, URL, headers) into the response body.</li>
+<li>The client reads that copy. That is the echo. No student record is read or written.</li>
+<li>In Java, Tomcat would call <code>doTrace</code> <b>only if TRACE is enabled</b>.</li>
+</ol>
+
+<p><b>Why Execute TRACE often fails (this is the important lab fact):</b>
+TRACE can be misused. If a browser is tricked into sending TRACE, the echo might include cookies or
+Authorization headers. Attackers called this <b>Cross-Site Tracing (XST)</b>.
+Because of that, <b>Apache Tomcat turns TRACE OFF by default</b> (Tomcat 11 included).
+So when the student clicks <b>Debug TRACE</b>, the browser may show an error, HTTP <b>405 Method Not Allowed</b>,
+or a blocked connection. <b>That is not a bug in your servlet.</b>
+Write in the journal: <i>Tomcat security blocked TRACE. Expected.</i>
+Do <b>not</b> enable TRACE on a college production server just to make the button look successful.</p>
+
+<p><b>Lab example:</b> Click <b>Debug TRACE</b> on Execute.</p>
+<ul>
+<li><b>If it runs:</b> the page shows a teaching line and <code>getMethod()</code> = TRACE. Still no change to Rahul.</li>
+<li><b>If it fails:</b> copy the error. That is the correct Tomcat default. You still understand TRACE from this theory.</li>
+</ul>
+
+<p><b>Choose TRACE only when</b></p>
+<ul>
+<li>the syllabus asks you to name all HTTP methods including TRACE;</li>
+<li>a teacher wants a demo that the method exists in <code>HttpServlet</code>.</li>
+</ul>
+<p><b>Do not choose TRACE when</b></p>
+<ul>
+<li>you need student data &rarr; GET / POST / PUT / DELETE;</li>
+<li>you need the list of allowed methods &rarr; that is <b>OPTIONS</b>, not TRACE;</li>
+<li>you are deploying a real website. Leave TRACE disabled.</li>
+</ul>
+<table>
+<tr><th></th><th>OPTIONS</th><th>TRACE</th></tr>
+<tr><td>One-line job</td><td>Ask: what methods are allowed?</td><td>Ask: echo my request back</td></tr>
+<tr><td>Useful answer</td><td><code>Allow</code> header</td><td>Copy of the request (debug)</td></tr>
+<tr><td>Changes student?</td><td>No</td><td>No</td></tr>
+<tr><td>Daily college website</td><td>Rare (APIs / CORS)</td><td>Almost never</td></tr>
+<tr><td>Tomcat 11 lab</td><td>Works (doOptions + Allow)</td><td>Often <b>blocked</b> (security)</td></tr>
+<tr><td>HTML form</td><td>Cannot send</td><td>Cannot send</td></tr>
+</table>
+<p><b>Exam / viva trap:</b> Students mix OPTIONS and TRACE.
+OPTIONS = <b>menu of methods</b>. TRACE = <b>echo / debug</b>, often switched off.</p>
+
+<h3>Syntax</h3>
+<pre class="syntax">@Override
+protected void doTrace(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    // Teaching only. Tomcat 11 often blocks TRACE before this method runs.
+    // Failure on Execute = container security, not a Java typing error.
+}</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>protected void doTrace(...)</code></td><td>Tomcat calls this for HTTP TRACE — only if TRACE is not blocked by the server.</td></tr><tr><td><code>Echo / mirror</code></td><td>The original idea: return the request text so a developer can see headers and the URL path.</td></tr><tr><td><code>Teaching only</code></td><td>Do not search, save, update, or delete a student in doTrace.</td></tr><tr><td><code>Tomcat may block TRACE</code></td><td>405 or fetch error on Execute is normal. Record: TRACE disabled for security (XST).</td></tr><tr><td><code>Do not enable on production</code></td><td>Leaving TRACE off is the correct college-server setting.</td></tr></table>
+<table class='proto'><tr><th colspan='2'><code>protected void doTrace(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException</code></th></tr><tr><td><b>Meaning</b></td><td>Runs for TRACE if the container allows it. Debug echo only — not a student-office operation.</td></tr><tr><td><b>Parameters</b></td><td>HttpServletRequest request, HttpServletResponse response</td></tr><tr><td><b>Returns</b></td><td>void</td></tr><tr><td><b>Detail</b></td><td>Often blocked by Tomcat 11. That is expected. Never use TRACE on a live site.</td></tr></table>
+</div>
+</div>
+
+<div class="section">
+<h2>Difference table (all six methods together)</h2>
+<p>Read each method section above first. This table is only a last-page comparison.</p>
+<table>
+<tr>
+<th>HTTP method</th>
+<th>Java method</th>
+<th>Job in this lab</th>
+<th>Where form data goes</th>
+<th>Can a normal HTML form send it?</th>
+<th>Changes the saved student?</th>
+</tr>
+<tr>
+<td><b>GET</b></td>
+<td><code>doGet</code></td>
+<td>Search / view by roll</td>
+<td>In the URL: <code>?roll=101</code></td>
+<td>Yes (<code>method="get"</code> or a link)</td>
+<td>No (read only)</td>
+</tr>
+<tr>
+<td><b>POST</b></td>
+<td><code>doPost</code></td>
+<td>Register (save name, roll, city)</td>
+<td>In the request body (not in the URL)</td>
+<td>Yes (<code>method="post"</code>)</td>
+<td>Yes (creates / overwrites the record)</td>
+</tr>
+<tr>
+<td><b>PUT</b></td>
+<td><code>doPut</code></td>
+<td>Update city of an existing roll</td>
+<td>With the request (lab uses fetch query string)</td>
+<td>No (use fetch / Postman)</td>
+<td>Yes (replaces city only)</td>
+</tr>
+<tr>
+<td><b>DELETE</b></td>
+<td><code>doDelete</code></td>
+<td>Remove the saved student</td>
+<td>Roll sent with the request</td>
+<td>No (use fetch / Postman)</td>
+<td>Yes (record is removed)</td>
+</tr>
+<tr>
+<td><b>OPTIONS</b></td>
+<td><code>doOptions</code></td>
+<td>Ask: which methods are allowed? Answer = <code>Allow</code> header (notice board). Does not open a student file.</td>
+<td>No student fields</td>
+<td>No (fetch / Postman)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><b>TRACE</b></td>
+<td><code>doTrace</code></td>
+<td>Ask: echo my request back (debug mirror). Tomcat 11 often blocks it (XST security). Not a student job.</td>
+<td>No student fields</td>
+<td>No (fetch / Postman)</td>
+<td>No</td>
+</tr>
+</table>
+<div class="eg"><b>Exam / viva (short):</b> GET = read, data in URL.
+POST = submit form, data in body.
+PUT = update existing.
+DELETE = remove.
+OPTIONS = menu of allowed methods (<code>Allow</code> header). Not search.
+TRACE = echo/debug; Tomcat may block it. Not OPTIONS.
+HTML forms = GET and POST only. OPTIONS and TRACE need fetch or Postman.</div>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>One servlet can handle many HTTP verbs. Each verb has one Java method.</p>
+<article class="fn">
+<h3>1. Function: <code>doGet</code></h3>
+<p><b>Simple meaning:</b> Search / read. Data may sit in the URL as ?roll=101.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Hall-ticket lookup, open a page, bookmarkable search.</td></tr>
+<tr><td>Lab example</td><td>GET roll 101 finds Rahul if the record exists.</td></tr>
+<tr><td>Common mistake</td><td>Using GET for a password — the password appears in history.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>doPost</code></h3>
+<p><b>Simple meaning:</b> Save / submit. Data sits in the request body. Address bar stays /httpmethods.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Register, login, exam form, any secret field.</td></tr>
+<tr><td>Lab example</td><td>POST name Rahul, roll 101, city Solapur.</td></tr>
+<tr><td>Common mistake</td><td>HTML form method must be post, or doPost never runs.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>doPut</code></h3>
+<p><b>Simple meaning:</b> Update an existing record (this lab: city only).</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doPut(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Change city after a student moves. HTML forms cannot send PUT — use fetch or Postman.</td></tr>
+<tr><td>Lab example</td><td>PUT city Pune for roll 101.</td></tr>
+<tr><td>Common mistake</td><td>Expecting a normal form submit to call doPut — it will not.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>doDelete</code></h3>
+<p><b>Simple meaning:</b> Remove the record so a later GET does not find it.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Dropped student / cancel registration.</td></tr>
+<tr><td>Lab example</td><td>DELETE roll 101, then GET shows not found.</td></tr>
+<tr><td>Common mistake</td><td>Same as PUT: a plain HTML form cannot send DELETE.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>5. Function: <code>request.getParameter</code></h3>
+<p><b>Simple meaning:</b> Reads one field. Works for GET (query string) and POST (body).</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String roll = request.getParameter("roll");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name — must match HTML name="roll" exactly (case sensitive).</td></tr>
+<tr><td>Returns</td><td>String, or null if the field is missing.</td></tr>
+<tr><td>When to use (USE)</td><td>Every form and every search box.</td></tr>
+<tr><td>Lab example</td><td>Hall-ticket search uses getParameter("roll").</td></tr>
+<tr><td>Common mistake</td><td>name="Roll" in HTML and getParameter("roll") in Java → null.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>6. Function: <code>request.getMethod</code></h3>
+<p><b>Simple meaning:</b> Returns the live verb: GET, POST, PUT, DELETE, OPTIONS, TRACE.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String m = request.getMethod();</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>String</td></tr>
+<tr><td>When to use (USE)</td><td>Print proof on the result page for the journal.</td></tr>
+<tr><td>Lab example</td><td>After POST the page shows request.getMethod() = POST.</td></tr>
+<tr><td>Common mistake</td><td>Do not hard-code the word GET in the output — read it from the request.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>Type <code>jakarta.servlet</code> in every program. Extra imports (Cookie, HttpSession, RequestDispatcher) are added in later chapters when needed.</p>
+</div>
+
+<div class="why"><b>Matched program:</b> class <code>HttpMethodsServlet</code>, URL <code>/httpmethods</code>.
+This is one student-office servlet. Each HTTP method does a different job on the same saved student
+(search, register, update city, remove). Open Index &rarr; Execute and fill the forms.</div>
+
+<div class="section"><h2>F) Complete Java program — every line explained</h2>
+<p>File: <code>HttpMethodsServlet.java</code>. One in-memory student (static fields). Restarting Tomcat resets the record.</p>
+<pre class="syntax">import java.io.IOException;                      // I/O exceptions from the writer
+import java.io.PrintWriter;                      // Prints HTML to the browser
+import jakarta.servlet.ServletException;         // Required on doXxx signatures
+import jakarta.servlet.http.HttpServlet;         // Base class with doGet, doPost, ...
+import jakarta.servlet.http.HttpServletRequest;  // Incoming method + parameters
+import jakarta.servlet.http.HttpServletResponse; // Outgoing HTML + headers
+
+public class HttpMethodsServlet extends HttpServlet {  // One office window, many verbs
+
+    static String name = "Rahul";    // Demo student name kept in server memory
+    static String roll = "101";      // Demo roll number
+    static String city = "Solapur";  // Demo city
+    static boolean exists = true;    // false after DELETE until a new POST
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {           // Tomcat calls this on HTTP GET
+        String r = request.getParameter("roll");             // Read ?roll=101 from the URL
+        String msg;                                          // Message we will print
+        if (r == null || r.isEmpty()) {                      // No roll typed: just a view
+            msg = "GET view";
+        } else if (exists &amp;&amp; roll.equals(r)) {               // Roll matches the saved file
+            msg = "GET found roll " + r;
+        } else {                                             // Wrong roll or already deleted
+            msg = "GET roll not found: " + r;
+        }
+        show(request, response, msg);                        // Common HTML printer
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {           // HTTP POST = register / save
+        name = request.getParameter("name");                 // Body field name (not in URL)
+        roll = request.getParameter("roll");                 // Body field roll
+        city = request.getParameter("city");                 // Body field city
+        exists = true;                                       // Record is alive again
+        show(request, response, "POST saved (body, not URL)");
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {           // HTTP PUT = update city
+        String r = request.getParameter("roll");             // Which student
+        String c = request.getParameter("city");             // New city
+        if (exists &amp;&amp; roll.equals(r)) {                      // Update only if roll matches
+            city = c;
+            show(request, response, "PUT updated city to " + city);
+        } else {
+            show(request, response, "PUT no matching roll");
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {           // HTTP DELETE = remove record
+        String r = request.getParameter("roll");
+        if (exists &amp;&amp; roll.equals(r)) {
+            exists = false;                                  // Mark deleted (memory only)
+            show(request, response, "DELETE removed roll " + r);
+        } else {
+            show(request, response, "DELETE no matching roll");
+        }
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {           // HTTP OPTIONS = menu of verbs
+        response.setHeader("Allow", "GET, POST, PUT, DELETE, TRACE, OPTIONS"); // Allow header
+        show(request, response, "OPTIONS Allow header set");
+    }
+
+    @Override
+    protected void doTrace(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {           // HTTP TRACE = debug echo
+        show(request, response, "TRACE debug (Tomcat may block this)");
+    }
+
+    private void show(HttpServletRequest request, HttpServletResponse response, String msg)
+            throws IOException {                             // Shared HTML for every verb
+        response.setContentType("text/html");                // Tell the browser: HTML body
+        PrintWriter out = response.getWriter();              // Character writer
+        out.println("&lt;h2&gt;request.getMethod() = " + request.getMethod() + "&lt;/h2&gt;"); // Live verb
+        out.println("&lt;p&gt;" + msg + "&lt;/p&gt;");                   // Job-specific message
+        if (exists) {
+            out.println("&lt;p&gt;Saved: " + name + " / " + roll + " / " + city + "&lt;/p&gt;");
+        } else {
+            out.println("&lt;p&gt;Saved: none&lt;/p&gt;");
+        }
+        out.println("&lt;p&gt;&lt;a href='httpmethods.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+<p><a class="exec-xl" href="../../httpmethods.html">Execute Online</a>
+<a class="btn source" href="../../source/HttpMethodsServlet.html">Source</a>
+<a class="btn ghost" href="../../practicals.html#ica-1">ICA Practical 01</a></p>
+</div>
+<div class="section">
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;HttpMethodsServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;HttpMethodsServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;HttpMethodsServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/httpmethods&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p>This is the complete <code>WEB-INF/web.xml</code> for this example (header + this program's <code>&lt;servlet&gt;</code> + <code>&lt;servlet-mapping&gt;</code>). Open Source for the same complete file.</p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-1">ICA Practical 01</a></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Source - HttpMethodsServlet.java + HTML + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+.prob { background:#fff8e6; border:1px solid #e6d59a; padding:14px; margin:12px 0; max-width:980px; }
+.why { background:#f0f7ff; border-left:4px solid #336699; padding:10px 14px; margin:10px 0; max-width:980px; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a.btn.ghost { background:#fff; color:#336699; }
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+.legend .attr { color:#0000ff; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#0000ff; }
+.js { color:#333; }
+.synexp { width:100%; max-width:980px; border-collapse:collapse; background:#fff; margin:12px 0 18px; }
+.synexp th, .synexp td { border:1px solid #ccc; padding:10px 12px; text-align:left; vertical-align:top; }
+.synexp th { background:#eef8ee; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<p class="icatag">ICA PRACTICAL 01 · SHOPEASY (like Amazon)</p>
+<div class="rel"><b>One HTML page:</b> <code>httpmethods.html</code> — do not add a second HTML file.
+Java: <a href="HttpMethodsServlet.html">HttpMethodsServlet</a> · <a href="GetPostDiffServlet.html">GetPostDiffServlet</a>.
+<a href="../practicals.html#ica-1">ICA journal</a>
+<a class="btn" href="../httpmethods.html">Run ShopEasy</a></div>
+<div class="realex"><b>Real examples:</b> GET = Amazon Track, Flipkart search, YouTube search, IRCTC PNR.
+POST = Amazon Checkout, Gmail Send, Instagram comment (never put a password in GET).
+PUT = Edit delivery city. DELETE = Cancel order / empty cart.</div>
+
+<div class="ps">
+<h2>Problem statement (ICA 1 · ShopEasy)</h2>
+<p><b>Title:</b> ShopEasy — track, place, edit and cancel an order (GET, POST, PUT, DELETE)</p>
+<p>Amazon-style desk on <b>one HTML page</b>. HTTP methods do different jobs on the same order (name, roll, city). Java may be two classes; do not write a second HTML file.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>GET tracks order 101 (like Amazon Track). Address bar may show <code>?roll=101</code>.</li>
+<li>POST places the order (Checkout). Address bar stays <code>/httpmethods</code> — data is not in the URL.</li>
+<li>PUT changes only the delivery city. DELETE cancels the order. OPTIONS lists Allow.</li>
+<li>On the <b>same HTML</b>, YouTube search uses GET (<code>/getpostdiff?q=Java</code>) and a review uses POST.</li>
+</ol>
+<p><b>Sample output</b> (Tomcat: <code>http://localhost:8080/basic-servlets/httpmethods?roll=101</code>):</p>
+<pre class="sample-out">request.getMethod() = GET
+GET found roll 101
+Saved: Rahul / 101 / Solapur</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Same URL <code>/httpmethods</code>. Only the HTTP method changes. Orange box = what the browser shows.</p>
+<div class="pflow-lab">GET — track order (data in the URL)</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type order 101<br>click Track</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET<br><code>/httpmethods?roll=101</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Tomcat</b><span>web.xml → HttpMethodsServlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Java</b><span>doGet()</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>request.getMethod() = GET<br>GET found roll 101</span></div></div><div class="pflow-lab">POST — place order (body, URL stays clean)</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Fill name, roll, city<br>click Place order</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST<br><code>/httpmethods</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Tomcat</b><span>same servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Java</b><span>doPost() saves order</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>request.getMethod() = POST<br>POST saved (body, not URL)</span></div></div><div class="pflow-lab">PUT / DELETE</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Update city<br>or Cancel order</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>PUT or DELETE<br>same URL</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>doPut() / doDelete()</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>PUT updated city to Pune<br>or DELETE removed roll 101</span></div></div></div>
+<p>
+<a class="btn ghost" href="../topics/02-http/theory.html">Theory</a>
+<a class="btn" href="../httpmethods.html">Execute</a>
+<a class="btn source" href="HttpMethodsServlet.html">Source</a>
+<a class="btn ghost" href="../index.html#ch-http">Index</a>
+</p>
+<h1>Source: HttpMethodsServlet</h1>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="tag">&lt;form&gt;</span>
+    <span class="attr">method=</span>
+    <span class="str">"post"</span>
+    <span class="cmt">&lt;!-- comment --&gt;</span>
+  </div>
+</div>
+<h2>1. HTML — one ICA page (httpmethods.html) — ShopEasy</h2><div class="why"><b>Simple meaning:</b> Compact HTML a student can copy. GET/POST = form. PUT/DELETE = small script because a form cannot send those methods.</div><div class="why"><b>Is &lt;script&gt; required?</b> GET and POST: <b>No</b> (form is enough). PUT and DELETE: <b>Yes</b> (HTML form cannot send those methods).</div><table class="synexp"><tr><th>HTML / line</th><th>Simple meaning</th></tr><tr><td><code>&lt;form method=&quot;get&quot; action=&quot;httpmethods&quot;&gt;</code></td><td>Browser sends GET to URL /httpmethods. Tomcat runs doGet.</td></tr><tr><td><code>&lt;input name=&quot;roll&quot;&gt;</code></td><td>Java reads it with request.getParameter("roll"). GET puts it in the URL as ?roll=101.</td></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;httpmethods&quot;&gt;</code></td><td>Browser sends POST. Tomcat runs doPost. Fields go in the body, not in the URL.</td></tr><tr><td><code>name / roll / city</code></td><td>These three names must match the three getParameter calls in doPost.</td></tr><tr><td><code>fetch(..., {method:&#x27;PUT&#x27;})</code></td><td>Normal HTML form cannot send PUT. This small script sends PUT so doPut runs.</td></tr><tr><td><code>fetch(..., {method:&#x27;DELETE&#x27;})</code></td><td>Same idea for DELETE → doDelete.</td></tr></table><p>Copy this small page. <code>name=</code> must match <code>getParameter</code> in Java.</p><pre class="code">&lt;!DOCTYPE html&gt;
+&lt;<span class="tag">html</span>&gt;
+&lt;<span class="tag">head</span>&gt;
+&lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
+&lt;<span class="tag">title</span>&gt;ShopEasy&lt;/<span class="tag">title</span>&gt;
+&lt;/<span class="tag">head</span>&gt;
+&lt;<span class="tag">body</span>&gt;
+&lt;<span class="tag">h2</span>&gt;Track order (GET)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;get&quot;</span> <span class="attr">action</span>=<span class="str">&quot;httpmethods&quot;</span>&gt;
+  Order: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;roll&quot;</span> <span class="attr">value</span>=<span class="str">&quot;101&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Track (GET)&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;Place order (POST)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;httpmethods&quot;</span>&gt;
+  Name: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;name&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  Order: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;roll&quot;</span> <span class="attr">value</span>=<span class="str">&quot;101&quot;</span>&gt;
+  City: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;city&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Solapur&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Place order (POST)&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;PUT / DELETE (script needed)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">button</span> <span class="attr">onclick</span>=<span class="str">&quot;send(&#x27;PUT&#x27;)&quot;</span>&gt;Edit city (PUT)&lt;/<span class="tag">button</span>&gt;
+&lt;<span class="tag">button</span> <span class="attr">onclick</span>=<span class="str">&quot;send(&#x27;DELETE&#x27;)&quot;</span>&gt;Cancel (DELETE)&lt;/<span class="tag">button</span>&gt;
+&lt;<span class="tag">script</span>&gt;<span class="js">
+function send(m){
+  fetch(&#x27;httpmethods?roll=101&amp;city=Pune&#x27;,{method:m})
+    .then(r=&gt;r.text()).then(t=&gt;document.write(t));
+}
+</span>&lt;/<span class="tag">script</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;Search vs review — same HTML (GetPostDiffServlet)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;get&quot;</span> <span class="attr">action</span>=<span class="str">&quot;getpostdiff&quot;</span>&gt;
+  Product: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;q&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Java&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Search (GET)&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;getpostdiff&quot;</span>&gt;
+  Name: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;name&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  Review: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;message&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Fast delivery&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Review (POST)&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+&lt;/<span class="tag">body</span>&gt;
+&lt;/<span class="tag">html</span>&gt;</pre><h2>2. Java program — HttpMethodsServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">HttpMethodsServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="kw">static</span> <span class="cls">String</span> name = <span class="str">&quot;Rahul&quot;</span>;
+    <span class="kw">static</span> <span class="cls">String</span> roll = <span class="str">&quot;101&quot;</span>;
+    <span class="kw">static</span> <span class="cls">String</span> city = <span class="str">&quot;Solapur&quot;</span>;
+    <span class="kw">static</span> <span class="kw">boolean</span> exists = <span class="kw">true</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> r = request.<span class="mtd">getParameter</span>(<span class="str">&quot;roll&quot;</span>);
+        <span class="cls">String</span> msg;
+        <span class="kw">if</span> (r == <span class="kw">null</span> || r.<span class="mtd">isEmpty</span>()) {
+            msg = <span class="str">&quot;GET view&quot;</span>;
+        } <span class="kw">else</span> <span class="kw">if</span> (exists &amp;&amp; roll.<span class="mtd">equals</span>(r)) {
+            msg = <span class="str">&quot;GET found roll &quot;</span> + r;
+        } <span class="kw">else</span> {
+            msg = <span class="str">&quot;GET roll not found: &quot;</span> + r;
+        }
+        <span class="mtd">show</span>(request, response, msg);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        name = request.<span class="mtd">getParameter</span>(<span class="str">&quot;name&quot;</span>);
+        roll = request.<span class="mtd">getParameter</span>(<span class="str">&quot;roll&quot;</span>);
+        city = request.<span class="mtd">getParameter</span>(<span class="str">&quot;city&quot;</span>);
+        exists = <span class="kw">true</span>;
+        <span class="mtd">show</span>(request, response, <span class="str">&quot;POST saved (body, not URL)&quot;</span>);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPut</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> r = request.<span class="mtd">getParameter</span>(<span class="str">&quot;roll&quot;</span>);
+        <span class="cls">String</span> c = request.<span class="mtd">getParameter</span>(<span class="str">&quot;city&quot;</span>);
+        <span class="kw">if</span> (exists &amp;&amp; roll.<span class="mtd">equals</span>(r)) {
+            city = c;
+            <span class="mtd">show</span>(request, response, <span class="str">&quot;PUT updated city to &quot;</span> + city);
+        } <span class="kw">else</span> {
+            <span class="mtd">show</span>(request, response, <span class="str">&quot;PUT no matching roll&quot;</span>);
+        }
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doDelete</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> r = request.<span class="mtd">getParameter</span>(<span class="str">&quot;roll&quot;</span>);
+        <span class="kw">if</span> (exists &amp;&amp; roll.<span class="mtd">equals</span>(r)) {
+            exists = <span class="kw">false</span>;
+            <span class="mtd">show</span>(request, response, <span class="str">&quot;DELETE removed roll &quot;</span> + r);
+        } <span class="kw">else</span> {
+            <span class="mtd">show</span>(request, response, <span class="str">&quot;DELETE no matching roll&quot;</span>);
+        }
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doOptions</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        response.<span class="mtd">setHeader</span>(<span class="str">&quot;Allow&quot;</span>, <span class="str">&quot;GET, POST, PUT, DELETE, TRACE, OPTIONS&quot;</span>);
+        <span class="mtd">show</span>(request, response, <span class="str">&quot;OPTIONS Allow header set&quot;</span>);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doTrace</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">show</span>(request, response, <span class="str">&quot;TRACE debug (Tomcat may block this)&quot;</span>);
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> <span class="mtd">show</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response, <span class="cls">String</span> msg)
+            <span class="kw">throws</span> <span class="cls">IOException</span> {
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;request.getMethod() = &quot;</span> + request.<span class="mtd">getMethod</span>() + <span class="str">&quot;&lt;/h2&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&quot;</span> + msg + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+        <span class="kw">if</span> (exists) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Saved: &quot;</span> + name + <span class="str">&quot; / &quot;</span> + roll + <span class="str">&quot; / &quot;</span> + city + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Saved: none&lt;/p&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;httpmethods.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+    }
+}
+</pre>
+<p><a class="btn" href="../index.html#ch-http">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;HttpMethodsServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;HttpMethodsServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;HttpMethodsServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/httpmethods&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;GetPostDiffServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/getpostdiff&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

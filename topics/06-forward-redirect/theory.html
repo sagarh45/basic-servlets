@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>6. Forwarding and Redirection of Requests</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>6. Forwarding and Redirection of Requests</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-fwd">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>You sit at a restaurant table. The waiter carries your order slip to the kitchen <b>inside the same restaurant</b>. You never stand up. The table number does not change. That is <b>forward</b>.</p>
+<p>A food-delivery app then says “Pay with UPI” and opens PhonePe / Google Pay. You leave the restaurant screen. The address bar becomes the UPI page. That is <b>redirect</b>.</p>
+<p>Both lab paths still land on <code>TargetServlet</code>. Look at the address bar and at request attributes — that is how you prove which path ran.</p>
+<p><b>forward</b> is a server-side hand-off of the <b>same request</b>. The browser address bar stays <code>/forward</code>.
+Request attributes set by ForwardServlet are still visible in TargetServlet.</p>
+<p><b>sendRedirect</b> tells the browser to make a <b>new request</b>. Tomcat sends HTTP 302 + Location.
+The address bar changes to <code>/target</code>. Request attributes from the first servlet are lost.</p>
+<p><b>include</b> inserts another resource into the same response (same request). Wrong PIN on a payment screen: show the error and the same form again.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> <b>Forward</b> = waiter takes the slip to the kitchen; you stay at the same table (URL does not change). <b>Redirect</b> = the app sends you to PhonePe; you leave and the address changes. <b>Include</b> = wrong PIN: the same payment screen comes back with an error.</p>
+<h3>The story (restaurant + UPI)</h3>
+<p><b>1. Forward — kitchen in the same restaurant</b></p>
+<p>You order at Table 7. The waiter does not send you to another shop. She walks your slip to the kitchen. You still sit at Table 7. The kitchen writes “ready” on <b>the same slip</b> (request attributes still there).</p>
+<p>In the lab: browser calls <code>/forward</code>. <code>ForwardServlet</code> puts <code>message</code> and <code>source</code> in the request bag and calls <code>forward</code> to <code>TargetServlet</code>. The page you see is written by Target, but the address bar still shows <code>/forward</code>.</p>
+<p><b>2. Redirect — pay in another app</b></p>
+<p>Swiggy / Zomato is not a bank. It sends you to UPI. You leave the food app. PhonePe starts a <b>new</b> conversation. Notes written on the restaurant slip are not inside PhonePe.</p>
+<p>In the lab: <code>/redirect</code> sends HTTP 302 + Location. The browser itself requests <code>/target</code>. Address bar changes. Attributes from RedirectServlet are gone (unless you put them in the query string or in session).</p>
+<p><b>3. Include — same screen, extra stamp</b></p>
+<p>Wrong UPI PIN. The app does not open a new website. It prints “Wrong PIN” on the <b>same</b> payment form. That is include: same request, extra HTML pasted in, then the original servlet can continue.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Daily life</th><th>API</th><th>Address bar</th><th>Request attributes</th></tr>
+<tr><td>Waiter walks the slip to the kitchen</td><td><code>rd.forward(request, response)</code></td><td>Stays <code>/forward</code></td><td>Still there</td></tr>
+<tr><td>App sends you to PhonePe</td><td><code>response.sendRedirect("target")</code></td><td>Becomes <code>/target</code></td><td>Lost (new request)</td></tr>
+<tr><td>Wrong PIN: same form again</td><td><code>rd.include(request, response)</code></td><td>Does not change</td><td>Still there</td></tr>
+</table>
+<h3>What you will see</h3>
+<p>Run Forward: URL still <code>/forward</code>; Target can print the message. Run Redirect: URL becomes <code>/target</code>; that message is missing unless you passed it in the query. That pair of observations is the whole proof.</p>
+<h3>Easy mistake</h3>
+<p>Writing HTML and then calling forward (response already committed). Or calling <code>setAttribute</code> and then <code>sendRedirect</code> and expecting Target to read the attribute — the bag was left in the first shop.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Forward — waiter to kitchen</h3>
+<p>You stay at the table. The kitchen prints the bill, but you are still Table 7. Another servlet writes the HTML; the URL is still the first servlet.</p>
+<h3>Redirect — food app → UPI / “please login again”</h3>
+<p>Zomato → PhonePe. Instagram “session expired” → login page. Address bar changes. Refresh will not re-POST the first form (PRG pattern).</p>
+<h3>Include — same payment screen</h3>
+<p>Wrong PIN: error line plus the original form on the same response. Capstone uses include on failure.</p>
+</div>
+
+<div class="section"><h2>B) When to use forward vs redirect vs include</h2>
+<table>
+<tr><th>API</th><th>USE WHEN</th><th>DO NOT USE WHEN</th></tr>
+<tr><td>forward</td><td>Show a result page but keep the original URL; pass request attributes</td>
+<td>After a successful POST that must not be resubmitted on refresh (use redirect)</td></tr>
+<tr><td>sendRedirect</td><td>Change the address bar; PRG after POST; send the user to another URL</td>
+<td>You still need request attributes from the first servlet</td></tr>
+<tr><td>include</td><td>Reuse a header/footer or show the login form again after an error</td>
+<td>You want to stop this servlet and jump fully to another page (use forward)</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>C) Diagrams</h2>
+
+<div class="diag">
+<h3>Fig. 6.1 — forward (same request)</h3>
+<div class="flow"><div class="box">1. Browser /forward</div><div class="arrow">&rarr;</div><div class="box">2. ForwardServlet</div><div class="arrow">&rarr;</div><div class="box">3. dispatcher.forward</div><div class="arrow">&rarr;</div><div class="box">4. TargetServlet</div><div class="arrow">&rarr;</div><div class="box">5. URL still /forward</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> forward is internal. The client does not see a second round-trip.</div>
+<ol class="steps-n"><li>Execute Forward.</li><li>ForwardServlet sets request attributes (message, source).</li><li>It calls getRequestDispatcher('/target').forward(request, response).</li><li>TargetServlet writes HTML. Browser URL still shows /forward.</li></ol>
+
+<div class="diag">
+<h3>Fig. 6.2 — sendRedirect (new request)</h3>
+<div class="flow"><div class="box">1. Browser /redirect</div><div class="arrow">&rarr;</div><div class="box">2. RedirectServlet</div><div class="arrow">&rarr;</div><div class="box">3. 302 + Location</div><div class="arrow">&rarr;</div><div class="box">4. Browser GET /target</div><div class="arrow">&rarr;</div><div class="box">5. TargetServlet</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> Use redirect after POST (PRG) so refresh does not resubmit the form.</div>
+<ol class="steps-n"><li>RedirectServlet calls response.sendRedirect('target').</li><li>Tomcat sends HTTP 302 with Location.</li><li>The browser makes a NEW GET to /target.</li><li>Attributes from RedirectServlet are gone.</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<pre class="syntax">// FORWARD — same request, URL stays /forward
+request.setAttribute("message", "Hello from ForwardServlet");
+RequestDispatcher rd = request.getRequestDispatcher("/target");
+rd.forward(request, response);
+
+// REDIRECT — new request, URL becomes /target
+response.sendRedirect("target");
+
+// INCLUDE — same request, then this servlet can write more
+rd.include(request, response);
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>getRequestDispatcher(&quot;/target&quot;)</code></td><td>Path inside this web app. Leading / is from the app root.</td></tr><tr><td><code>forward(request, response)</code></td><td>Do not write the HTML body before forward.</td></tr><tr><td><code>sendRedirect(&quot;target&quot;)</code></td><td>Relative URL. Browser will request it next.</td></tr><tr><td><code>include</code></td><td>Output of the included page is inserted into this response.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>Forward keeps the same request and the same URL. Redirect tells the browser to open a new URL.</p>
+<article class="fn">
+<h3>1. Function: <code>getRequestDispatcher</code></h3>
+<p><b>Simple meaning:</b> Finds another servlet or HTML page inside this application.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">RequestDispatcher rd = request.getRequestDispatcher("target");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>path — servlet mapping or /file.html</td></tr>
+<tr><td>Returns</td><td>RequestDispatcher</td></tr>
+<tr><td>When to use (USE)</td><td>Next internal desk (forward) or paste another page (include).</td></tr>
+<tr><td>Lab example</td><td>ForwardServlet uses "target" so TargetServlet runs.</td></tr>
+<tr><td>Daily-life example</td><td>Kitchen is an internal path (“/kitchen”), not https://phonepe.com.</td></tr>
+<tr><td>Common mistake</td><td>Using a full http:// URL here — that is not an internal dispatcher.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>forward</code></h3>
+<p><b>Simple meaning:</b> Hands this same request to the next servlet. Address bar does not change. setAttribute still works.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">rd.forward(request, response);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>the same request and response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Login success → welcome page, URL still /forward or /CapstoneLogin.</td></tr>
+<tr><td>Lab example</td><td>Exam form POST to /forward; bar still shows /forward; Target prints PASS.</td></tr>
+<tr><td>Daily-life example</td><td>Waiter walks the order slip to the kitchen. You still sit at Table 7.</td></tr>
+<tr><td>Common mistake</td><td>Writing HTML, then calling forward — illegal state / committed response.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>include</code></h3>
+<p><b>Simple meaning:</b> Pastes another servlet/page into this response, then your code continues.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">rd.include(request, response);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request, response</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Wrong password: show error line AND the login form again.</td></tr>
+<tr><td>Lab example</td><td>CapstoneLogin include /capstone.html on failure.</td></tr>
+<tr><td>Daily-life example</td><td>Wrong UPI PIN: stamp “try again” on the same payment form.</td></tr>
+<tr><td>Common mistake</td><td>Thinking include changes the address bar — it does not.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>sendRedirect</code></h3>
+<p><b>Simple meaning:</b> Sends HTTP 302. Browser opens a new request. Address bar changes. Request attributes are lost.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">response.sendRedirect("target");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>A URL (relative or absolute)</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Payment gateway, “go to login”, Post-Redirect-Get after a POST.</td></tr>
+<tr><td>Lab example</td><td>POST to /redirect; bar becomes /target.</td></tr>
+<tr><td>Daily-life example</td><td>Food app sends you to PhonePe. Address bar becomes the UPI URL.</td></tr>
+<tr><td>Common mistake</td><td>Expecting getAttribute after redirect — it is gone unless you put it in the query or session.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>5. Function: <code>setAttribute / getAttribute</code></h3>
+<p><b>Simple meaning:</b> Carry a Java object on this request only. Survives forward. Does not survive redirect.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">request.setAttribute("message", "PASS");
+String msg = (String) request.getAttribute("message");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name and value</td></tr>
+<tr><td>Returns</td><td>void / Object</td></tr>
+<tr><td>When to use (USE)</td><td>Pass a flag from ForwardServlet to TargetServlet.</td></tr>
+<tr><td>Lab example</td><td>Target prints FORWARD when message=PASS.</td></tr>
+<tr><td>Daily-life example</td><td>Notes on the restaurant slip survive the walk to the kitchen. They do not survive a trip to PhonePe.</td></tr>
+<tr><td>Common mistake</td><td>Using setAttribute then sendRedirect — Target will not see it.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>This chapter needs <code>RequestDispatcher</code> for <code>forward</code> and <code>include</code>. Type <code>jakarta.servlet</code>, never <code>javax.servlet</code>.</p>
+</div>
+
+<div class="why"><b>Matched programs:</b> ForwardServlet (<code>/forward</code>),
+RedirectServlet (<code>/redirect</code>), TargetServlet (<code>/target</code>).</div>
+
+<div class="section"><h2>F) Complete Java programs — every line explained</h2>
+<pre class="syntax">import java.io.IOException;
+import jakarta.servlet.RequestDispatcher;        // Object that can forward or include
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class ForwardServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        go(request, response);
+    }
+
+    private void go(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String student = request.getParameter("student");           // Form / query name
+        request.setAttribute("message", "Result for " + student + ": PASS"); // Same-request bag
+        request.setAttribute("source", "ForwardServlet");           // Target can read this
+        RequestDispatcher rd = request.getRequestDispatcher("/target"); // App-root path
+        rd.forward(request, response);                              // URL stays /forward
+    }
+}</pre>
+<pre class="syntax">import java.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class RedirectServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        go(request, response);
+    }
+
+    private void go(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String student = request.getParameter("student");
+        if (student == null) { student = "Rahul"; }
+        response.sendRedirect("target?from=RedirectServlet&amp;student="
+                + java.net.URLEncoder.encode(student, "UTF-8")); // HTTP 302; new GET; URL changes
+    }
+}</pre>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class TargetServlet extends HttpServlet {
+
+    // Redirect makes a new GET, so doGet is required.
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException { show(request, response); }
+
+    // Forward from the POST form keeps POST, so doPost is required.
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException { show(request, response); }
+
+    private void show(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        String msg = (String) request.getAttribute("message"); // Present after FORWARD only
+        String from = request.getParameter("from");            // Present after REDIRECT query
+        out.println("&lt;h2&gt;TargetServlet&lt;/h2&gt;");
+        if (msg != null) {
+            out.println("&lt;p&gt;FORWARD: " + msg + " (URL still /forward)&lt;/p&gt;");
+        } else if (from != null) {
+            out.println("&lt;p&gt;REDIRECT from " + from + " student="
+                    + request.getParameter("student") + " (URL changed)&lt;/p&gt;");
+        } else {
+            out.println("&lt;p&gt;Direct access&lt;/p&gt;");
+        }
+        out.println("&lt;p&gt;&lt;a href='forward.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;ForwardServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/forward&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;RedirectServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/redirect&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;TargetServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/target&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../forward.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-3">ICA Practical 03</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-3">ICA Practical 03</a></div>
+</div>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                      

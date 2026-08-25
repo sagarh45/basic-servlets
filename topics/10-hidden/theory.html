@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>10. Session Management - Hidden Form Field</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>10. Session Management - Hidden Form Field</h1>
+<div class="nav">
+<a class="btn active" href="theory.html?v=1127">Theory</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+<a class="btn secondary" href="../../index.html#ch-hidden">Index</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only.
+See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>A two-page Amazon / IRCTC form asks name on page 1 and seats on page 2. The name is posted again as <code>&lt;input type="hidden"&gt;</code> so the server still has it. It is not in the address bar, but View Source shows it — so it is not a secret (unlike HttpSession). Login: <b>java</b> / <b>servlet</b>. Hidden field: <code>session_id=054</code>.</p>
+<p>A <b>hidden form field</b> is <code>&lt;input type="hidden"&gt;</code>. The user does not see it, but it is submitted with the form.</p>
+<p>This lab sends <code>session_id=054</code> with login and password. On success Valid <b>forwards</b> to Welcome.
+Welcome still sees the same request parameters (including the hidden field).</p>
+<p>Hidden fields are <b>not secret</b>. Anyone can View Source.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> A hidden field is a line folded inside a booking form. You do not see it on screen, but View Source shows it. It is <b>not</b> a secret and <b>not</b> a server session.</p>
+<h3>The story (two-page IRCTC / Amazon checkout)</h3>
+<p>Page 1 asks name. Page 2 asks seats. The site must not make you type the booking id again. The HTML of page 2 includes:</p>
+<p><code>&lt;input type="hidden" name="session_id" value="054"&gt;</code></p>
+<p>When you click Submit, login, password <b>and</b> that hidden id travel together (this lab uses POST). <code>Valid</code> checks <b>java</b> / <b>servlet</b>. On success it <b>forwards</b> to Welcome on the <b>same request</b>, so Welcome can still read <code>session_id</code> with <code>getParameter</code>.</p>
+<p>A friend who right-clicks View Source can still read <code>054</code>. So: hidden ≠ encrypted. Passwords belong in POST + HttpSession, not in a hidden field.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Booking form</th><th>This lab</th></tr>
+<tr><td>Folded PNR / token inside the paper</td><td><code>type="hidden" name="session_id"</code></td></tr>
+<tr><td>Visible login boxes</td><td><code>login</code> and <code>pwd</code></td></tr>
+<tr><td>Check, then kitchen same slip</td><td>Valid → <code>forward</code> Welcome</td></tr>
+<tr><td>Wrong password: same form again</td><td><code>include</code> the login page</td></tr>
+</table>
+<h3>What you will see</h3>
+<p>Welcome prints the user and <code>session_id=054</code>. The address bar does not show the hidden value (POST). View Source of the form still does.</p>
+<h3>Easy mistake</h3>
+<p>Writing “hidden field is secure like HttpSession.” Session data lives on the server. Hidden data lives in HTML anyone can open.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>Two-page IRCTC / Amazon checkout</h3>
+<p>Page 1: name. Page 2: seats. Hidden fields carry the booking id so you do not type it again. A friend who Views Source can still see it.</p>
+<h3>CSRF token on a real site</h3>
+<p>Production sites hide a random token in the form. Same HTML trick; still not encryption.</p>
+<h3>Why not for a password</h3>
+<p>Password in a hidden field is visible in View Source. Use HttpSession after POST login.</p>
+</div>
+
+<div class="section"><h2>B) When to use a hidden field</h2>
+<table>
+<tr><th>Use a hidden field when</th><th>Do not use it when</th></tr>
+<tr><td>You must carry one value to the next POST/forward (token, id)</td><td>You need a real login session across many pages (use HttpSession)</td></tr>
+<tr><td>The next page is reached by the same request (forward)</td><td>The value is a password (visible in HTML source)</td></tr>
+<tr><td>You are teaching this syllabus technique</td><td>You think hidden means encrypted</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+
+<div class="diag">
+<h3>Fig. 10.1 — Hidden field login</h3>
+<div class="flow"><div class="box">1. hidden_login.html</div><div class="arrow">&rarr;</div><div class="box">2. POST Valid</div><div class="arrow">&rarr;</div><div class="box">3. check login/pwd</div><div class="arrow">&rarr;</div><div class="box">4. forward Welcome</div><div class="arrow">&rarr;</div><div class="box">5. Print session_id + user</div></div>
+</div>
+<div class="diag-cap"><b>Description:</b> Hidden fields only carry data across one submit / forward. They are not a server session.</div>
+<ol class="steps-n"><li>The form has visible login/password and hidden session_id.</li><li>Valid.doPost reads all three with getParameter.</li><li>If login is java and password is servlet, it forwards to Welcome.</li><li>Welcome prints username and session_id.</li><li>If login fails, Valid includes the login page again.</li></ol>
+
+</div>
+
+<div class="section"><h2>D) Full syntax</h2>
+<pre class="syntax">&lt;form method="post" action="Valid"&gt;
+  Login: &lt;input name="login" value="java"&gt;
+  Password: &lt;input name="pwd" value="servlet"&gt;
+  &lt;input type="hidden" name="session_id" value="054"&gt;
+  &lt;input type="submit" value="Execute"&gt;
+&lt;/form&gt;
+</pre>
+<pre class="syntax">String login = request.getParameter("login");
+String pwd = request.getParameter("pwd");
+String sid = request.getParameter("session_id");
+if (login.equals("java") &amp;&amp; pwd.equals("servlet")) {
+  request.getRequestDispatcher("Welcome").forward(request, response);
+} else {
+  request.getRequestDispatcher("/hidden_login.html").include(request, response);
+}
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr><tr><td><code>type=&quot;hidden&quot;</code></td><td>Not shown on screen, still submitted.</td></tr><tr><td><code>getParameter(&#x27;session_id&#x27;)</code></td><td>Same API as a visible field.</td></tr><tr><td><code>forward Welcome</code></td><td>Same request, so Welcome can still read session_id.</td></tr><tr><td><code>include login page</code></td><td>Fail path. Show the form again.</td></tr></table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>A hidden field is not shown on screen, but View Source still shows it. It is not a secret.</p>
+<article class="fn">
+<h3>1. Function: <code>HTML hidden input</code></h3>
+<p><b>Simple meaning:</b> The browser will POST this name=value with the form. The student does not type it.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">&lt;input type="hidden" name="session_id" value="054"&gt;</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name and value</td></tr>
+<tr><td>Returns</td><td>Goes to the server as a normal parameter</td></tr>
+<tr><td>When to use (USE)</td><td>Multi-step exam form: carry the name to the next POST.</td></tr>
+<tr><td>Lab example</td><td>hidden_login.html posts session_id=054 with login and password.</td></tr>
+<tr><td>Common mistake</td><td>Thinking hidden means encrypted. Anyone can View Source.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>getParameter (hidden field)</code></h3>
+<p><b>Simple meaning:</b> Reads the hidden value exactly like a visible box.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">String sid = request.getParameter("session_id");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>name="session_id"</td></tr>
+<tr><td>Returns</td><td>String</td></tr>
+<tr><td>When to use (USE)</td><td>Welcome page prints both the login name and the hidden id.</td></tr>
+<tr><td>Lab example</td><td>After successful POST, Welcome shows session_id 054.</td></tr>
+<tr><td>Common mistake</td><td>Using GET for the login form — password would then appear in the URL.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>forward after Valid</code></h3>
+<p><b>Simple meaning:</b> Same request: Welcome can still read getParameter for login and session_id.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">request.getRequestDispatcher("Welcome").forward(request, response);</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>Welcome mapping</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Success path of the hidden-field login.</td></tr>
+<tr><td>Lab example</td><td>URL may still show /Valid while Welcome HTML is displayed.</td></tr>
+<tr><td>Common mistake</td><td>Redirect instead of forward — hidden POST fields would be gone.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;</pre>
+<p>Type <code>jakarta.servlet</code> in every program. Extra imports (Cookie, HttpSession, RequestDispatcher) are added in later chapters when needed.</p>
+</div>
+
+<div class="why"><b>Matched programs:</b> Valid (POST from hidden_login.html) and Welcome.
+Login <b>java</b> / password <b>servlet</b>. Hidden field <code>session_id=054</code>.</div>
+
+<div class="section"><h2>F) Complete HTML + Java + XML — every line explained</h2>
+<pre class="syntax">&lt;form method="post" action="Valid"&gt;                 &lt;!-- POST so password is not in the URL --&gt;
+  Login: &lt;input name="login" value="java"&gt;         &lt;!-- Visible field --&gt;
+  Password: &lt;input name="pwd" type="password" value="servlet"&gt;
+  &lt;input type="hidden" name="session_id" value="054"&gt; &lt;!-- Not on screen; still submitted --&gt;
+  &lt;input type="submit" value="Execute"&gt;
+&lt;/form&gt;</pre>
+<pre class="syntax">import java.io.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+
+public class Valid extends HttpServlet {
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        String login = request.getParameter("login");       // Visible field
+        String pwd = request.getParameter("pwd");           // Password (body)
+        if (login != null &amp;&amp; pwd != null
+                &amp;&amp; login.equals("java") &amp;&amp; pwd.equals("servlet")) {
+            RequestDispatcher rd = request.getRequestDispatcher("Welcome");
+            rd.forward(request, response);                  // Same request → Welcome sees hidden field
+        } else {
+            out.println("&lt;h1&gt;Incorrect LoginId/Password&lt;/h1&gt;");
+            request.getRequestDispatcher("/hidden_login.html").include(request, response); // Form again
+        }
+    }
+}</pre>
+<pre class="syntax">public class Welcome extends HttpServlet {
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {          // Forward keeps POST
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("&lt;h1&gt;id:" + request.getParameter("session_id") + "&lt;/h1&gt;"); // Hidden field
+        out.println("&lt;h3&gt;Welcome " + request.getParameter("login") + "&lt;/h3&gt;");
+        out.println("&lt;p&gt;&lt;a href='hidden_login.html'&gt;Back&lt;/a&gt;&lt;/p&gt;");
+    }
+}</pre>
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Valid&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Valid&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Valid&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Valid&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Welcome&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Welcome&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<p><a class="exec-xl" href="../../hidden_login.html">Execute Online</a>
+<a class="btn ghost" href="../../practicals.html#ica-4">ICA Practical 04</a></p>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html#ica-4">ICA Practical 04</a></div>
+</div>
+</body>
+</html>

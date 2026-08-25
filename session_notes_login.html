@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Execute - Session Management - HttpSession</title>
+<link rel="stylesheet" href="portal.css?v=2300">
+<script src="portal.js?v=2300" defer></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Execute: 8. Session Management - HttpSession</h1>
+<!-- MATCHED-EXAMPLE-BANNER -->
+<div class="match" style="background:#e8ffe8;border:2px solid #3a7a3a;padding:12px;margin:12px 0;">
+<b>Matched example:</b> <code>NotesSessionLogin</code> &nbsp; URL <code>/NotesSessionLogin</code><br>
+Theory / Source are for the same example.
+<a href="topics/08-httpsession/theory.html">Open matching Theory</a>
+</div>
+
+<div class="nav">
+<a class="btn ghost" href="topics/08-httpsession/theory.html">Theory</a>
+<a class="btn active" href="session_notes_login.html?back=ch-session">Execute</a>
+<a class="btn source" href="source/NotesSessionLogin.html">Source</a>
+<a class="btn secondary" href="index.html#ch-session">Index</a>
+</div>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> HttpSession login, welcome and logout</p>
+<p>Store the user name on the server (session), not only in the browser. Login is java / servlet.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>POST login java and password servlet. The server stores the name and opens Welcome.</li><li>Welcome must print Welcome java and a Logout link.</li><li>Click Logout. Session is cleared and the login form comes back. Wrong password prints Wrong login. Use java / servlet.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">Welcome java
+Logout</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">Name is stored on the server (HttpSession). Login is <b>java</b> / <b>servlet</b>.</p>
+<div class="pflow-lab">Correct login</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/NotesSessionLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>getSession(true)<br>setAttribute username</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>4. Redirect</b><span>GET NotesSessionWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>5. Output</b><span>Welcome java<br>Logout</span></div></div><div class="pflow-lab">Wrong password</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong login or password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>doPost() fails check</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Wrong login. Use java / servlet.</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>session.invalidate()</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>back to login form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again<br>(session gone)</span></div></div></div>
+
+<div class="reqsyn"><b>Required basic syntax for this example:</b>
+<pre class="syntax">HttpSession s = request.getSession(true);
+s.setAttribute(&quot;username&quot;, login);</pre></div>
+
+<!-- SYNTAX-EXPLAIN -->
+<div class="why" style="background:#f0f7ff;border-left:4px solid #336699;padding:10px 14px;margin:10px 0;">
+<b>How to read the syntax above:</b> Left side is code you type. Meaning is in Theory page
+(section <i>Syntax with explanation</i>) with line-by-line table. Open Theory if any line is unclear.
+</div>
+
+<hr class="sep">
+<div class="box-run">
+<form method="post" action="NotesSessionLogin">
+<div class="row"><label class="f">User</label><input name="login" value="java"></div>
+<div class="row"><label class="f">Password</label><input type="password" name="pwd" value="servlet"></div>
+<input type="submit" value="Login (POST)">
+</form>
+</div>
+<p style="margin-top:18px;"><a href="index.html#ch-session" id="backLink">Return to Index</a></p>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);
+  var b=p.get('back');
+  if(b) document.getElementById('backLink').href='index.html#'+b;
+})();
+</script>
+</div>
+</body>
+</html>

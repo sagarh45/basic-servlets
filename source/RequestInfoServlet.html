@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Source - RequestInfoServlet.java + web.xml</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
+h1 { color: #222; font-size: 28px; }
+h2 { color: #333; margin-top: 32px; border-bottom: 2px solid #336699; padding-bottom: 6px; scroll-margin-top: 20px; }
+.info { background: #eef6ff; padding: 12px 14px; margin-bottom: 18px; border: 1px solid #cde; }
+ol.cat { margin: 0; padding-left: 22px; }
+ol.cat > li { margin: 8px 0; }
+table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 8px; }
+th, td { border: 1px solid #ccc; padding: 10px 12px; text-align: left; vertical-align: middle; }
+th { background: #f0f0f0; }
+tr[id] { scroll-margin-top: 24px; }
+tr:target { background: #fff8d6; }
+a.btn { display: inline-block; margin-right: 8px; padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; text-decoration: none; font-size: 16px; }
+a.btn.source { background: #555; border-color: #555; }
+a { color: #0066cc; }
+code { background: #eee; padding: 2px 5px; }
+.files a { margin-right: 8px; margin-bottom: 4px; }
+.box { background: #fff; border: 1px solid #ccc; padding: 24px; display: inline-block; min-width: 320px; }
+label { display: inline-block; width: 90px; }
+.row { margin: 10px 0; }
+input[type=submit] { padding: 8px 18px; border: 1px solid #336699; color: #fff; background: #336699; font-size: 16px; cursor: pointer; }
+.syllabus { background:#fff; border:1px solid #ccc; padding:14px; margin-bottom:18px; }
+
+.legend span { display:inline-block; margin-right:14px; font-size:15px; }
+.legend .kw { color:#0000ff; font-weight:bold; }
+.legend .cls { color:#267f99; font-weight:bold; }
+.legend .mtd { color:#795e26; font-weight:bold; }
+.legend .str { color:#a31515; }
+.legend .cmt { color:#008000; }
+.legend .tag { color:#800000; font-weight:bold; }
+pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1px solid #ccc; font-size:17px; line-height:1.55; font-family: Consolas, "Courier New", monospace; }
+.kw { color:#0000ff; font-weight:bold; }
+.cls { color:#267f99; font-weight:bold; }
+.mtd { color:#795e26; font-weight:bold; }
+.str { color:#a31515; }
+.cmt { color:#008000; }
+.ann { color:#808080; }
+.num { color:#098658; }
+.tag { color:#800000; font-weight:bold; }
+.attr { color:#ff0000; }
+.aval { color:#0000ff; }
+</style>
+<link rel="stylesheet" href="source.css">
+</head>
+<body>
+<h1>Source: RequestInfoServlet</h1>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> Print method, URI and query string from the request</p>
+<p>Show what the browser actually sent: method, paths, query string and parameters.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>Open /requestinfo?name=Rahul&city=Solapur.</li><li>Print HTTP Method, Request URI, Context Path, Servlet Path, Query String.</li><li>Print a table of request parameters. Write complete Java and web.xml.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
+<pre class="sample-out">HttpServletRequest Information
+HTTP Method    GET
+Request URI    /basic-servlets/requestinfo
+Query String   name=Rahul&amp;city=Solapur
+name = Rahul
+city = Solapur</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">The servlet prints what the browser sent: method, URI, query string, parameters.</p>
+<div class="pflow-lab">Open with query string</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Execute<br>(name=Rahul, city=Solapur)</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>GET <code>/requestinfo?name=Rahul&amp;city=Solapur</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>doGet() reads request info</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>HTTP Method GET<br>Query String name=Rahul&amp;city=Solapur<br>parameter table</span></div></div></div>
+<p><a class="btn" href="../index.html">Return to Index</a></p>
+<div class="info">White background, large font, syntax highlight:
+  <div class="legend" style="margin-top:8px;">
+    <span class="kw">keyword</span>
+    <span class="cls">Class</span>
+    <span class="mtd">method()</span>
+    <span class="str">"string"</span>
+    <span class="cmt">// comment</span>
+    <span class="tag">&lt;xml-tag&gt;</span>
+  </div>
+</div>
+<h2>1) Java code - RequestInfoServlet.java</h2>
+<pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> java.util.<span class="cls">Enumeration</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="cmt">/**
+ * Practical 10: Request Information Servlet
+ * Displays HTTP method, URI, query string, headers, and parameters.
+ * Try: /requestinfo?name=Rahul&amp;city=Solapur
+ */</span>
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">RequestInfoServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1<span class="cls">L</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html;charset=UTF-8&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;Request Info&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;HttpServletRequest Information&lt;/h2&gt;&quot;</span>);
+
+        <span class="cmt">// Basic request info</span>
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h3&gt;Basic Info&lt;/h3&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;table border=&#x27;1&#x27; cellpadding=&#x27;6&#x27;&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;th&gt;Property&lt;/th&gt;&lt;th&gt;Value&lt;/th&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;HTTP Method&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getMethod</span>() + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;Request URI&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getRequestURI</span>() + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;Context Path&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getContextPath</span>() + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;Servlet Path&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getServletPath</span>() + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;Query String&lt;/td&gt;&lt;td&gt;&quot;</span> + (request.<span class="mtd">getQueryString</span>() != <span class="kw">null</span> ? request.<span class="mtd">getQueryString</span>() : <span class="str">&quot;(none)&quot;</span>) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;Protocol&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getProtocol</span>() + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;Remote Addr&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getRemoteAddr</span>() + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;Remote Host&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getRemoteHost</span>() + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/table&gt;&quot;</span>);
+
+        <span class="cmt">// Request parameters</span>
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h3&gt;Request Parameters&lt;/h3&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;table border=&#x27;1&#x27; cellpadding=&#x27;6&#x27;&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Value&lt;/th&gt;&lt;/tr&gt;&quot;</span>);
+        <span class="cls">Enumeration</span>&lt;<span class="cls">String</span>&gt; paramNames = request.<span class="mtd">getParameterNames</span>();
+        <span class="kw">boolean</span> hasParams = <span class="kw">false</span>;
+        <span class="kw">while</span> (paramNames.<span class="mtd">hasMoreElements</span>()) {
+            hasParams = <span class="kw">true</span>;
+            <span class="cls">String</span> name = paramNames.<span class="mtd">nextElement</span>();
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;&quot;</span> + name + <span class="str">&quot;&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getParameter</span>(name) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        }
+        <span class="kw">if</span> (!hasParams) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td colspan=&#x27;2&#x27;&gt;(no parameters - try ?name=Rahul&amp;amp;city=Solapur)&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/table&gt;&quot;</span>);
+
+        <span class="cmt">// Request headers</span>
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h3&gt;Request Headers&lt;/h3&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;table border=&#x27;1&#x27; cellpadding=&#x27;6&#x27;&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;th&gt;Header Name&lt;/th&gt;&lt;th&gt;Header Value&lt;/th&gt;&lt;/tr&gt;&quot;</span>);
+        <span class="cls">Enumeration</span>&lt;<span class="cls">String</span>&gt; headerNames = request.<span class="mtd">getHeaderNames</span>();
+        <span class="kw">while</span> (headerNames.<span class="mtd">hasMoreElements</span>()) {
+            <span class="cls">String</span> headerName = headerNames.<span class="mtd">nextElement</span>();
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;tr&gt;&lt;td&gt;&quot;</span> + headerName + <span class="str">&quot;&lt;/td&gt;&lt;td&gt;&quot;</span> + request.<span class="mtd">getHeader</span>(headerName) + <span class="str">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/table&gt;&quot;</span>);
+
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;requestinfo?name=Rahul&amp;city=Solapur&#x27;&gt;Test with query params&lt;/a&gt; | &quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;a href=&#x27;index.html#ex-requestinfo&#x27;&gt;Back to Index&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+
+        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;[RequestInfoServlet] Displayed request info for &quot;</span> + request.<span class="mtd">getMethod</span>() + <span class="str">&quot; &quot;</span> + request.<span class="mtd">getRequestURI</span>());
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">doGet</span>(request, response);
+    }
+}
+</pre>
+<p><a href="../index.html">Return to Index</a></p>
+
+<h2>web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;RequestInfoServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;RequestInfoServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;RequestInfoServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/requestinfo&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</body>
+</html>

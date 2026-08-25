@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>1. Servlets Introduction, Need and Working</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../portal.css?v=2100">
+<script src="../../portal.js?v=2100" defer></script>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="../../index.html"><span class="mark">II</span> Unit-II Lab</a>
+  <nav class="tabs" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a class="on" href="../../theory.html">Theory</a>
+    <a href="../../programs.html">Programs</a>
+    <a href="../../practicals.html">ICA Practicals</a>
+  </nav>
+</header>
+<div class="wrap">
+<h1>1. Servlets Introduction, Need and Working</h1>
+<div class="nav">
+<a class="btn active" href="theory.html">Theory</a>
+<a class="btn ghost" href="diagram.html">Diagram</a>
+<a class="btn ghost" href="syntax.html">Syntax</a>
+<a class="btn ghost" href="../../setup.html">Lab Setup</a>
+</div>
+
+<div class="labstack">
+<b>Verified for Apache Tomcat 11.0.24</b> (Jakarta EE 11 / Servlet 6.1) + JDK 17+<br>
+Every program uses <code>jakarta.servlet.*</code> only. See <a href="../../setup.html">Lab Setup</a>.
+</div>
+
+<p class="note">This page is <b>theory</b> only: meaning, real-life examples, diagrams, functions (syntax + use + example) and complete code. Copy the journal <b>problem statement</b> from the <a href="../../practicals.html">ICA Practicals</a> tab or from the program <b>Source</b> page.</p>
+<div class="section"><h2>A) Concept in simple English</h2>
+<div class="card">
+<p>A printed cinema timetable is the same for everyone. A static HTML file can show it. A ticket search is different: you type a movie name and must see <b>your</b> seat. A file typed once cannot do that. The site needs a server-side Java program (a servlet) to read the form and choose the matching record.</p>
+<p>A <b>Servlet</b> is a Java class that runs on the <b>server</b> inside a servlet container (Apache Tomcat 11).
+The browser never runs servlet code. The browser only sends an HTTP request and displays the HTML that the servlet writes.</p>
+<p><b>Introduction:</b> Servlet = server-side Java used to build dynamic web pages.<br>
+<b>Need:</b> Static HTML cannot change for each user. A servlet can use if/else, loops, forms, and session data.<br>
+<b>Working:</b> Browser request &rarr; Tomcat 11 &rarr; <code>web.xml</code> mapping &rarr; <code>doGet</code>/<code>doPost</code> &rarr; HTML response.</p>
+<p>In this lab every HTTP servlet extends <code>jakarta.servlet.http.HttpServlet</code>.</p>
+<p><b>Servlet container (Tomcat) jobs you do not write:</b> open port 8080, read HTTP, create threads, find the servlet from the URL, call the matching <code>doXxx</code> method, send the bytes back to the browser.</p>
+<p><b>Your jobs:</b> write the Java class, map it in <code>web.xml</code>, compile to <code>WEB-INF/classes</code>.</p>
+</div></div>
+
+<div class="teach">
+<h2>Picture it from daily life</h2>
+<p class="easy"><b>One-line rule:</b> A servlet is a Java worker inside Tomcat. Your phone browser never runs that Java. The worker reads the request and writes an HTML page back.</p>
+<h3>The story (printed menu vs food-delivery app)</h3>
+<p>Imagine two things.</p>
+<ol>
+<li><b>A paper restaurant menu</b> is the same for every guest. A static HTML file can show it. No worker is needed.</li>
+<li><b>A Swiggy / Zomato order status</b> is different. You type order <code>101</code>. Your friend types order <code>205</code>. Each must see a different dish and ETA. A file typed once cannot do that. A worker must look up the order. That worker is the <b>servlet</b>.</li>
+</ol>
+<p>Chrome does not know the restaurant database. Chrome only knows how to send “please show order 101” and how to paint HTML. Tomcat (the kitchen building) receives the message, finds the right worker from <code>web.xml</code>, and the worker prints the page.</p>
+<h3>Story → Java (same idea)</h3>
+<table class="storymap">
+<tr><th>Daily life</th><th>In this lab</th></tr>
+<tr><td>You on a phone / laptop</td><td>Browser (Chrome / Edge)</td></tr>
+<tr><td>The restaurant’s kitchen building</td><td>Apache Tomcat 11</td></tr>
+<tr><td>Board: “Counter 3 = order status”</td><td><code>web.xml</code> URL mapping</td></tr>
+<tr><td>The worker who does the job</td><td>Your class that <code>extends HttpServlet</code></td></tr>
+<tr><td>The paper they hand back</td><td>HTML written with <code>PrintWriter</code></td></tr>
+</table>
+<h3>What you will see</h3>
+<p>Open <code>/hello</code>. The heading “Welcome to Servlets” was not typed in a <code>.html</code> file. Java printed it. The address bar still shows a normal URL. That is dynamic output.</p>
+<h3>Easy mistake</h3>
+<p>Thinking “the browser runs the servlet.” It does not. If Tomcat is stopped, the page cannot be generated. Static notes still open; servlets do not.</p>
+</div>
+
+<div class="realex">
+<h2>Real-life examples (short recap)</h2>
+<h3>1) Printed bus timetable vs live PNR status</h3>
+<p>A PDF “Bus 12 leaves at 6 pm” is static. IRCTC PNR search is dynamic: you type a PNR and must see your train. Only a servlet can read the PNR and choose the matching record.</p>
+<h3>2) Gmail / Instagram login</h3>
+<p>After POST of user name and password, the next page must say “Welcome java”. That if/else lives in a servlet. One HTML file cannot do it.</p>
+<h3>3) Amazon order receipt</h3>
+<p>Each order needs a different receipt number. The browser never calculates that. Tomcat runs the servlet; the servlet writes HTML with that order’s data.</p>
+<p><b>Rule to remember:</b> If the page must change for each user, each form, or each login — use a Servlet. If the page never changes (a poster image, static notes) — plain HTML is enough.</p>
+</div>
+
+<div class="objbox">
+<h3>Learning objectives</h3>
+<ul>
+<li>Explain servlet, servlet container, request and response in one paragraph.</li>
+<li>Map a URL in <code>web.xml</code> to a Java class.</li>
+<li>Write <code>doGet</code> with every line understood.</li>
+<li>Use <code>jakarta.servlet</code> (Tomcat 11), never <code>javax.servlet</code>.</li>
+</ul>
+</div>
+
+<div class="section"><h2>B) When to use a Servlet</h2>
+<table>
+<tr><th>Use a Servlet when</th><th>Do not use a Servlet when</th></tr>
+<tr><td>The page must change after a form, login, or calculation</td><td>The page is only static notes / images (plain HTML is enough)</td></tr>
+<tr><td>You must read request data (<code>getParameter</code>)</td><td>You only need a file that never changes</td></tr>
+<tr><td>You need session, cookies, forward, or redirect</td><td>You are writing desktop Java (no HTTP)</td></tr>
+<tr><td>Gmail, IRCTC, food-app status, search</td><td>A printed PDF that is the same for everyone</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>C) Diagram</h2>
+<div class="diag">
+<h3>Fig. 1.1 — Request flow inside Tomcat 11.0.24</h3>
+<div class="flow"><div class="box">1. Browser</div><div class="arrow">&rarr;</div><div class="box">2. Tomcat 11</div><div class="arrow">&rarr;</div><div class="box">3. web.xml</div><div class="arrow">&rarr;</div><div class="box">4. HttpServlet method</div><div class="arrow">&rarr;</div><div class="box">5. PrintWriter</div><div class="arrow">&rarr;</div><div class="box">6. Browser page</div></div>
+</div>
+<div class="diag-cap"><b>Fig. 1.1 caption:</b> The browser never runs servlet code. Tomcat maps the URL, calls doGet or doPost, and the servlet writes HTML.</div>
+<ol class="steps-n">
+<li><b>Browser</b> opens a URL such as <code>http://localhost:8080/basic-servlets/hello</code>.</li>
+<li><b>Tomcat 11.0.24</b> receives the HTTP request. The context path is <code>/basic-servlets</code>.</li>
+<li><b>web.xml</b> maps the remaining path (example <code>/hello</code>) to class <code>HelloServlet</code>.</li>
+<li>Tomcat creates / reuses the servlet object and calls <code>doGet</code> (because the address bar / link uses GET).</li>
+<li>The method writes HTML using <code>response.getWriter()</code>.</li>
+<li>The browser displays that HTML. This is the program output.</li>
+</ol>
+</div>
+
+<div class="section"><h2>D) Full syntax (short form)</h2>
+<pre class="syntax">import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class MyServlet extends HttpServlet {
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    response.setContentType("text/html");
+    PrintWriter out = response.getWriter();
+    out.println("&lt;h1&gt;Hello from Servlet&lt;/h1&gt;");
+  }
+}
+</pre>
+<table class="synexp"><tr><th>Code / Line</th><th>Simple meaning</th></tr>
+<tr><td><code>extends HttpServlet</code></td><td>Makes this class an HTTP servlet that Tomcat can call.</td></tr>
+<tr><td><code>doGet(request, response)</code></td><td>Runs when the browser uses GET (link, address bar, form method=get).</td></tr>
+<tr><td><code>setContentType("text/html")</code></td><td>Tell the browser the body is HTML. Call this BEFORE writing.</td></tr>
+<tr><td><code>getWriter()</code></td><td>Gives PrintWriter to write the HTML page.</td></tr>
+<tr><td><code>out.println(...)</code></td><td>One line of HTML sent to the browser.</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>E) Functions — syntax, use and example</h2>
+<p class="easy">Each function below is the Java for the daily-life story above. Read the meaning, then the syntax, then the lab row.</p>
+<p>Read each card in simple English. Tomcat calls these methods. You write the body.</p>
+<article class="fn">
+<h3>1. Function: <code>doGet</code></h3>
+<p><b>Simple meaning:</b> Runs when the browser uses GET (link, address bar, or form method=get). You write the HTML page here.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>request = incoming URL and fields. response = object used to send HTML back.</td></tr>
+<tr><td>Returns</td><td>void (nothing). The page is the output.</td></tr>
+<tr><td>When to use (USE)</td><td>First page, search, open a URL. HelloServlet uses only doGet.</td></tr>
+<tr><td>Lab example</td><td>Student opens /hello. Tomcat calls doGet. Page shows “Welcome to Servlets”.</td></tr>
+<tr><td>Common mistake</td><td>Wrong spelling of doGet, or missing throws — Tomcat will not call your method.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>2. Function: <code>response.setContentType</code></h3>
+<p><b>Simple meaning:</b> Tells the browser: the body is an HTML page, not a download or plain text.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">response.setContentType("text/html");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>type — use "text/html" in this lab.</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Always, before you write HTML.</td></tr>
+<tr><td>Lab example</td><td>HelloServlet calls it first, then getWriter().</td></tr>
+<tr><td>Common mistake</td><td>Writing HTML first, then setContentType — the browser may show garbage.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>3. Function: <code>response.getWriter</code></h3>
+<p><b>Simple meaning:</b> Gives a printer that sends characters (HTML) to the browser.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">PrintWriter out = response.getWriter();</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>none</td></tr>
+<tr><td>Returns</td><td>PrintWriter</td></tr>
+<tr><td>When to use (USE)</td><td>Every servlet that prints a page.</td></tr>
+<tr><td>Lab example</td><td>out.println("&lt;h1&gt;Welcome to Servlets&lt;/h1&gt;");</td></tr>
+<tr><td>Common mistake</td><td>Do not also call getOutputStream() on the same response.</td></tr>
+</table>
+</article>
+
+<article class="fn">
+<h3>4. Function: <code>out.println</code></h3>
+<p><b>Simple meaning:</b> Sends one line of HTML to the browser.</p>
+<p><b>Full syntax:</b></p>
+<pre class="syntax">out.println("&lt;p&gt;This page is generated by Java.&lt;/p&gt;");</pre>
+<table class="synexp">
+<tr><th>Item</th><th>Simple English</th></tr>
+<tr><td>Parameters</td><td>A String (the HTML text).</td></tr>
+<tr><td>Returns</td><td>void</td></tr>
+<tr><td>When to use (USE)</td><td>Build the visible page line by line.</td></tr>
+<tr><td>Lab example</td><td>HelloServlet prints heading, paragraph, and a Back link.</td></tr>
+<tr><td>Common mistake</td><td>Forgetting &lt;html&gt; is OK for a short lab page; forgetting setContentType is not.</td></tr>
+</table>
+</article>
+</div>
+
+<div class="section"><h2>Required imports (Tomcat 11)</h2>
+<pre class="syntax">import java.io.IOException;                 // Thrown by getWriter() and network I/O
+import java.io.PrintWriter;                 // Character writer used to send HTML
+import jakarta.servlet.ServletException;    // Servlet-specific checked exception
+import jakarta.servlet.http.HttpServlet;    // Base class for HTTP servlets
+import jakarta.servlet.http.HttpServletRequest;   // Incoming HTTP request
+import jakarta.servlet.http.HttpServletResponse;  // Outgoing HTTP response</pre>
+<p>Type <code>jakarta.servlet</code> in every program. Extra imports (<code>Cookie</code>, <code>HttpSession</code>, <code>RequestDispatcher</code>) are added in later chapters when needed.</p>
+</div>
+
+<div class="why"><b>Theory-only chapter:</b> Read the notes and diagrams here.
+The first runnable “hello” program is class <code>HelloServlet</code>, URL <code>/hello</code>. Syllabus lab programs start from Chapter 2 (HTTP Methods).</div>
+
+<div class="section"><h2>F) Complete Java program — every line explained</h2>
+<p>File name: <code>HelloServlet.java</code> (must match the public class name). Place the compiled <code>.class</code> in <code>WEB-INF/classes</code>.</p>
+<pre class="syntax">import java.io.IOException;                 // Checked exception for I/O (writer, network)
+import java.io.PrintWriter;                 // Class used to print characters (HTML) to the client
+import jakarta.servlet.ServletException;    // Exception type required on servlet method signatures
+import jakarta.servlet.http.HttpServlet;    // Parent class that understands GET, POST, ...
+import jakarta.servlet.http.HttpServletRequest;   // Object that holds URL, parameters, headers
+import jakarta.servlet.http.HttpServletResponse;  // Object used to set status, type, and body
+
+public class HelloServlet extends HttpServlet {   // Public class Tomcat will load by name
+
+    private static final long serialVersionUID = 1L;  // Version id for Serializable (HttpServlet is serializable)
+
+    @Override                                         // Compiler checks that we really override doGet
+    protected void doGet(HttpServletRequest request,  // Incoming request from the browser
+                         HttpServletResponse response) // Outgoing response we will fill
+            throws ServletException, IOException {    // Required throws clause of HttpServlet.doGet
+
+        response.setContentType("text/html");         // Header: body is HTML, not plain text or JSON
+
+        PrintWriter out = response.getWriter();       // Get the character stream to the browser
+        out.println("&lt;!DOCTYPE html&gt;");               // Start a legal HTML5 document
+        out.println("&lt;html&gt;");                        // Root HTML element
+        out.println("&lt;head&gt;&lt;title&gt;Hello Servlet&lt;/title&gt;&lt;/head&gt;"); // Browser tab title
+        out.println("&lt;body&gt;");                        // Visible page starts
+        out.println("&lt;h1&gt;Welcome to Servlets&lt;/h1&gt;");  // Main heading generated by Java
+        out.println("&lt;p&gt;This page is generated by HelloServlet using doGet().&lt;/p&gt;"); // Proof it is dynamic
+        out.println("&lt;p&gt;&lt;a href='index.html'&gt;Back to Index&lt;/a&gt;&lt;/p&gt;"); // Link back to the lab home
+        out.println("&lt;/body&gt;");                       // End visible page
+        out.println("&lt;/html&gt;");                       // End HTML document
+
+        System.out.println("[HelloServlet] doGet() executed."); // Message on Tomcat console, not in browser
+    }                                                 // End of doGet
+}                                                     // End of class</pre>
+<p><a class="btn source" href="../../source/HelloServlet.html">Open highlighted source page</a>
+<a class="exec-xl" href="../../hello.html">Execute Online</a></p>
+</div>
+<div class="section">
+
+<h2>G) Complete web.xml for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+
+<pre class="syntax">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
+         version=&quot;6.1&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;HelloServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;HelloServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;HelloServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+<table class="synexp">
+<tr><th>XML line</th><th>Meaning</th></tr>
+<tr><td><code>version="6.1"</code></td><td>Matches Tomcat 11. Do not write web-app 2.5 / javax.</td></tr>
+<tr><td><code>&lt;servlet-name&gt;</code></td><td>A label. It is not the URL and not the .java file name (though we keep them similar).</td></tr>
+<tr><td><code>&lt;servlet-class&gt;</code></td><td>Must match the public class. Default package in this lab (no package. prefix).</td></tr>
+<tr><td><code>&lt;url-pattern&gt;/hello&lt;/url-pattern&gt;</code></td><td>The path the student types after <code>/basic-servlets</code>.</td></tr>
+<tr><td>Two blocks with the same servlet-name</td><td>First block = who. Second block = which URL. Both names must be identical.</td></tr>
+</table>
+</div>
+
+<div class="section"><h2>H) Expected output and viva</h2>
+<p><b>Output:</b> a heading “Welcome to Servlets” and a short paragraph. The address bar shows <code>/hello</code>. Nothing is typed as a static .html file for that heading — Java printed it.</p>
+<div class="viva">
+<b>Viva (with model answers):</b>
+<p><b>Q.</b> Who executes servlet code?<br><span class="ans"><b>A.</b> Apache Tomcat 11 on the server. The browser only displays HTML.</span></p>
+<p><b>Q.</b> Why not put Java in the browser?<br><span class="ans"><b>A.</b> The browser does not have the servlet container, <code>web.xml</code>, or server data (student records, sessions).</span></p>
+<p><b>Q.</b> What happens if servlet-name in mapping does not match servlet-name in servlet?<br><span class="ans"><b>A.</b> Tomcat cannot find the class for that URL. You get 404 or a deployment error.</span></p>
+<p><b>Q.</b> Why <code>jakarta.servlet</code> and not <code>javax.servlet</code>?<br><span class="ans"><b>A.</b> Tomcat 11 implements Jakarta EE 11. <code>javax.servlet</code> is the old Java EE name (Tomcat 9 and below).</span></p>
+</div>
+</div>
+
+<div class="footer"><a href="../../theory.html">Return to Theory package</a> · <a href="../../practicals.html">ICA Practicals</a></div>
+</div>
+</body>
+</html>
