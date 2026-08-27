@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>ICA 4 · MyMail account — run this small project</title>
-<link rel="stylesheet" href="portal.css?v=2800">
-<script src="portal.js?v=2800" defer></script>
+<link rel="stylesheet" href="portal.css?v=2802">
+<script src="portal.js?v=2802" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -27,6 +27,10 @@
 <li><b>Full portal</b> — correct login: session + cookie + <b>forward</b>, so the URL stays <code>/CapstoneLogin</code>. Wrong password: <b>include</b> shows the form again. Logout clears both.</li>
 </ol>
 <pre class="sample-out">Welcome java
+Session (on the server) says: java
+remember cookie (in the browser) says: java
+Two different places. Close the browser and the session goes, but the cookie
+stays for 7 days. Logout clears both.
 Logout</pre>
 </div>
 

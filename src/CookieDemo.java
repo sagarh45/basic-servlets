@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
@@ -9,6 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * Each Write adds a new cookie. Rahul then Sagar both stay.
  * Cookie name is u_Rahul, u_Sagar so names do not overwrite each other.
+ *
+ * A cookie is known by its NAME only:
+ *   new name  -> a new cookie is created, old ones stay
+ *   same name -> the same cookie is reused, value is written again,
+ *                no second copy is made and nothing is deleted
  */
 public class CookieDemo extends HttpServlet {
 
@@ -17,7 +24,9 @@ public class CookieDemo extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        show(request, response, "Type Rahul, Write. Type Sagar, Write. Read / Display all shows both.");
+        show(request, response, "Type Rahul, Write. Type Sagar, Write. Both stay,"
+                + " because the cookie names u_Rahul and u_Sagar are different.<br><br>"
+                + listCookies(request, null, null, null));
     }
 
     @Override
@@ -38,16 +47,32 @@ public class CookieDemo extends HttpServlet {
         if ("write".equals(op)) {
             String value = text.isEmpty() ? "Rahul" : text;
             String name = key(value);
+            boolean old = find(request, name) != null;
             put(response, path, name, value, 60 * 60);
-            msg = "WRITE saved <b>user = " + value + "</b>. Names stored now:<br>"
-                    + listCookies(request, name, value);
+            if (old) {
+                msg = "WRITE: cookie <b>" + name + "</b> was already in this browser."
+                        + " The same cookie is used again and the value is written on top."
+                        + " No second cookie is made, and no old name is deleted.<br><br>"
+                        + listCookies(request, name, value, null);
+            } else {
+                msg = "WRITE: new cookie <b>" + name + "</b> = " + value + " is created."
+                        + " Old names stay as they are.<br><br>"
+                        + listCookies(request, name, value, null);
+            }
         } else if ("read".equals(op) || "list".equals(op)) {
-            msg = listCookies(request, null, null);
+            msg = listCookies(request, null, null, null);
         } else if ("delete".equals(op)) {
             String name = pickDeleteName(request, text);
-            put(response, path, name, "x", 0);
-            msg = "DELETE cookie <b>" + name + "</b>. Click Display all. "
-                    + "Type the name (Rahul) or cookie id (u_Rahul) to delete that one.";
+            if (find(request, name) == null) {
+                msg = "DELETE: there is no cookie named <b>" + name + "</b> in this browser."
+                        + " Nothing is deleted. Type a name from the list below.<br><br>"
+                        + listCookies(request, null, null, null);
+            } else {
+                put(response, path, name, "x", 0);
+                msg = "DELETE: cookie <b>" + name + "</b> is removed with setMaxAge(0)."
+                        + " Only this one name goes, the others stay.<br><br>"
+                        + listCookies(request, null, null, name);
+            }
         } else {
             msg = "Choose Write, Read, Display all, or Delete.";
         }
@@ -101,34 +126,55 @@ public class CookieDemo extends HttpServlet {
         return null;
     }
 
-    private static String listCookies(HttpServletRequest request, String extraName, String extraValue) {
+    /**
+     * addName / addValue = cookie just written (the browser sends it only on the
+     * next request, so we show it now). delName = cookie just deleted.
+     */
+    private static String listCookies(HttpServletRequest request,
+            String addName, String addValue, String delName) {
+        Map<String, String> box = new LinkedHashMap<String, String>();
         Cookie[] arr = request.getCookies();
-        StringBuilder sb = new StringBuilder("All names stored in this browser:<br>");
-        int n = 0;
-        boolean sawExtra = false;
         if (arr != null) {
             for (int i = 0; i < arr.length; i++) {
                 String name = arr[i].getName();
                 if ("JSESSIONID".equalsIgnoreCase(name)) {
                     continue;
                 }
-                if (extraName != null && extraName.equals(name)) {
-                    sawExtra = true;
-                    sb.append("user = ").append(extraValue).append("<br>");
-                } else if (name.startsWith("u_")) {
-                    sb.append("user = ").append(arr[i].getValue()).append("<br>");
-                } else {
-                    sb.append("<b>").append(name).append("</b> = ").append(arr[i].getValue()).append("<br>");
-                }
-                n++;
+                box.put(name, arr[i].getValue());
             }
         }
-        if (extraName != null && !sawExtra) {
-            sb.append("user = ").append(extraValue).append("<br>");
-            n++;
+        if (delName != null) {
+            box.remove(delName);
         }
-        if (n == 0) {
-            sb.append("None yet. Write Rahul, then Write Sagar.");
+        if (addName != null) {
+            box.put(addName, addValue);
+        }
+
+        StringBuilder mine = new StringBuilder();
+        StringBuilder other = new StringBuilder();
+        int a = 0;
+        int b = 0;
+        for (Map.Entry<String, String> e : box.entrySet()) {
+            if (e.getKey().startsWith("u_")) {
+                a++;
+                mine.append(a).append(". <b>").append(e.getKey()).append("</b> = ")
+                        .append(e.getValue()).append("<br>");
+            } else {
+                b++;
+                other.append("<b>").append(e.getKey()).append("</b> = ")
+                        .append(e.getValue()).append("<br>");
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<b>Names saved in this browser: ").append(a).append("</b><br>");
+        if (a == 0) {
+            sb.append("None yet. Type Rahul and click Write cookie.<br>");
+        } else {
+            sb.append(mine);
+        }
+        if (b > 0) {
+            sb.append("<br>Cookies from the other demos: ").append(b).append("<br>").append(other);
         }
         return sb.toString();
     }

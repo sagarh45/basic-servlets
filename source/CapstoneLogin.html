@@ -62,13 +62,17 @@ Portal joins POST + session + cookie + forward / include: the session proves you
 </ol>
 <p><b>Sample output:</b></p>
 <pre class="sample-out">Welcome java
-Logout
+Session (on the server) says: java
+remember cookie (in the browser): not in this request yet. A cookie you just
+wrote comes back on the next click. Open Welcome once more to see it.
+Two different places. Close the browser and the session goes, but the cookie
+stays for 7 days. Logout clears both.
 Logout</pre>
 </div>
 <div class="pflow">
 <h2>Program output flow</h2>
 <p class="pflow-cap">Mini portal: session + remember cookie + forward on success, include on failure. Login <b>java</b> / <b>servlet</b>.</p>
-<div class="pflow-lab">Success</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/CapstoneLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>session + cookie remember<br>forward CapstoneWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome java<br>Logout<br>(URL still /CapstoneLogin)</span></div></div><div class="pflow-lab">Failure</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>print error + include form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect Login ID / Password<br>+ login form again</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>invalidate + cookie maxAge 0</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>capstone.html</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again</span></div></div></div>
+<div class="pflow-lab">Success</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/CapstoneLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>session + cookie remember<br>forward CapstoneWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome java<br>session says java<br>cookie: next click<br>(URL still /CapstoneLogin)</span></div></div><div class="pflow-lab">Failure</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>print error + include form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect Login ID / Password<br>+ login form again</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>invalidate + cookie maxAge 0</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>capstone.html</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again</span></div></div></div>
 <p>
 <a class="btn ghost" href="../topics/11-capstone/theory.html">Theory</a>
 <a class="btn" href="../capstone.html">Execute</a>

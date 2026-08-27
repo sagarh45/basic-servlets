@@ -26,25 +26,35 @@ Java: <a href="CookieDemo.html">CookieDemo</a> (this page). The four-class ICA v
 <p><b>What you must do:</b></p>
 <ol>
 <li>One HTML form, one text box named <code>cval</code>, four submit buttons sharing the name <code>op</code> with values <code>write</code>, <code>read</code>, <code>list</code> and <code>delete</code>.</li>
-<li>A browser cannot keep two cookies with the same name, so give each name its own cookie: <code>Rahul</code> is stored as cookie <code>u_Rahul</code>, <code>Sagar</code> as <code>u_Sagar</code>. Display them all back as <code>user = Rahul</code>.</li>
+<li>A browser cannot keep two cookies with the same name, so give each name its own cookie: <code>Rahul</code> is stored as cookie <code>u_Rahul</code>, <code>Sagar</code> as <code>u_Sagar</code>. Display them back as <code>1. u_Rahul = Rahul</code>.</li>
+<li>If the same name is written twice, that one cookie is reused and its value is written on top. Print a clear message for it — no second cookie, and no old name deleted.</li>
 <li>Delete uses the same cookie name with <code>setMaxAge(0)</code>.</li>
 <li>Write complete Java and complete web.xml for CookieDemo only.</li>
 </ol>
 <p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/cookiedemo</code>):</p>
-<pre class="sample-out">WRITE saved user = Sagar. Names stored now:
-All names stored in this browser:
-user = Rahul
-user = Sagar</pre>
+<pre class="sample-out">WRITE: new cookie u_Sagar = Sagar is created. Old names stay as they are.
+
+Names saved in this browser: 2
+1. u_Rahul = Rahul
+2. u_Sagar = Sagar</pre>
+<p><b>Now click Write on Rahul a second time.</b> A cookie is known by its name only, so the same box is reused:</p>
+<pre class="sample-out">WRITE: cookie u_Rahul was already in this browser. The same cookie is used
+again and the value is written on top. No second cookie is made, and no old
+name is deleted.
+
+Names saved in this browser: 2
+1. u_Rahul = Rahul
+2. u_Sagar = Sagar</pre>
 </div>
 <div class="pflow">
 <h2>Program output flow</h2>
 <p class="pflow-cap">A cookie you just wrote is not in the same request. The browser sends it back on the <b>next</b> request — that is why Write and Read are two separate clicks.</p>
 <div class="pflow-lab">Write</div>
-<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type Rahul, click Write</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/cookiedemo</code> op=write</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>addCookie u_Rahul=Rahul</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>WRITE saved user = Rahul</span></div></div>
+<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type Rahul, click Write</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/cookiedemo</code> op=write</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>addCookie u_Rahul=Rahul</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>WRITE: new cookie u_Rahul = Rahul is created</span></div></div>
 <div class="pflow-lab">Read / Display all</div>
-<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Display all</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>sends every cookie back</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>getCookies() loop, skip JSESSIONID</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>user = Rahul<br>user = Sagar</span></div></div>
+<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Display all</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>sends every cookie back</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>getCookies() loop, skip JSESSIONID</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>1. u_Rahul = Rahul<br>2. u_Sagar = Sagar</span></div></div>
 <div class="pflow-lab">Delete</div>
-<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type Rahul, click Delete</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>u_Rahul with setMaxAge(0)</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>DELETE cookie u_Rahul<br>Display all now shows only Sagar</span></div></div>
+<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type Rahul, click Delete</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>u_Rahul with setMaxAge(0)</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>DELETE: cookie u_Rahul is removed<br>list now shows only Sagar</span></div></div>
 </div>
 <p><a class="btn" href="../cookie.html">Run this program</a> <a class="btn ghost" href="../topics/07-cookies/theory.html">Cookies theory</a> <a class="btn" href="../index.html">Index</a></p>
 <div class="info">This is the exact class that answers <code>/cookiedemo</code>. Copy-paste file: <code>src/CookieDemo.java</code>.</div>
@@ -52,6 +62,8 @@ user = Sagar</pre>
 <h2>1) Java program — CookieDemo.java</h2>
 <pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> java.util.<span class="cls">LinkedHashMap</span>;
+<span class="kw">import</span> java.util.<span class="cls">Map</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">Cookie</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
@@ -61,6 +73,11 @@ user = Sagar</pre>
 <span class="cmt">/**
  * Each Write adds a new cookie. Rahul then Sagar both stay.
  * Cookie name is u_Rahul, u_Sagar so names do not overwrite each other.
+ *
+ * A cookie is known by its NAME only:
+ *   new name  -&gt; a new cookie is created, old ones stay
+ *   same name -&gt; the same cookie is reused, value is written again,
+ *                no second copy is made and nothing is deleted
  */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">CookieDemo</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
 
@@ -69,7 +86,9 @@ user = Sagar</pre>
     <span class="ann">@Override</span>
     <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
-        <span class="mtd">show</span>(request, response, <span class="str">&quot;Type Rahul, Write. Type Sagar, Write. Read / Display all shows both.&quot;</span>);
+        <span class="mtd">show</span>(request, response, <span class="str">&quot;Type Rahul, Write. Type Sagar, Write. Both stay,&quot;</span>
+                + <span class="str">&quot; because the cookie names u_Rahul and u_Sagar are different.&lt;br&gt;&lt;br&gt;&quot;</span>
+                + <span class="mtd">listCookies</span>(request, <span class="kw">null</span>, <span class="kw">null</span>, <span class="kw">null</span>));
     }
 
     <span class="ann">@Override</span>
@@ -90,16 +109,32 @@ user = Sagar</pre>
         <span class="kw">if</span> (<span class="str">&quot;write&quot;</span>.<span class="mtd">equals</span>(op)) {
             <span class="cls">String</span> value = text.<span class="mtd">isEmpty</span>() ? <span class="str">&quot;Rahul&quot;</span> : text;
             <span class="cls">String</span> name = <span class="mtd">key</span>(value);
+            <span class="kw">boolean</span> old = <span class="mtd">find</span>(request, name) != <span class="kw">null</span>;
             <span class="mtd">put</span>(response, path, name, value, <span class="num">60</span> * <span class="num">60</span>);
-            msg = <span class="str">&quot;WRITE saved &lt;b&gt;user = &quot;</span> + value + <span class="str">&quot;&lt;/b&gt;. Names stored now:&lt;br&gt;&quot;</span>
-                    + <span class="mtd">listCookies</span>(request, name, value);
+            <span class="kw">if</span> (old) {
+                msg = <span class="str">&quot;WRITE: cookie &lt;b&gt;&quot;</span> + name + <span class="str">&quot;&lt;/b&gt; was already in this browser.&quot;</span>
+                        + <span class="str">&quot; The same cookie is used again and the value is written on top.&quot;</span>
+                        + <span class="str">&quot; No second cookie is made, and no old name is deleted.&lt;br&gt;&lt;br&gt;&quot;</span>
+                        + <span class="mtd">listCookies</span>(request, name, value, <span class="kw">null</span>);
+            } <span class="kw">else</span> {
+                msg = <span class="str">&quot;WRITE: new cookie &lt;b&gt;&quot;</span> + name + <span class="str">&quot;&lt;/b&gt; = &quot;</span> + value + <span class="str">&quot; is created.&quot;</span>
+                        + <span class="str">&quot; Old names stay as they are.&lt;br&gt;&lt;br&gt;&quot;</span>
+                        + <span class="mtd">listCookies</span>(request, name, value, <span class="kw">null</span>);
+            }
         } <span class="kw">else</span> <span class="kw">if</span> (<span class="str">&quot;read&quot;</span>.<span class="mtd">equals</span>(op) || <span class="str">&quot;list&quot;</span>.<span class="mtd">equals</span>(op)) {
-            msg = <span class="mtd">listCookies</span>(request, <span class="kw">null</span>, <span class="kw">null</span>);
+            msg = <span class="mtd">listCookies</span>(request, <span class="kw">null</span>, <span class="kw">null</span>, <span class="kw">null</span>);
         } <span class="kw">else</span> <span class="kw">if</span> (<span class="str">&quot;delete&quot;</span>.<span class="mtd">equals</span>(op)) {
             <span class="cls">String</span> name = <span class="mtd">pickDeleteName</span>(request, text);
-            <span class="mtd">put</span>(response, path, name, <span class="str">&quot;x&quot;</span>, <span class="num">0</span>);
-            msg = <span class="str">&quot;DELETE cookie &lt;b&gt;&quot;</span> + name + <span class="str">&quot;&lt;/b&gt;. Click Display all. &quot;</span>
-                    + <span class="str">&quot;Type the name (Rahul) or cookie id (u_Rahul) to delete that one.&quot;</span>;
+            <span class="kw">if</span> (<span class="mtd">find</span>(request, name) == <span class="kw">null</span>) {
+                msg = <span class="str">&quot;DELETE: there is no cookie named &lt;b&gt;&quot;</span> + name + <span class="str">&quot;&lt;/b&gt; in this browser.&quot;</span>
+                        + <span class="str">&quot; Nothing is deleted. Type a name from the list below.&lt;br&gt;&lt;br&gt;&quot;</span>
+                        + <span class="mtd">listCookies</span>(request, <span class="kw">null</span>, <span class="kw">null</span>, <span class="kw">null</span>);
+            } <span class="kw">else</span> {
+                <span class="mtd">put</span>(response, path, name, <span class="str">&quot;x&quot;</span>, <span class="num">0</span>);
+                msg = <span class="str">&quot;DELETE: cookie &lt;b&gt;&quot;</span> + name + <span class="str">&quot;&lt;/b&gt; is removed with setMaxAge(0).&quot;</span>
+                        + <span class="str">&quot; Only this one name goes, the others stay.&lt;br&gt;&lt;br&gt;&quot;</span>
+                        + <span class="mtd">listCookies</span>(request, <span class="kw">null</span>, <span class="kw">null</span>, name);
+            }
         } <span class="kw">else</span> {
             msg = <span class="str">&quot;Choose Write, Read, Display all, or Delete.&quot;</span>;
         }
@@ -153,34 +188,55 @@ user = Sagar</pre>
         <span class="kw">return</span> <span class="kw">null</span>;
     }
 
-    <span class="kw">private</span> <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">listCookies</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">String</span> extraName, <span class="cls">String</span> extraValue) {
+    <span class="cmt">/**
+     * addName / addValue = cookie just written (the browser sends it only on the
+     * next request, so we show it now). delName = cookie just deleted.
+     */</span>
+    <span class="kw">private</span> <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">listCookies</span>(<span class="cls">HttpServletRequest</span> request,
+            <span class="cls">String</span> addName, <span class="cls">String</span> addValue, <span class="cls">String</span> delName) {
+        <span class="cls">Map</span>&lt;<span class="cls">String</span>, <span class="cls">String</span>&gt; box = <span class="kw">new</span> <span class="cls">LinkedHashMap</span>&lt;<span class="cls">String</span>, <span class="cls">String</span>&gt;();
         <span class="cls">Cookie</span>[] arr = request.<span class="mtd">getCookies</span>();
-        <span class="cls">StringBuilder</span> sb = <span class="kw">new</span> <span class="cls">StringBuilder</span>(<span class="str">&quot;All names stored in this browser:&lt;br&gt;&quot;</span>);
-        <span class="kw">int</span> n = <span class="num">0</span>;
-        <span class="kw">boolean</span> sawExtra = <span class="kw">false</span>;
         <span class="kw">if</span> (arr != <span class="kw">null</span>) {
             <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
                 <span class="cls">String</span> name = arr[i].<span class="mtd">getName</span>();
                 <span class="kw">if</span> (<span class="str">&quot;JSESSIONID&quot;</span>.<span class="mtd">equalsIgnoreCase</span>(name)) {
                     <span class="kw">continue</span>;
                 }
-                <span class="kw">if</span> (extraName != <span class="kw">null</span> &amp;&amp; extraName.<span class="mtd">equals</span>(name)) {
-                    sawExtra = <span class="kw">true</span>;
-                    sb.<span class="mtd">append</span>(<span class="str">&quot;user = &quot;</span>).<span class="mtd">append</span>(extraValue).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
-                } <span class="kw">else</span> <span class="kw">if</span> (name.<span class="mtd">startsWith</span>(<span class="str">&quot;u_&quot;</span>)) {
-                    sb.<span class="mtd">append</span>(<span class="str">&quot;user = &quot;</span>).<span class="mtd">append</span>(arr[i].<span class="mtd">getValue</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
-                } <span class="kw">else</span> {
-                    sb.<span class="mtd">append</span>(<span class="str">&quot;&lt;b&gt;&quot;</span>).<span class="mtd">append</span>(name).<span class="mtd">append</span>(<span class="str">&quot;&lt;/b&gt; = &quot;</span>).<span class="mtd">append</span>(arr[i].<span class="mtd">getValue</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
-                }
-                n++;
+                box.<span class="mtd">put</span>(name, arr[i].<span class="mtd">getValue</span>());
             }
         }
-        <span class="kw">if</span> (extraName != <span class="kw">null</span> &amp;&amp; !sawExtra) {
-            sb.<span class="mtd">append</span>(<span class="str">&quot;user = &quot;</span>).<span class="mtd">append</span>(extraValue).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
-            n++;
+        <span class="kw">if</span> (delName != <span class="kw">null</span>) {
+            box.<span class="mtd">remove</span>(delName);
         }
-        <span class="kw">if</span> (n == <span class="num">0</span>) {
-            sb.<span class="mtd">append</span>(<span class="str">&quot;None yet. Write Rahul, then Write Sagar.&quot;</span>);
+        <span class="kw">if</span> (addName != <span class="kw">null</span>) {
+            box.<span class="mtd">put</span>(addName, addValue);
+        }
+
+        <span class="cls">StringBuilder</span> mine = <span class="kw">new</span> <span class="cls">StringBuilder</span>();
+        <span class="cls">StringBuilder</span> other = <span class="kw">new</span> <span class="cls">StringBuilder</span>();
+        <span class="kw">int</span> a = <span class="num">0</span>;
+        <span class="kw">int</span> b = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="cls">Map</span>.<span class="cls">Entry</span>&lt;<span class="cls">String</span>, <span class="cls">String</span>&gt; e : box.<span class="mtd">entrySet</span>()) {
+            <span class="kw">if</span> (e.<span class="mtd">getKey</span>().<span class="mtd">startsWith</span>(<span class="str">&quot;u_&quot;</span>)) {
+                a++;
+                mine.<span class="mtd">append</span>(a).<span class="mtd">append</span>(<span class="str">&quot;. &lt;b&gt;&quot;</span>).<span class="mtd">append</span>(e.<span class="mtd">getKey</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;/b&gt; = &quot;</span>)
+                        .<span class="mtd">append</span>(e.<span class="mtd">getValue</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
+            } <span class="kw">else</span> {
+                b++;
+                other.<span class="mtd">append</span>(<span class="str">&quot;&lt;b&gt;&quot;</span>).<span class="mtd">append</span>(e.<span class="mtd">getKey</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;/b&gt; = &quot;</span>)
+                        .<span class="mtd">append</span>(e.<span class="mtd">getValue</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
+            }
+        }
+
+        <span class="cls">StringBuilder</span> sb = <span class="kw">new</span> <span class="cls">StringBuilder</span>();
+        sb.<span class="mtd">append</span>(<span class="str">&quot;&lt;b&gt;Names saved in this browser: &quot;</span>).<span class="mtd">append</span>(a).<span class="mtd">append</span>(<span class="str">&quot;&lt;/b&gt;&lt;br&gt;&quot;</span>);
+        <span class="kw">if</span> (a == <span class="num">0</span>) {
+            sb.<span class="mtd">append</span>(<span class="str">&quot;None yet. Type Rahul and click Write cookie.&lt;br&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            sb.<span class="mtd">append</span>(mine);
+        }
+        <span class="kw">if</span> (b &gt; <span class="num">0</span>) {
+            sb.<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;Cookies from the other demos: &quot;</span>).<span class="mtd">append</span>(b).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>).<span class="mtd">append</span>(other);
         }
         <span class="kw">return</span> sb.<span class="mtd">toString</span>();
     }

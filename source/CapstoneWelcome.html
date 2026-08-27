@@ -27,22 +27,35 @@ Portal joins POST + session + cookie + forward / include: the session proves you
 <p>If there is no session, send the user back to login. If there is a session, greet the user.</p>
 <p><b>What you must do:</b></p>
 <ol>
-<li>Use getSession(false). Guard against a missing session.</li><li>Print Welcome <user>, explain forward / session / cookie, and give a Logout link.</li><li>Write complete Java and complete web.xml.</li>
+<li>Use getSession(false). Guard against a missing session.</li><li>Print Welcome &lt;user&gt;, then one line for the session name and one line for the <code>remember</code> cookie read with <code>getCookies()</code>, so both places are visible together.</li><li>A cookie written on this response is not in this request, so print a clear line for that case.</li><li>Write complete Java and complete web.xml.</li>
 </ol>
 <p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/...</code>):</p>
 <pre class="sample-out">Welcome java
+Session (on the server) says: java
+remember cookie (in the browser): not in this request yet. A cookie you just
+wrote comes back on the next click. Open Welcome once more to see it.
+Two different places. Close the browser and the session goes, but the cookie
+stays for 7 days. Logout clears both.
+Logout</pre>
+<p><b>Open Welcome once more.</b> Now the browser sends the cookie, so both lines show the name:</p>
+<pre class="sample-out">Welcome java
+Session (on the server) says: java
+remember cookie (in the browser) says: java
+Two different places. Close the browser and the session goes, but the cookie
+stays for 7 days. Logout clears both.
 Logout</pre>
 </div>
 <div class="pflow">
 <h2>Program output flow</h2>
 <p class="pflow-cap">Mini portal: session + remember cookie + forward on success, include on failure. Login <b>java</b> / <b>servlet</b>.</p>
-<div class="pflow-lab">Success</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/CapstoneLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>session + cookie remember<br>forward CapstoneWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome java<br>Logout<br>(URL still /CapstoneLogin)</span></div></div><div class="pflow-lab">Failure</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>print error + include form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect Login ID / Password<br>+ login form again</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>invalidate + cookie maxAge 0</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>capstone.html</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again</span></div></div></div>
+<div class="pflow-lab">Success</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/CapstoneLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>session + cookie remember<br>forward CapstoneWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome java<br>session says java<br>cookie: next click<br>(URL still /CapstoneLogin)</span></div></div><div class="pflow-lab">Failure</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>print error + include form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect Login ID / Password<br>+ login form again</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>invalidate + cookie maxAge 0</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>capstone.html</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again</span></div></div></div>
 <p><a class="btn" href="../capstone.html">Run ICA project</a> <a class="btn ghost" href="../practicals.html#ica-4">ICA journal</a> <a class="btn" href="../index.html">Index</a></p>
 <div class="info">Capstone project source (Java + web.xml)</div>
 <h2>1) Java - CapstoneWelcome.java</h2>
 <pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">Cookie</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
@@ -68,10 +81,36 @@ Logout</pre>
             response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;capstone.html&quot;</span>);
             <span class="kw">return</span>;
         }
+        <span class="cls">String</span> remembered = <span class="mtd">cookieValue</span>(request, <span class="str">&quot;remember&quot;</span>);
         response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
         <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h1&gt;Welcome &quot;</span> + session.<span class="mtd">getAttribute</span>(<span class="str">&quot;username&quot;</span>) + <span class="str">&quot;&lt;/h1&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Session (on the server) says: &lt;b&gt;&quot;</span>
+                + session.<span class="mtd">getAttribute</span>(<span class="str">&quot;username&quot;</span>) + <span class="str">&quot;&lt;/b&gt;&lt;/p&gt;&quot;</span>);
+        <span class="kw">if</span> (remembered == <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;remember cookie (in the browser): not in this request yet.&quot;</span>
+                    + <span class="str">&quot; A cookie you just wrote comes back on the next click.&quot;</span>
+                    + <span class="str">&quot; Open Welcome once more to see it.&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;remember cookie (in the browser) says: &lt;b&gt;&quot;</span> + remembered + <span class="str">&quot;&lt;/b&gt;&lt;/p&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Two different places. Close the browser and the session goes,&quot;</span>
+                + <span class="str">&quot; but the cookie stays for 7 days. Logout clears both.&lt;/p&gt;&quot;</span>);
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;CapstoneLogout&#x27;&gt;Logout&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+    }
+
+    <span class="cmt">/** Value of one cookie, or null if the browser did not send it. */</span>
+    <span class="kw">private</span> <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">cookieValue</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">String</span> name) {
+        <span class="cls">Cookie</span>[] arr = request.<span class="mtd">getCookies</span>();
+        <span class="kw">if</span> (arr == <span class="kw">null</span>) {
+            <span class="kw">return</span> <span class="kw">null</span>;
+        }
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
+            <span class="kw">if</span> (name.<span class="mtd">equals</span>(arr[i].<span class="mtd">getName</span>())) {
+                <span class="kw">return</span> arr[i].<span class="mtd">getValue</span>();
+            }
+        }
+        <span class="kw">return</span> <span class="kw">null</span>;
     }
 }
 </pre>

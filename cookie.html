@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Cookie demo — write, read, list, delete</title>
-<link rel="stylesheet" href="portal.css?v=2800">
-<script src="portal.js?v=2800" defer></script>
+<link rel="stylesheet" href="portal.css?v=2802">
+<script src="portal.js?v=2802" defer></script>
 <style>
 .cook-btns { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; }
 .cook-btns button { padding:10px 16px; font-size:16px; cursor:pointer; }
@@ -16,6 +16,7 @@
 <div class="wrap">
 <h1>Cookie demo (like YouTube Remember me)</h1>
 <p>Type <b>Rahul</b> → Write. Type <b>Sagar</b> → Write. Read / Display all shows <b>both</b> (each name is its own cookie).</p>
+<p class="note">A cookie is known by its <b>name</b> only. <b>Rahul</b> is saved as <code>u_Rahul</code> and <b>Sagar</b> as <code>u_Sagar</code>, so two different names live together. Write <b>Rahul</b> a second time and the same <code>u_Rahul</code> box is used again — the value is written on top, no second copy is made, and <b>no old name is deleted</b>. Only <code>setMaxAge(0)</code> deletes.</p>
 <div class="nav">
 <a class="btn ghost" href="topics/07-cookies/theory.html">Theory</a>
 <a class="btn active" href="cookie.html">Run project</a>
@@ -38,7 +39,7 @@
   </div>
 </form>
 <p class="note" style="margin-top:12px">
-  Each Write adds a name. Rahul then Sagar both stay. Delete: type that name (Rahul) and click Delete selected cookie.
+  Each <b>new</b> name adds a cookie; the <b>same</b> name reuses its own cookie. Delete: type that name (Rahul) and click Delete selected cookie — only that one goes.
 </p>
 <script>
 (function () {

@@ -7,8 +7,8 @@
 <meta http-equiv="Expires" content="0">
 <title>7. Session Management - Cookies</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../../portal.css?v=2800">
-<script src="../../portal.js?v=2800" defer></script>
+<link rel="stylesheet" href="../../portal.css?v=2802">
+<script src="../../portal.js?v=2802" defer></script>
 
 </head>
 <body>
@@ -64,8 +64,17 @@ See <a href="../../setup.html">Lab Setup</a>.
 <tr><td>YouTube remembers last watched video</td><td><code>new Cookie("lastVideo", "Java")</code></td></tr>
 <tr><td>You return; stickers are still on the bag</td><td><code>request.getCookies()</code></td></tr>
 <tr><td>Sign out of this browser / Forget me</td><td>same name + <code>setMaxAge(0)</code></td></tr>
+<tr><td>Writing a new price on the <b>same</b> sticker</td><td>same name again = value replaced, still one cookie</td></tr>
 <tr><td>Password on a tag on a cafe laptop</td><td>Never — use session + POST instead</td></tr>
 </table>
+<h3>The name is the address (important for the exam)</h3>
+<p>A browser keeps <b>one</b> cookie per name for a site. So the name decides everything:</p>
+<table class="synexp"><tr><th>You write</th><th>What the browser does</th></tr>
+<tr><td>A <b>new</b> name, like <code>u_Sagar</code> after <code>u_Rahul</code></td><td>Makes a new cookie. Both stay. Count goes 1 → 2.</td></tr>
+<tr><td>The <b>same</b> name twice, like <code>u_Rahul</code> again</td><td>Uses that same cookie and writes the value on top. No second copy is made, and no other name is deleted. Count stays the same.</td></tr>
+<tr><td>The same name with <code>setMaxAge(0)</code></td><td>Throws that one cookie away. Other names are untouched.</td></tr>
+</table>
+<p>This is why the demo stores <code>Rahul</code> as <code>u_Rahul</code> and <code>Sagar</code> as <code>u_Sagar</code>. If both were saved under one name <code>user</code>, the second write would silently replace the first and only one name would ever show.</p>
 <h3>What you will see</h3>
 <p>After Cookie1, DevTools → Application → Cookies shows <code>user</code>. Cookie2 greets Rahul and adds <code>lastVideo</code>. Cookie3 lists both. After Forget me, Cookie3 should not find <code>user</code>.</p>
 <h3>Easy mistake</h3>

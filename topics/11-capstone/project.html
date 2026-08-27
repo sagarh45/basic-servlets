@@ -5,8 +5,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Project - 11. Capstone Student Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../../portal.css?v=2800">
-<script src="../../portal.js?v=2800" defer></script>
+<link rel="stylesheet" href="../../portal.css?v=2802">
+<script src="../../portal.js?v=2802" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -39,8 +39,9 @@ Do not mix Cookie1 or NotesSessionLogin into this project.</div>
 <ol>
 <li>Open Execute. Type user <code>java</code> and password <code>servlet</code>. Click Login (POST).</li>
 <li>Success page: Welcome java. Address bar still shows <code>/CapstoneLogin</code> because of <b>forward</b>.</li>
-<li>Refresh Welcome later: session still has the name (HttpSession).</li>
-<li>Open login again later: the user box may already show <code>java</code> (remember cookie).</li>
+<li>Read the two lines on Welcome. The first is the <b>session</b> (server side), the second is the <b>remember cookie</b> (browser side). The cookie line says “not in this request yet” the first time, because a cookie you just wrote comes back only on the next click.</li>
+<li>Open Welcome once more: now both lines say <code>java</code>. Same name, two different places.</li>
+<li>Close the browser and open Welcome again: the session is gone, so you are sent back to the form — but the cookie is still there for 7 days.</li>
 <li>Click Logout: session is invalidated, cookie is removed, form comes back empty.</li>
 <li>Try a wrong password: error message + the same form is included (include, not forward).</li>
 </ol>
@@ -51,7 +52,7 @@ Do not mix Cookie1 or NotesSessionLogin into this project.</div>
 <table>
 <tr><th>Class</th><th>Real job</th></tr>
 <tr><td><code>CapstoneLogin</code></td><td>Reads the filled form. Checks java/servlet. On success: session + cookie + forward.</td></tr>
-<tr><td><code>CapstoneWelcome</code></td><td>Reads session. If missing, send back to the form. Shows Welcome + Logout.</td></tr>
+<tr><td><code>CapstoneWelcome</code></td><td>Reads the session. If missing, send back to the form. Shows Welcome, the session name, the remember cookie, and Logout.</td></tr>
 <tr><td><code>CapstoneLogout</code></td><td>invalidate() session and delete remember cookie, then go back to the form.</td></tr>
 </table>
 </div>
