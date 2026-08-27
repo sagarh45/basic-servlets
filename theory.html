@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Theory · Unit-II Servlets · WIT Solapur</title>
-<link rel="stylesheet" href="portal.css?v=2600">
-<script src="portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="portal.css?v=2800">
+<script src="portal.js?v=2800" defer></script>
 </head>
 <body>
 <header class="sitebar">
@@ -24,9 +24,10 @@
 
 <div class="wrap">
   <section class="hero">
-    <span class="kicker">Tab 1 · Complete theory package · English</span>
+    <span class="kicker">Tab 1 · Nine chapters · Simple English</span>
     <h1>Visual theory: Servlets and session tracking</h1>
     <p>Read this map first. Open each chapter for deep English notes: a daily-life story (restaurant, Gmail, hospital, UPI), what you will see, the matching Java, labelled diagrams, functions with syntax, and complete code.</p>
+    <p class="note">Nine chapters. Session tracking is taught with the two tools you actually use: <b>cookies</b> (Chapter 07) and <b>HttpSession</b> (Chapter 08). URL rewriting and hidden form fields are not part of this course.</p>
   </section>
 
   <div class="labstack">
@@ -97,17 +98,7 @@
       <p>Gmail-style login. Data lives on the server. Cookie only carries the session id.</p>
     </div>
     <div class="viz-card">
-      <h3>9. URL rewriting</h3>
-      <div class="mini"><span>Cookies off</span><i>→</i><span>jsessionid in link</span></div>
-      <p>When the browser will not store a cookie, the id travels in the URL.</p>
-    </div>
-    <div class="viz-card">
-      <h3>10. Hidden field</h3>
-      <div class="mini"><span>Not in address bar</span><i>but</i><span>visible in View Source</span></div>
-      <p>Multi-step exam form. Next POST carries the name. Not a secret.</p>
-    </div>
-    <div class="viz-card">
-      <h3>11. Capstone portal</h3>
+      <h3>9. Capstone portal</h3>
       <div class="mini"><span>POST</span><span>Session</span><span>Cookie</span><span>Forward</span><span>Logout</span></div>
       <p>Join the unit: login java / servlet. Wrong password includes the form again.</p>
     </div>
@@ -155,6 +146,7 @@
       <p>Daily-life examples, request path through Tomcat 11, functions with syntax, complete HelloServlet + web.xml with every line commented.</p>
       <div class="ch-actions">
         <a class="btn" href="topics/01-intro/theory.html?v=2100">Open full notes</a>
+        <a class="btn ghost" href="programs.html#p-intro">Go to program</a>
       </div>
     </article>
     <article class="ch-card" data-id="ch-http" data-kind="lab" data-tags="http">
@@ -163,7 +155,7 @@
       <p>GET search, POST register, PUT update, DELETE remove, OPTIONS menu, TRACE echo.</p>
       <div class="ch-actions">
         <a class="btn" href="topics/02-http/theory.html?v=2100">Open full notes</a>
-        <a class="btn ghost" href="programs.html#p-http">Go to program</a>
+        <a class="btn ghost" href="programs.html#p-methods">Go to program</a>
       </div>
     </article>
     <article class="ch-card" data-id="ch-getpost" data-kind="lab" data-tags="get post">
@@ -220,31 +212,14 @@
         <a class="btn ghost" href="programs.html#p-session">Go to program</a>
       </div>
     </article>
-    <article class="ch-card" data-id="ch-url" data-kind="lab" data-tags="url rewrite">
-      <div class="ch-top"><span class="ch-num">CHAPTER 09</span></div>
-      <h2>URL Rewriting</h2>
-      <p>Carry identity in the link when cookies are disabled.</p>
-      <div class="ch-actions">
-        <a class="btn" href="topics/09-urlrewrite/theory.html?v=2100">Open full notes</a>
-        <a class="btn ghost" href="programs.html#p-url">Go to program</a>
-      </div>
-    </article>
-    <article class="ch-card" data-id="ch-hidden" data-kind="lab" data-tags="hidden">
-      <div class="ch-top"><span class="ch-num">CHAPTER 10</span></div>
-      <h2>Hidden Form Field</h2>
-      <p>Name travels in the next POST. View Source still shows it.</p>
-      <div class="ch-actions">
-        <a class="btn" href="topics/10-hidden/theory.html?v=2100">Open full notes</a>
-        <a class="btn ghost" href="programs.html#p-hidden">Go to program</a>
-      </div>
-    </article>
     <article class="ch-card" data-id="ch-capstone" data-kind="project" data-tags="capstone">
-      <div class="ch-top"><span class="ch-num">CHAPTER 11</span></div>
-      <h2>Capstone: Student login portal</h2>
-      <p>POST + session + remember cookie + forward / include + logout.</p>
+      <div class="ch-top"><span class="ch-num">CHAPTER 09</span></div>
+      <h2>Capstone: MyMail login portal</h2>
+      <p>POST + session + remember cookie + forward / include + logout. Joins Chapter 07 and Chapter 08.</p>
       <div class="ch-actions">
-        <a class="btn" href="topics/11-capstone/theory.html?v=2100">Open full notes</a>
+        <a class="btn" href="topics/11-capstone/theory.html?v=2800">Open full notes</a>
         <a class="btn ghost" href="topics/11-capstone/project.html">Project sheet</a>
+        <a class="btn ghost" href="programs.html#p-portal">Go to program</a>
       </div>
     </article>
   </div>

@@ -7,8 +7,8 @@
 <meta http-equiv="Expires" content="0">
 <title>7. Session Management - Cookies</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../../portal.css?v=2600">
-<script src="../../portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="../../portal.css?v=2800">
+<script src="../../portal.js?v=2800" defer></script>
 
 </head>
 <body>
@@ -89,7 +89,7 @@ See <a href="../../setup.html">Lab Setup</a>.
 <tr><th>Use cookies when</th><th>Do not use cookies when</th></tr>
 <tr><td>Remember a display name, theme, last city (non-secret)</td><td>Password, marks, bank data</td></tr>
 <tr><td>You need data on the next visit even after the tab closed (setMaxAge &gt; 0)</td><td>You need data only on the server (use HttpSession)</td></tr>
-<tr><td>The browser may send the value back automatically</td><td>Cookies are disabled (use URL rewriting or hidden field)</td></tr>
+<tr><td>The browser may send the value back automatically</td><td>The student must not be able to change the value (use HttpSession)</td></tr>
 </table>
 <p><b>Create</b> Remember me in Cookie1. <b>Read + last watched</b> in Cookie2. <b>List</b> in Cookie3. <b>Forget me</b> with same name + setMaxAge(0) in CookieDelete.</p>
 </div>

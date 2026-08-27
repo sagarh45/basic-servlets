@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Cookie demo — write, read, list, delete</title>
-<link rel="stylesheet" href="portal.css?v=2720">
-<script src="portal.js?v=2720" defer></script>
+<link rel="stylesheet" href="portal.css?v=2800">
+<script src="portal.js?v=2800" defer></script>
 <style>
 .cook-btns { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; }
 .cook-btns button { padding:10px 16px; font-size:16px; cursor:pointer; }
-.cookie-out { min-height:72px; background:#fff8e6; border:2px solid #0d7377; border-radius:10px; padding:14px 16px; margin-top:16px; font-size:18px; }
-.cookie-out b { color:#0d7377; }
 </style>
 </head>
 <body>
@@ -21,7 +19,7 @@
 <div class="nav">
 <a class="btn ghost" href="topics/07-cookies/theory.html">Theory</a>
 <a class="btn active" href="cookie.html">Run project</a>
-<a class="btn source" href="source/Cookie1.html">Source</a>
+<a class="btn source" href="source/CookieDemo.html">Source</a>
 </div>
 
 <div class="card">
@@ -39,7 +37,6 @@
     <button type="submit" name="op" value="delete">Delete selected cookie</button>
   </div>
 </form>
-<div class="cookie-out" id="cookieOut">Result box — Write Rahul, then Write Sagar. Both names stay.</div>
 <p class="note" style="margin-top:12px">
   Each Write adds a name. Rahul then Sagar both stay. Delete: type that name (Rahul) and click Delete selected cookie.
 </p>
@@ -52,6 +49,9 @@
 })();
 </script>
 </div>
+
+<h3 class="sec">Output</h3>
+<div class="labout" id="labOut"><p class="labout-empty">Click any button above. The result appears here and the form stays on screen.</p></div>
 
 <p style="margin-top:18px;"><a href="programs.html#p-cookie">Back to Programs</a></p>
 </div>

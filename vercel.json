@@ -4,10 +4,29 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
+
+    { "source": "/httpmethods", "destination": "/httpmethods.html" },
+    { "source": "/getpostdiff", "destination": "/httpmethods.html" },
+
+    { "source": "/lifecycle", "destination": "/lifecycle.html" },
+    { "source": "/configcontext", "destination": "/lifecycle.html" },
+
+    { "source": "/forward", "destination": "/forward.html" },
+    { "source": "/redirect", "destination": "/forward.html" },
+    { "source": "/target", "destination": "/forward.html" },
+    { "source": "/include", "destination": "/forward.html" },
+
     { "source": "/cookiedemo", "destination": "/cookie.html" },
-    { "source": "/Cookie1", "destination": "/cookie.html" },
-    { "source": "/Cookie2", "destination": "/cookie.html" },
-    { "source": "/Cookie3", "destination": "/cookie.html" },
-    { "source": "/CookieDelete", "destination": "/cookie.html" }
+
+    { "source": "/Cookie1", "destination": "/capstone.html" },
+    { "source": "/Cookie2", "destination": "/capstone.html" },
+    { "source": "/Cookie3", "destination": "/capstone.html" },
+    { "source": "/CookieDelete", "destination": "/capstone.html" },
+    { "source": "/NotesSessionLogin", "destination": "/capstone.html" },
+    { "source": "/NotesSessionWelcome", "destination": "/capstone.html" },
+    { "source": "/NotesSessionLogout", "destination": "/capstone.html" },
+    { "source": "/CapstoneLogin", "destination": "/capstone.html" },
+    { "source": "/CapstoneWelcome", "destination": "/capstone.html" },
+    { "source": "/CapstoneLogout", "destination": "/capstone.html" }
   ]
 }

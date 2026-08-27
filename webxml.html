@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Complete web.xml · Unit-II Servlets · WIT Solapur</title>
-<link rel="stylesheet" href="portal.css?v=2600">
-<script src="portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="portal.css?v=2800">
+<script src="portal.js?v=2800" defer></script>
 </head>
 <body>
 <header class="sitebar">
@@ -241,17 +241,9 @@
     &lt;servlet&gt;&lt;servlet-name&gt;NotesSessionLogout&lt;/servlet-name&gt;&lt;servlet-class&gt;NotesSessionLogout&lt;/servlet-class&gt;&lt;/servlet&gt;
     &lt;servlet-mapping&gt;&lt;servlet-name&gt;NotesSessionLogout&lt;/servlet-name&gt;&lt;url-pattern&gt;/NotesSessionLogout&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
 
-    &lt;!-- ICA 08: URL rewriting --&gt;
-    &lt;servlet&gt;&lt;servlet-name&gt;Url1&lt;/servlet-name&gt;&lt;servlet-class&gt;Url1&lt;/servlet-class&gt;&lt;/servlet&gt;
-    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Url1&lt;/servlet-name&gt;&lt;url-pattern&gt;/Url1&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
-    &lt;servlet&gt;&lt;servlet-name&gt;Url2&lt;/servlet-name&gt;&lt;servlet-class&gt;Url2&lt;/servlet-class&gt;&lt;/servlet&gt;
-    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Url2&lt;/servlet-name&gt;&lt;url-pattern&gt;/Url2&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
-
-    &lt;!-- ICA 09: hidden field --&gt;
-    &lt;servlet&gt;&lt;servlet-name&gt;Valid&lt;/servlet-name&gt;&lt;servlet-class&gt;Valid&lt;/servlet-class&gt;&lt;/servlet&gt;
-    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Valid&lt;/servlet-name&gt;&lt;url-pattern&gt;/Valid&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
-    &lt;servlet&gt;&lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;&lt;servlet-class&gt;Welcome&lt;/servlet-class&gt;&lt;/servlet&gt;
-    &lt;servlet-mapping&gt;&lt;servlet-name&gt;Welcome&lt;/servlet-name&gt;&lt;url-pattern&gt;/Welcome&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
+    &lt;!-- Chapter 07: cookie write / read / display all / delete on one page --&gt;
+    &lt;servlet&gt;&lt;servlet-name&gt;CookieDemo&lt;/servlet-name&gt;&lt;servlet-class&gt;CookieDemo&lt;/servlet-class&gt;&lt;/servlet&gt;
+    &lt;servlet-mapping&gt;&lt;servlet-name&gt;CookieDemo&lt;/servlet-name&gt;&lt;url-pattern&gt;/cookiedemo&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
 
     &lt;servlet&gt;&lt;servlet-name&gt;ServletIntroWorking&lt;/servlet-name&gt;&lt;servlet-class&gt;ServletIntroWorking&lt;/servlet-class&gt;&lt;/servlet&gt;
     &lt;servlet-mapping&gt;&lt;servlet-name&gt;ServletIntroWorking&lt;/servlet-name&gt;&lt;url-pattern&gt;/intro&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
@@ -260,7 +252,7 @@
     &lt;servlet&gt;&lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;&lt;servlet-class&gt;GetPostDiffServlet&lt;/servlet-class&gt;&lt;/servlet&gt;
     &lt;servlet-mapping&gt;&lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;&lt;url-pattern&gt;/getpostdiff&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
 
-    &lt;!-- ICA 10 capstone mini project --&gt;
+    &lt;!-- ICA 04 capstone mini project: cookie + HttpSession --&gt;
     &lt;servlet&gt;&lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;&lt;servlet-class&gt;CapstoneLogin&lt;/servlet-class&gt;&lt;/servlet&gt;
     &lt;servlet-mapping&gt;&lt;servlet-name&gt;CapstoneLogin&lt;/servlet-name&gt;&lt;url-pattern&gt;/CapstoneLogin&lt;/url-pattern&gt;&lt;/servlet-mapping&gt;
     &lt;servlet&gt;&lt;servlet-name&gt;CapstoneWelcome&lt;/servlet-name&gt;&lt;servlet-class&gt;CapstoneWelcome&lt;/servlet-class&gt;&lt;/servlet&gt;

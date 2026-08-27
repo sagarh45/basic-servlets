@@ -2,15 +2,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>ICA 4 · MyMail account — run this small project</title>
-<link rel="stylesheet" href="portal.css?v=2600">
-<script src="portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="portal.css?v=2800">
+<script src="portal.js?v=2800" defer></script>
 </head>
 <body>
 <div class="wrap">
 <h1>Small project: MyMail account</h1>
-<p>One HTML page. Many Java classes (that is allowed). Login is always <b>java</b> / <b>servlet</b>. Password is never stored in a cookie. Click every block.</p>
+<p>One HTML page. Two ways to remember a user: a <b>cookie</b> in the browser and an <b>HttpSession</b> on the server. Then one portal that uses both. Login is always <b>java</b> / <b>servlet</b>. A password is never stored in a cookie.</p>
 <div class="nav">
 <a class="btn ghost" href="practicals.html#ica-4">ICA journal</a>
 <a class="btn active" href="capstone.html">Run project</a>
@@ -19,71 +20,61 @@
 
 <div class="ps">
 <h2>What this project does</h2>
-<p>MyMail is a small Gmail-like site. HTTP forgets you after each click, so we store a name in four ways. Then we join them in one portal.</p>
+<p>HTTP forgets you after every click. MyMail remembers you in two places, and you can see the difference.</p>
 <ol>
-<li><b>Remember me (cookie)</b> — browser keeps <code>user=Rahul</code>. Home greets you. Forget me uses <code>setMaxAge(0)</code>.</li>
-<li><b>Gmail login (HttpSession)</b> — name lives on the server. Welcome then Logout.</li>
-<li><b>Cookies off (URL rewriting)</b> — ids travel in the next-page link.</li>
-<li><b>Hidden id</b> — form posts <code>session_id=054</code> you did not type. View Source still shows it.</li>
-<li><b>Full portal</b> — success: session + cookie + forward (URL stays /CapstoneLogin). Wrong password: include the form. Logout: invalidate + cookie maxAge 0.</li>
+<li><b>Cookie</b> — the browser keeps <code>user=Rahul</code>. Home greets you without asking again. Forget me deletes it with <code>setMaxAge(0)</code>.</li>
+<li><b>HttpSession</b> — the name lives in Tomcat memory. Welcome reads <code>getSession(false)</code>. Logout calls <code>invalidate()</code>.</li>
+<li><b>Full portal</b> — correct login: session + cookie + <b>forward</b>, so the URL stays <code>/CapstoneLogin</code>. Wrong password: <b>include</b> shows the form again. Logout clears both.</li>
 </ol>
 <pre class="sample-out">Welcome java
-Login success using forward.
-Username stored in HttpSession.
-Cookie remember also created for next visit.
 Logout</pre>
 </div>
 
 <div class="card">
 <h3>A) Remember me on this browser (cookie)</h3>
-<p>Like YouTube Continue as Rahul. Full write / read / delete project: <a href="cookie.html">WatchTube cookies</a>. Four Java classes: Cookie1, Cookie2, Cookie3, CookieDelete.</p>
+<p>Like YouTube “Continue as Rahul”. Four Java classes: <code>Cookie1</code> writes, <code>Cookie2</code> reads on Home, <code>Cookie3</code> lists, <code>CookieDelete</code> deletes. Write first, then Read — a cookie you just wrote is not in the same request.</p>
 <form method="post" action="Cookie1">
 <div class="row"><label class="f">Display name</label><input name="login" value="Rahul"></div>
-<input type="submit" value="Remember me (POST)">
+<input type="submit" value="1. Remember me (POST)">
 </form>
-<p style="margin-top:10px;"><a href="Cookie2">Open Home</a> &nbsp;|&nbsp; <a href="Cookie3">List cookies</a> &nbsp;|&nbsp; <a href="CookieDelete">Forget me</a></p>
+<p style="margin-top:10px;">
+<a href="Cookie2">2. Read on Home</a> &nbsp;|&nbsp;
+<a href="Cookie3">List cookies</a> &nbsp;|&nbsp;
+<a href="CookieDelete">3. Forget me (delete)</a>
+</p>
+<p class="note">Many names at once? Open the <a href="cookie.html">cookie write / read / delete page</a>.</p>
 </div>
 
 <div class="card">
 <h3>B) Sign in (HttpSession)</h3>
-<p>Like Gmail. Name lives on the server. Three Java classes. Try a wrong password too.</p>
+<p>Like Gmail. The name is stored on the server, not in the browser. Three Java classes: <code>NotesSessionLogin</code>, <code>NotesSessionWelcome</code>, <code>NotesSessionLogout</code>. Try a wrong password too, then Logout and open Welcome again.</p>
 <form method="post" action="NotesSessionLogin">
 <div class="row"><label class="f">User</label><input name="login" value="java"></div>
 <div class="row"><label class="f">Password</label><input type="password" name="pwd" value="servlet"></div>
 <input type="submit" value="Sign in (POST)">
 </form>
+<p style="margin-top:10px;">
+<a href="NotesSessionWelcome">Open Welcome</a> &nbsp;|&nbsp;
+<a href="NotesSessionLogout">Logout (invalidate)</a>
+</p>
 </div>
 
 <div class="card">
-<h3>C) Cookies are off (URL rewriting)</h3>
-<p>Like old net-banking. The next page reads both ids from the URL. Two Java classes: Url1, Url2.</p>
-<form method="get" action="Url1">
-<div class="row"><label class="f">Id 1</label><input name="s_id1" value="054"></div>
-<div class="row"><label class="f">Id 2</label><input name="s_id2" value="055"></div>
-<input type="submit" value="Carry ids in the URL (GET)">
-</form>
-</div>
-
-<div class="card">
-<h3>D) Hidden application id</h3>
-<p>Like a two-step form. Hidden <code>session_id=054</code> is posted with login. View Source to see it. Two Java classes: Valid, Welcome.</p>
-<form method="post" action="Valid">
-<div class="row"><label class="f">Login</label><input name="login" value="java"></div>
-<div class="row"><label class="f">Password</label><input name="pwd" value="servlet"></div>
-<input type="hidden" name="session_id" value="054">
-<input type="submit" value="Continue (POST)">
-</form>
-</div>
-
-<div class="card">
-<h3>E) Full MyMail portal</h3>
-<p>Joins session + remember cookie + forward + include + logout. Three Java classes. Correct login: java / servlet.</p>
+<h3>C) Full MyMail portal (cookie + session together)</h3>
+<p>Joins both tools. Correct login stores the name in the session, sets a 7-day <code>remember</code> cookie (name only), and <b>forwards</b> to Welcome, so the URL stays <code>/CapstoneLogin</code>. Wrong password <b>includes</b> this form again. Logout invalidates the session and deletes the cookie.</p>
 <form method="post" action="CapstoneLogin">
 <div class="row"><label class="f">Login</label><input name="login" value="java"></div>
 <div class="row"><label class="f">Password</label><input type="password" name="pwd" value="servlet"></div>
 <input type="submit" value="Open MyMail portal (POST)">
 </form>
+<p style="margin-top:10px;">
+<a href="CapstoneWelcome">Open Welcome</a> &nbsp;|&nbsp;
+<a href="CapstoneLogout">Logout (clear both)</a>
+</p>
 </div>
+
+<h3 class="sec">Output</h3>
+<div class="labout" id="labOut"><p class="labout-empty">Click any button above. The result appears here and the forms stay on screen.</p></div>
 
 <p style="margin-top:18px;"><a href="practicals.html#ica-4">Back to ICA 4</a></p>
 </div>

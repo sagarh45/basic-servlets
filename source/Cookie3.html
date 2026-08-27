@@ -49,14 +49,13 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 04 · MYMAIL ACCOUNT</p>
-<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookies, session, URL rewrite, hidden field and portal together.
-Java: <a href="Cookie1.html">Cookie1</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="Url1.html">Url1</a> · <a href="Valid.html">Valid</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
+<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookie, HttpSession and the portal that uses both.
+Java: <a href="Cookie1.html">Cookie1</a> · <a href="Cookie2.html">Cookie2</a> · <a href="CookieDelete.html">CookieDelete</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
 <a href="../practicals.html#ica-4">ICA journal</a>
 <a class="btn" href="../capstone.html">Run MyMail account</a></div>
 <div class="realex"><b>Real examples:</b> Cookie = YouTube / Instagram Continue as Rahul (never store a password).
 HttpSession = Gmail / WhatsApp Web login until Logout.
-URL rewriting = old net-banking when cookies are blocked.
-Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + forward / include.</div>
+Portal joins POST + session + cookie + forward / include: the session proves you are logged in, the cookie only remembers your display name.</div>
 
 <h1>Source: Cookie3</h1>
 <div class="ps">
@@ -102,21 +101,46 @@ lastVideo = Java</pre>
 <span class="kw">import</span> jakarta.servlet.*;
 <span class="kw">import</span> jakarta.servlet.http.*;
 
+<span class="cmt">/** WatchTube account — READ / list cookies user and lastVideo. */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">Cookie3</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
     <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
         response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
         <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;body&gt;&lt;h2&gt;Account — cookies on this browser&lt;/h2&gt;&quot;</span>);
+        <span class="kw">boolean</span> afterDelete = <span class="str">&quot;1&quot;</span>.<span class="mtd">equals</span>(request.<span class="mtd">getParameter</span>(<span class="str">&quot;deleted&quot;</span>));
+        <span class="kw">boolean</span> hasUser = <span class="kw">false</span>;
+        <span class="kw">boolean</span> hasVideo = <span class="kw">false</span>;
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;body&gt;&quot;</span>);
+        <span class="kw">if</span> (afterDelete) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;3. DELETE done — READ remaining cookies&lt;/h2&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;READ — cookies on this browser&lt;/h2&gt;&quot;</span>);
+        }
         <span class="cls">Cookie</span>[] arr = request.<span class="mtd">getCookies</span>();
+        <span class="kw">int</span> shown = <span class="num">0</span>;
         <span class="kw">if</span> (arr != <span class="kw">null</span>) {
             <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
-                out.<span class="mtd">println</span>(arr[i].<span class="mtd">getName</span>() + <span class="str">&quot; = &quot;</span> + arr[i].<span class="mtd">getValue</span>() + <span class="str">&quot;&lt;br&gt;&quot;</span>);
+                <span class="cls">String</span> n = arr[i].<span class="mtd">getName</span>();
+                <span class="kw">if</span> (<span class="str">&quot;JSESSIONID&quot;</span>.<span class="mtd">equalsIgnoreCase</span>(n)) {
+                    <span class="kw">continue</span>;
+                }
+                out.<span class="mtd">println</span>(n + <span class="str">&quot; = &quot;</span> + arr[i].<span class="mtd">getValue</span>() + <span class="str">&quot;&lt;br&gt;&quot;</span>);
+                shown++;
+                <span class="kw">if</span> (<span class="str">&quot;user&quot;</span>.<span class="mtd">equals</span>(n)) {
+                    hasUser = <span class="kw">true</span>;
+                }
+                <span class="kw">if</span> (<span class="str">&quot;lastVideo&quot;</span>.<span class="mtd">equals</span>(n)) {
+                    hasVideo = <span class="kw">true</span>;
+                }
             }
-        } <span class="kw">else</span> {
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;No cookies.&lt;/p&gt;&quot;</span>);
         }
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;CookieDelete&#x27;&gt;Forget me on this device&lt;/a&gt; | &lt;a href=&#x27;index.html#ex-cookie3&#x27;&gt;Index&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        <span class="kw">if</span> (shown == <span class="num">0</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;No lab cookies (user / lastVideo).&lt;/p&gt;&quot;</span>);
+        }
+        <span class="kw">if</span> (afterDelete &amp;&amp; !hasUser &amp;&amp; !hasVideo) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;b&gt;Forget me worked.&lt;/b&gt; user and lastVideo are gone.&lt;/p&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;cookie.html&#x27;&gt;1. WRITE again&lt;/a&gt; | &lt;a href=&#x27;Cookie2&#x27;&gt;2. READ Home&lt;/a&gt; | &lt;a href=&#x27;CookieDelete&#x27;&gt;3. DELETE&lt;/a&gt;&lt;/p&gt;&quot;</span>);
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
     }
 }

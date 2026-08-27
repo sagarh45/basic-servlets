@@ -42,19 +42,18 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 04 · MYMAIL ACCOUNT</p>
-<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookies, session, URL rewrite, hidden field and portal together.
-Java: <a href="Cookie1.html">Cookie1</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="Url1.html">Url1</a> · <a href="Valid.html">Valid</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
+<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookie, HttpSession and the portal that uses both.
+Java: <a href="Cookie1.html">Cookie1</a> · <a href="Cookie2.html">Cookie2</a> · <a href="CookieDelete.html">CookieDelete</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
 <a href="../practicals.html#ica-4">ICA journal</a>
 <a class="btn" href="../capstone.html">Run MyMail account</a></div>
 <div class="realex"><b>Real examples:</b> Cookie = YouTube / Instagram Continue as Rahul (never store a password).
 HttpSession = Gmail / WhatsApp Web login until Logout.
-URL rewriting = old net-banking when cookies are blocked.
-Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + forward / include.</div>
+Portal joins POST + session + cookie + forward / include: the session proves you are logged in, the cookie only remembers your display name.</div>
 
 <div class="ps">
 <h2>Problem statement (ICA 4 · MyMail account — cookies)</h2>
 <p><b>Title:</b> YouTube-style Remember me on the MyMail account page</p>
-<p>All four cookie classes plus session, URL rewrite, hidden field and portal sit on <b>one HTML:</b> <code>capstone.html</code>. Cookie name <code>user</code>. Never store a password.</p>
+<p>All four cookie classes plus session and portal sit on <b>one HTML:</b> <code>capstone.html</code>. Cookie name <code>user</code>. Never store a password.</p>
 <p><b>What you must do:</b></p>
 <ol>
 <li>POST display name Rahul to Cookie1. Page shows Continue as Rahul (<code>user=Rahul</code>).</li>
@@ -118,6 +117,7 @@ Password is not stored.</pre>
 <span class="kw">import</span> jakarta.servlet.*;
 <span class="kw">import</span> jakarta.servlet.http.*;
 
+<span class="cmt">/** WatchTube Remember me — WRITE cookies user and lastVideo. */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">Cookie1</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
 
     <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
@@ -126,23 +126,36 @@ Password is not stored.</pre>
         <span class="kw">if</span> (login == <span class="kw">null</span> || login.<span class="mtd">isEmpty</span>()) {
             login = <span class="str">&quot;guest&quot;</span>;
         }
-        <span class="cls">Cookie</span> c = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;user&quot;</span>, login);
-        c.<span class="mtd">setMaxAge</span>(60 * 60);
         <span class="cls">String</span> path = request.<span class="mtd">getContextPath</span>();
-        <span class="kw">if</span> (path == <span class="kw">null</span> || path.<span class="mtd">isEmpty</span>()) path = <span class="str">&quot;/&quot;</span>;
-        c.<span class="mtd">setPath</span>(path);
-        response.<span class="mtd">addCookie</span>(c);
+        <span class="kw">if</span> (path == <span class="kw">null</span> || path.<span class="mtd">isEmpty</span>()) {
+            path = <span class="str">&quot;/&quot;</span>;
+        }
+
+        <span class="cls">Cookie</span> user = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;user&quot;</span>, login);
+        user.<span class="mtd">setMaxAge</span>(<span class="num">60</span> * <span class="num">60</span>);
+        user.<span class="mtd">setPath</span>(path);
+        response.<span class="mtd">addCookie</span>(user);
+
         <span class="cls">Cookie</span> video = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;lastVideo&quot;</span>, <span class="str">&quot;Java&quot;</span>);
-        video.<span class="mtd">setMaxAge</span>(60 * 60);
+        video.<span class="mtd">setMaxAge</span>(<span class="num">60</span> * <span class="num">60</span>);
         video.<span class="mtd">setPath</span>(path);
         response.<span class="mtd">addCookie</span>(video);
+
         response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
         <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;body&gt;&quot;</span>);
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;1. WRITE cookie — Continue as &quot;</span> + login + <span class="str">&quot;&lt;/h2&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Saved cookie user=&quot;</span> + login + <span class="str">&quot; and lastVideo=Java.&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Saved cookie &lt;b&gt;user=&quot;</span> + login + <span class="str">&quot;&lt;/b&gt; and &lt;b&gt;lastVideo=Java&lt;/b&gt; (YouTube Remember me).&lt;/p&gt;&quot;</span>);
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Password is not stored.&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;Cookie2&#x27;&gt;2. READ cookies (Home)&lt;/a&gt; | &lt;a href=&#x27;CookieDelete&#x27;&gt;3. DELETE cookies&lt;/a&gt;&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;cookie.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;A cookie you just wrote is not in this same request. Click READ so the browser sends it back.&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;Cookie2&#x27;&gt;2. READ cookies (Home)&lt;/a&gt; | &lt;a href=&#x27;Cookie3&#x27;&gt;List cookies&lt;/a&gt; | &lt;a href=&#x27;CookieDelete&#x27;&gt;3. DELETE cookies&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;cookie.html&#x27;&gt;Back to WatchTube cookies&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+    }
+
+    <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;cookie.html&quot;</span>);
     }
 }
 </pre><h2>3. Java program — Cookie2.java</h2><pre class="code"><span class="kw">import</span> java.io.*;

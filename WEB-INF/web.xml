@@ -370,45 +370,6 @@
         <url-pattern>/NotesSessionLogout</url-pattern>
     </servlet-mapping>
 
-    <!-- ICA 08 / Chapter 9: URL rewriting encodeURL Url1 → Url2 -->
-    <servlet>
-        <servlet-name>Url1</servlet-name>
-        <servlet-class>Url1</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Url1</servlet-name>
-        <url-pattern>/Url1</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>Url2</servlet-name>
-        <servlet-class>Url2</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Url2</servlet-name>
-        <url-pattern>/Url2</url-pattern>
-    </servlet-mapping>
-
-    <!-- ICA 09 / Chapter 10: hidden field session_id + Valid forward Welcome -->
-    <servlet>
-        <servlet-name>Valid</servlet-name>
-        <servlet-class>Valid</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Valid</servlet-name>
-        <url-pattern>/Valid</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>Welcome</servlet-name>
-        <servlet-class>Welcome</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Welcome</servlet-name>
-        <url-pattern>/Welcome</url-pattern>
-    </servlet-mapping>
-
-
     <servlet>
         <servlet-name>ServletIntroWorking</servlet-name>
         <servlet-class>ServletIntroWorking</servlet-class>

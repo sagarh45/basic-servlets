@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>ICA 1 · ShopEasy — run this small project</title>
-<link rel="stylesheet" href="portal.css?v=2600">
-<script src="portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="portal.css?v=2800">
+<script src="portal.js?v=2800" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -96,25 +96,33 @@ Saved: Rahul / 101 / Solapur</pre>
 </form>
 </div>
 
+<h3 class="sec">Output</h3>
+<div class="labout" id="labOut"><p class="labout-empty">Click any button above. The result appears here and the forms stay on screen.</p></div>
+
 <p style="margin-top:18px;"><a href="practicals.html#ica-1">Back to ICA 1</a></p>
 <script>
-function sendMethod(m){
-  fetch('httpmethods',{method:m}).then(r=>r.text()).then(t=>{document.open();document.write(t);document.close();})
-  .catch(e=>{document.getElementById('msg').innerText='Error: '+e+' (TRACE may be disabled)';});
+/* Real Tomcat path: show the servlet response in the Output box. */
+function labShow(url, html){
+  var box=document.getElementById('labOut');
+  box.innerHTML="<div class='labout-bar'><b>Address bar</b><code>"+url+"</code></div>"+
+    "<div class='labout-page'>"+html+"</div>";
 }
+function labFetch(url, m){
+  fetch(url,{method:m}).then(r=>r.text())
+    .then(t=>labShow('http://localhost:8080/basic-servlets/'+url, t))
+    .catch(e=>{document.getElementById('msg').innerText='Error: '+e+' ('+m+' may be disabled)';});
+}
+function sendMethod(m){ labFetch('httpmethods', m); }
 function sendPut(){
   var roll=document.getElementById('putRoll').value;
   var city=document.getElementById('putCity').value;
-  fetch('httpmethods?roll='+encodeURIComponent(roll)+'&city='+encodeURIComponent(city),{method:'PUT'})
-    .then(r=>r.text()).then(t=>{document.open();document.write(t);document.close();});
+  labFetch('httpmethods?roll='+encodeURIComponent(roll)+'&city='+encodeURIComponent(city),'PUT');
 }
 function sendDelete(){
   var roll=document.getElementById('delRoll').value;
-  fetch('httpmethods?roll='+encodeURIComponent(roll),{method:'DELETE'})
-    .then(r=>r.text()).then(t=>{document.open();document.write(t);document.close();});
+  labFetch('httpmethods?roll='+encodeURIComponent(roll),'DELETE');
 }
 </script>
-<script src="online-lab.js?v=2600"></script>
 </div>
 </body>
 </html>

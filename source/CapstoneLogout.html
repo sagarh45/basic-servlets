@@ -12,14 +12,13 @@ pre.code{background:#fff;color:#000;padding:18px;overflow:auto;border:1px solid 
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 04 · MYMAIL ACCOUNT</p>
-<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookies, session, URL rewrite, hidden field and portal together.
-Java: <a href="Cookie1.html">Cookie1</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="Url1.html">Url1</a> · <a href="Valid.html">Valid</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
+<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookie, HttpSession and the portal that uses both.
+Java: <a href="Cookie1.html">Cookie1</a> · <a href="Cookie2.html">Cookie2</a> · <a href="CookieDelete.html">CookieDelete</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
 <a href="../practicals.html#ica-4">ICA journal</a>
 <a class="btn" href="../capstone.html">Run MyMail account</a></div>
 <div class="realex"><b>Real examples:</b> Cookie = YouTube / Instagram Continue as Rahul (never store a password).
 HttpSession = Gmail / WhatsApp Web login until Logout.
-URL rewriting = old net-banking when cookies are blocked.
-Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + forward / include.</div>
+Portal joins POST + session + cookie + forward / include: the session proves you are logged in, the cookie only remembers your display name.</div>
 
 <h1>Source: CapstoneLogout</h1>
 <div class="ps">
@@ -36,7 +35,7 @@ Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + f
 <div class="pflow">
 <h2>Program output flow</h2>
 <p class="pflow-cap">Mini portal: session + remember cookie + forward on success, include on failure. Login <b>java</b> / <b>servlet</b>.</p>
-<div class="pflow-lab">Success</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/CapstoneLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>session + cookie remember<br>forward CapstoneWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome java<br>Login success using forward<br>(URL still /CapstoneLogin)</span></div></div><div class="pflow-lab">Failure</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>print error + include form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect Login ID / Password<br>+ login form again</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>invalidate + cookie maxAge 0</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>capstone.html</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again</span></div></div></div>
+<div class="pflow-lab">Success</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>POST java / servlet</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/CapstoneLogin</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>session + cookie remember<br>forward CapstoneWelcome</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome java<br>Logout<br>(URL still /CapstoneLogin)</span></div></div><div class="pflow-lab">Failure</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Wrong password</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>print error + include form</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Incorrect Login ID / Password<br>+ login form again</span></div></div><div class="pflow-lab">Logout</div><div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Logout</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>invalidate + cookie maxAge 0</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Redirect</b><span>capstone.html</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Login form again</span></div></div></div>
 <p><a class="btn" href="../capstone.html">Run ICA project</a> <a class="btn ghost" href="../practicals.html#ica-4">ICA journal</a> <a class="btn" href="../index.html">Index</a></p>
 <div class="info">Capstone project source (Java + web.xml)</div>
 <h2>1) Java - CapstoneLogout.java</h2>
@@ -51,7 +50,7 @@ Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + f
 <span class="cmt">/** Capstone logout: invalidate session and clear remember cookie. */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">CapstoneLogout</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
 
-    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1<span class="cls">L</span>;
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = <span class="num">1L</span>;
 
     <span class="ann">@Override</span>
     <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)

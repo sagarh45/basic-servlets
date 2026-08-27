@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>ICA Practicals · Unit-II Servlets · WIT Solapur</title>
-<link rel="stylesheet" href="portal.css?v=2600">
-<script src="portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="portal.css?v=2800">
+<script src="portal.js?v=2800" defer></script>
 </head>
 <body>
 <header class="sitebar">
@@ -35,8 +35,9 @@
       <li><a href="#ica-1"><b>ICA 1 · ShopEasy</b></a> — like Amazon. Track, place, edit and cancel an order. Search a product (GET) vs write a review (POST). <a href="httpmethods.html">Run project</a></li>
       <li><a href="#ica-2"><b>ICA 2 · WatchTube</b></a> — like YouTube. View count (init once, every refresh is a view). Channel name vs this video’s author. <a href="lifecycle.html">Run project</a></li>
       <li><a href="#ica-3"><b>ICA 3 · MyMail + PayNow</b></a> — open a mail in the same tab (forward), pay at the bank (redirect), page with a footer (include). <a href="forward.html">Run project</a></li>
-      <li><a href="#ica-4"><b>ICA 4 · MyMail account</b></a> — Remember me, Gmail login, cookies off, hidden id, full portal. <a href="capstone.html">Run project</a></li>
+      <li><a href="#ica-4"><b>ICA 4 · MyMail account</b></a> — like Gmail. Remember me with a <b>cookie</b> (browser), sign in with an <b>HttpSession</b> (server), then one portal using both. <a href="capstone.html">Run project</a></li>
     </ol>
+    <p class="note"><b>Only these four.</b> ICA 1 to ICA 3 cover the earlier topics (HTTP methods, lifecycle with config and context, forward with redirect and include). ICA 4 covers cookies and HttpSession. URL rewriting and hidden form fields are not part of this course.</p>
     <p><b>How to write the journal:</b> copy the title and problem statement · draw the figure · paste the one HTML, every Java class, and web.xml · run the project · fill the observation table · write result, conclusion and viva.</p>
     <p><b>Software:</b> JDK 21+ · Tomcat 11.0.24 · <code>jakarta.servlet.*</code> · folder <code>basic-servlets</code>. Copy-paste Java from <code>src/</code>. Login: <b>java</b> / <b>servlet</b>.</p>
   </div>
@@ -627,59 +628,64 @@ IncludeServlet  → /include</pre>
   <article class="ica" id="ica-4">
     <header>
       <span class="tag">ICA PRACTICAL 04 · SMALL PROJECT: MYMAIL ACCOUNT</span>
-      <h2>MyMail account — Remember me, sign in, cookies off, hidden id, and full portal</h2>
+      <h2>MyMail account — Remember me (cookie), sign in (HttpSession), and one portal using both</h2>
     </header>
 
     <h3 class="sec">1. Aim</h3>
-    <p>To implement the four session-tracking techniques on <b>one common HTML page</b> and to join them in a mini Gmail-style portal (POST login, HttpSession, Remember-me cookie, forward on success, include on failure, logout). Several Java classes are required; extra HTML files are not.</p>
+    <p>To store a user on the browser side with a <b>cookie</b> and on the server side with an <b>HttpSession</b>, on <b>one common HTML page</b>, and to join both in a mini Gmail-style portal (POST login, session, Remember-me cookie, forward on success, include on failure, logout). Several Java classes are required; extra HTML files are not.</p>
 
     <div class="ps">
       <h2>2. Problem statement</h2>
-      <p>HTTP is stateless: after one response Tomcat forgets the browser. YouTube still says Continue as Rahul, and Gmail still keeps you logged in, because we store something. Put every form on <b>one HTML file</b>. Implement and compare:</p>
+      <p>HTTP is <b>stateless</b>: after one response Tomcat forgets the browser. YouTube still says “Continue as Rahul” and Gmail still keeps you logged in, because something was stored. Put every form on <b>one HTML file</b>. Implement and compare the two tools that real sites use:</p>
       <ol>
-        <li><b>Cookie</b> — YouTube Remember me: store display name <code>user</code>; Home reads it; Forget me uses <code>setMaxAge(0)</code>. Never store a password. Java: Cookie1, Cookie2, Cookie3, CookieDelete.</li>
-        <li><b>HttpSession</b> — Gmail login <b>java</b> / <b>servlet</b> (POST); Welcome reads <code>getSession(false)</code>; logout calls <code>invalidate()</code>. Java: NotesSessionLogin, Welcome, Logout.</li>
-        <li><b>URL rewriting</b> — old net-banking when cookies are blocked: <code>encodeURL</code> plus <code>s_id1</code> and <code>s_id2</code>. Java: Url1, Url2.</li>
-        <li><b>Hidden form field</b> — scholarship form page 1 posts hidden <code>session_id=054</code>; forward to Welcome. Java: Valid, Welcome.</li>
+        <li><b>Cookie (browser side)</b> — YouTube Remember me. Write display name <code>user</code>; Home reads it; Forget me deletes it with <code>setMaxAge(0)</code>. Never store a password. Java: <code>Cookie1</code>, <code>Cookie2</code>, <code>Cookie3</code>, <code>CookieDelete</code>.</li>
+        <li><b>HttpSession (server side)</b> — Gmail login <b>java</b> / <b>servlet</b> by POST. Welcome reads <code>getSession(false)</code>; Logout calls <code>invalidate()</code> and Welcome is blocked after that. Java: <code>NotesSessionLogin</code>, <code>NotesSessionWelcome</code>, <code>NotesSessionLogout</code>.</li>
       </ol>
-      <p><b>Mini-project (same HTML):</b> <code>CapstoneLogin</code> POST-checks credentials, stores session username, sets a 7-day remember cookie (name only), forwards to Welcome on success, includes the form on failure, and logout invalidates the session and deletes the cookie.</p>
+      <p><b>Mini-project (same HTML):</b> <code>CapstoneLogin</code> checks the password on POST, stores the username in the session, sets a 7-day <code>remember</code> cookie holding the <i>name only</i>, <b>forwards</b> to Welcome on success (URL stays <code>/CapstoneLogin</code>), <b>includes</b> the form again on failure, and Logout invalidates the session and deletes the cookie.</p>
     </div>
 
     <div class="objbox"><h3>3. Objectives</h3>
       <ul>
         <li>To create, read and delete a cookie.</li>
-        <li>To use getSession(true), setAttribute, getSession(false) and invalidate.</li>
-        <li>To build a session-safe link with encodeURL.</li>
-        <li>To carry a hidden field across forward, and to combine techniques in one portal.</li>
+        <li>To use <code>getSession(true)</code>, <code>setAttribute</code>, <code>getSession(false)</code> and <code>invalidate</code>.</li>
+        <li>To state exactly where each kind of data is stored, and what a Logout must clear.</li>
+        <li>To combine a cookie and a session in one login portal.</li>
       </ul>
     </div>
     <div class="softbox"><b>4. Software required:</b> same stack. Login: <b>java</b> / <b>servlet</b>.</div>
 
     <h3 class="sec">5. Theory (copy into the journal — functions, syntax, use)</h3>
-    <p>HTTP is <b>stateless</b>: after one response Tomcat forgets the browser unless you store something. Four syllabus tools:</p>
-    <p>A <b>cookie</b> is a small name=value in the <b>browser</b> (YouTube Remember me / Continue as Rahul). <b>HttpSession</b> is a map in <b>Tomcat memory</b> (ERP login). <b>URL rewriting</b> puts identity in the link when cookies are blocked (<code>encodeURL</code>). A <b>hidden field</b> is posted with the form; View Source still shows it, so it is not a secret. Login for this lab: <b>java</b> / <b>servlet</b> (POST only).</p>
+    <p>HTTP is <b>stateless</b>: after one response Tomcat forgets the browser unless you store something. There are two tools in this practical, and the only real difference is <b>where the data sits</b>.</p>
+    <p>A <b>cookie</b> is a small <code>name=value</code> kept in the <b>browser</b>. It is like a library card in your own pocket: handy, but the student can read it and edit it, so it must never hold a password. YouTube uses it for “Continue as Rahul”.</p>
+    <p>An <b>HttpSession</b> is a map kept in <b>Tomcat memory</b>. It is like a cloakroom token: the bag stays with the railway and you carry only the number. The browser holds just the session id (usually in a cookie named <code>JSESSIONID</code>), so the real data never travels to the student. Gmail uses it to keep you logged in. Login for this lab: <b>java</b> / <b>servlet</b> (POST only).</p>
     <table class="synexp">
       <tr><th>Function</th><th>Syntax</th><th>Use / example</th></tr>
       <tr><td><code>new Cookie</code> + <code>addCookie</code></td><td><code>Cookie c = new Cookie("user", login); response.addCookie(c);</code></td><td>Remember display name. Never store a password.</td></tr>
-      <tr><td><code>getCookies</code></td><td><code>Cookie[] arr = request.getCookies(); if (arr != null) ...</code></td><td>Read the name on the next page. Null-check first.</td></tr>
-      <tr><td><code>setMaxAge(0)</code></td><td><code>c.setMaxAge(0); response.addCookie(c);</code></td><td>Delete cookie user (Forget me / logout).</td></tr>
+      <tr><td><code>getCookies</code></td><td><code>Cookie[] arr = request.getCookies(); if (arr != null) ...</code></td><td>Read the name on the next page. Null-check first — a browser with no cookie returns null.</td></tr>
+      <tr><td><code>setMaxAge(0)</code></td><td><code>c.setMaxAge(0); response.addCookie(c);</code></td><td>Delete cookie <code>user</code> (Forget me / logout).</td></tr>
       <tr><td><code>getSession(true)</code> + <code>setAttribute</code></td><td><code>request.getSession(true).setAttribute("username", login);</code></td><td>After POST login success. Data lives on the server.</td></tr>
-      <tr><td><code>getSession(false)</code></td><td><code>HttpSession s = request.getSession(false);</code></td><td>Welcome: if null, send student back to login. Do not create a new empty session.</td></tr>
-      <tr><td><code>invalidate</code></td><td><code>session.invalidate();</code></td><td>Logout. Next Welcome is blocked.</td></tr>
-      <tr><td><code>encodeURL</code></td><td><code>response.encodeURL("Url2?s_id1=054")</code></td><td>Next-page link. Adds jsessionid if cookies are off.</td></tr>
-      <tr><td>hidden field</td><td><code>&lt;input type="hidden" name="session_id" value="054"&gt;</code></td><td>Next POST / forward. Welcome reads getParameter("session_id").</td></tr>
+      <tr><td><code>getSession(false)</code></td><td><code>HttpSession s = request.getSession(false);</code></td><td>Welcome: if null, send the student back to login. Do not create a new empty session.</td></tr>
+      <tr><td><code>invalidate</code></td><td><code>session.invalidate();</code></td><td>Logout. The next Welcome is blocked.</td></tr>
     </table>
-    <p>Full cards: Theory Chapters 7–11. Mini-project functions are in Chapter 11.</p>
+    <p>Full cards: Theory Chapter 07 (cookies), Chapter 08 (HttpSession) and Chapter 09 (portal).</p>
 
     <div class="fig">
-      <svg viewBox="0 0 860 200" xmlns="http://www.w3.org/2000/svg" role="img">
-        <rect class="panel" x="15" y="20" width="195" height="160" rx="6"/><text class="lab" x="112" y="48" text-anchor="middle">Cookie</text><text class="small" x="28" y="78">Stored in browser</text><text class="small" x="28" y="98">YouTube Remember me</text><text class="small" x="28" y="118">Delete: maxAge 0</text><text class="small" x="28" y="138">Not for passwords</text>
-        <rect class="panel2" x="225" y="20" width="195" height="160" rx="6"/><text class="lab" x="322" y="48" text-anchor="middle">HttpSession</text><text class="small" x="238" y="78">Stored on server</text><text class="small" x="238" y="98">Gmail login identity</text><text class="small" x="238" y="118">Logout: invalidate</text><text class="small" x="238" y="138">Id often in JSESSIONID</text>
-        <rect class="panel" x="435" y="20" width="195" height="160" rx="6"/><text class="lab" x="532" y="48" text-anchor="middle">URL rewriting</text><text class="small" x="448" y="78">Cookies blocked</text><text class="small" x="448" y="98">encodeURL(link)</text><text class="small" x="448" y="118">;jsessionid= in path</text><text class="small" x="448" y="138">Old net-banking</text>
-        <rect class="panel2" x="645" y="20" width="200" height="160" rx="6"/><text class="lab" x="745" y="48" text-anchor="middle">Hidden field</text><text class="small" x="658" y="78">type="hidden"</text><text class="small" x="658" y="98">Next POST / forward</text><text class="small" x="658" y="118">Visible in View Source</text><text class="small" x="658" y="138">Scholarship form step</text>
+      <svg viewBox="0 0 860 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Figure 4.1 Cookie versus HttpSession">
+        <rect class="panel" x="30" y="20" width="370" height="160" rx="6"/>
+        <text class="lab" x="215" y="50" text-anchor="middle">Cookie — in the browser</text>
+        <text class="small" x="50" y="82">Stored on the student's computer</text>
+        <text class="small" x="50" y="104">Like a library card in your pocket</text>
+        <text class="small" x="50" y="126">Delete with setMaxAge(0)</text>
+        <text class="small" x="50" y="148">Never store a password here</text>
+        <rect class="panel2" x="460" y="20" width="370" height="160" rx="6"/>
+        <text class="lab" x="645" y="50" text-anchor="middle">HttpSession — on the server</text>
+        <text class="small" x="480" y="82">Stored in Tomcat memory</text>
+        <text class="small" x="480" y="104">Like a cloakroom token number</text>
+        <text class="small" x="480" y="126">End it with invalidate()</text>
+        <text class="small" x="480" y="148">Browser carries only JSESSIONID</text>
       </svg>
     </div>
-    <p class="figcap">Fig. 4.1 Four session-tracking techniques (Unit-II syllabus)</p>
+    <p class="figcap">Fig. 4.1 The two session-tracking tools: cookie (client side) versus HttpSession (server side)</p>
 
     <div class="fig">
       <svg viewBox="0 0 860 140" xmlns="http://www.w3.org/2000/svg" role="img">
@@ -693,62 +699,58 @@ IncludeServlet  → /include</pre>
         <rect class="panel2" x="620" y="35" width="220" height="70" rx="6"/><text class="small" x="730" y="66" text-anchor="middle">Logout: invalidate</text><text class="small" x="730" y="84" text-anchor="middle">+ cookie maxAge 0</text>
       </svg>
     </div>
-    <p class="figcap">Fig. 4.2 Mini-project login portal (success path and logout)</p>
+    <p class="figcap">Fig. 4.2 Portal: one login that uses the session and the cookie, and a logout that clears both</p>
 
     <div class="realex">
       <h2>6. Real-life examples</h2>
       <ul>
-        <li><b>Cookie</b> — YouTube / Instagram “Continue as Rahul”. Flipkart keeps the cart id. Never put a password here.</li>
-        <li><b>HttpSession</b> — Gmail, WhatsApp Web, Moodle: after login the server remembers you until Logout.</li>
-        <li><b>URL rewriting</b> — Older SBI / net-banking when cookies are blocked: <code>;jsessionid=</code> in the link.</li>
-        <li><b>Hidden field</b> — IRCTC booking step 1 → step 2 (PNR / form id). Scholarship form page 1 posts hidden <code>session_id</code>. Visible in View Source — not a secret.</li>
-        <li><b>Portal</b> — One Gmail-style page: POST login, session for identity, cookie for display name, forward on success, include on wrong password, logout clears both.</li>
+        <li><b>Cookie</b> — YouTube and Instagram “Continue as Rahul”. Flipkart keeps the cart id. A shop’s loyalty card in your own wallet. Never put a password here.</li>
+        <li><b>HttpSession</b> — Gmail, WhatsApp Web, Moodle, college ERP: after login the server remembers you until Logout. A railway cloakroom token — the bag stays with them, you carry only the number.</li>
+        <li><b>Both together</b> — One Gmail-style page: the session proves you are logged in, and the cookie only remembers your display name so the page can greet you before you log in. Logout must clear both.</li>
+        <li><b>Why Logout matters</b> — On a shared college computer, if Logout only cleared the cookie, the next student would still be inside your account, because the session was still alive on the server.</li>
       </ul>
     </div>
 
-    <h3 class="sec">7. Algorithm (portal)</h3>
+    <h3 class="sec">7. Algorithm</h3>
     <ol class="steps-n">
-      <li>If login is java and password is servlet: getSession(true), setAttribute username, addCookie remember, forward CapstoneWelcome.</li>
-      <li>Else: print error and include capstone.html.</li>
-      <li>Welcome: getSession(false); if missing, redirect to the form.</li>
-      <li>Logout: invalidate session; cookie remember maxAge 0; redirect to the form.</li>
+      <li><b>Cookie write:</b> make <code>new Cookie("user", login)</code>, set maxAge, <code>response.addCookie</code>.</li>
+      <li><b>Cookie read:</b> loop <code>request.getCookies()</code> (null-check) and print the value of <code>user</code>.</li>
+      <li><b>Cookie delete:</b> same name, <code>setMaxAge(0)</code>, add it again.</li>
+      <li><b>Session login:</b> if login is java and password is servlet, <code>getSession(true)</code> and <code>setAttribute("username", login)</code>, then go to Welcome. Else print the error.</li>
+      <li><b>Session Welcome:</b> <code>getSession(false)</code>; if null, send the student back to the login form.</li>
+      <li><b>Session logout:</b> <code>invalidate()</code>, then back to the form.</li>
+      <li><b>Portal:</b> on success do steps 1 and 4 together, then <b>forward</b> to Welcome. On failure print the error and <b>include</b> the form. Logout does step 3 and step 6.</li>
     </ol>
 
     <h3 class="sec">8. Procedure</h3>
     <ol class="steps-n">
-      <li>Open the <b>one</b> Execute page (<code>capstone.html</code>). All five blocks are on that HTML.</li>
-      <li>Cookies: Remember me as Rahul, open Home, list cookies, Forget me (maxAge 0).</li>
-      <li>HttpSession: login java/servlet, refresh Welcome, logout, prove Welcome is blocked.</li>
-      <li>URL rewriting: enter 054 and 055, click next, note both ids (and jsessionid if present).</li>
-      <li>Hidden field: login, View Source for session_id, confirm password is not in the URL.</li>
-      <li>Mini portal: correct login (URL stays CapstoneLogin), wrong password (form included), logout.</li>
+      <li>Open the <b>one</b> Execute page (<code>capstone.html</code>). All three blocks are on that HTML.</li>
+      <li><b>Cookie:</b> Remember me as Rahul → Read on Home → List cookies → Forget me. Read again and note that it is gone.</li>
+      <li><b>HttpSession:</b> Sign in with java / servlet → Open Welcome → Logout → Open Welcome again and note that it is blocked.</li>
+      <li><b>Portal:</b> correct login (the URL stays <code>/CapstoneLogin</code> because of forward) → wrong password (the form is included again) → Logout (both stores cleared).</li>
+      <li>Open browser DevTools → Application → Cookies. Note that <code>user</code> is visible to you, but the session data is not.</li>
     </ol>
 
     <h3 class="sec">9. Medium HTML — one page (many Java classes)</h3>
-    <pre class="syntax">&lt;form method="post" action="Cookie1"&gt;
+    <pre class="syntax">&lt;!-- A) cookie: browser side --&gt;
+&lt;form method="post" action="Cookie1"&gt;
   Name: &lt;input name="login" value="Rahul"&gt;
   &lt;input type="submit" value="Remember me"&gt;
 &lt;/form&gt;
-&lt;p&gt;&lt;a href="Cookie2"&gt;Home&lt;/a&gt; · &lt;a href="Cookie3"&gt;List&lt;/a&gt; · &lt;a href="CookieDelete"&gt;Forget me&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="Cookie2"&gt;Read on Home&lt;/a&gt; ·
+   &lt;a href="Cookie3"&gt;List&lt;/a&gt; ·
+   &lt;a href="CookieDelete"&gt;Forget me&lt;/a&gt;&lt;/p&gt;
 
+&lt;!-- B) HttpSession: server side --&gt;
 &lt;form method="post" action="NotesSessionLogin"&gt;
   User: &lt;input name="login" value="java"&gt;
   Password: &lt;input type="password" name="pwd" value="servlet"&gt;
-  &lt;input type="submit" value="Gmail login"&gt;
+  &lt;input type="submit" value="Sign in"&gt;
 &lt;/form&gt;
+&lt;p&gt;&lt;a href="NotesSessionWelcome"&gt;Welcome&lt;/a&gt; ·
+   &lt;a href="NotesSessionLogout"&gt;Logout&lt;/a&gt;&lt;/p&gt;
 
-&lt;form method="get" action="Url1"&gt;
-  Id1: &lt;input name="s_id1" value="054"&gt; Id2: &lt;input name="s_id2" value="055"&gt;
-  &lt;input type="submit" value="Next (URL rewrite)"&gt;
-&lt;/form&gt;
-
-&lt;form method="post" action="Valid"&gt;
-  &lt;input type="hidden" name="session_id" value="054"&gt;
-  Login: &lt;input name="login" value="java"&gt;
-  Password: &lt;input name="pwd" value="servlet"&gt;
-  &lt;input type="submit" value="Continue"&gt;
-&lt;/form&gt;
-
+&lt;!-- C) portal: both together --&gt;
 &lt;form method="post" action="CapstoneLogin"&gt;
   Login: &lt;input name="login" value="java"&gt;
   Password: &lt;input type="password" name="pwd" value="servlet"&gt;
@@ -756,35 +758,49 @@ IncludeServlet  → /include</pre>
 &lt;/form&gt;</pre>
 
     <h3 class="sec">10. Medium Java (core lines — full files in src/)</h3>
-    <p>Full write / read / delete project: <a href="cookie.html">WatchTube cookies</a>. Copy <code>src/Cookie1.java</code> … <code>src/CookieDelete.java</code>.</p>
-    <pre class="syntax">// Cookie — YouTube Remember me
+    <p>Write / read / delete many names: <a href="cookie.html">cookie demo page</a>. Copy <code>src/Cookie1.java</code> … <code>src/CookieDelete.java</code>.</p>
+    <pre class="syntax">// A) Cookie — browser side (YouTube Remember me)
 Cookie c = new Cookie("user", login);
-c.setMaxAge(60 * 60);
+c.setMaxAge(60 * 60);                  // 1 hour
 response.addCookie(c);
-Cookie del = new Cookie("user", ""); del.setMaxAge(0); response.addCookie(del);
 
-// HttpSession — Gmail login
+Cookie[] arr = request.getCookies();   // read on the next page
+if (arr != null) {
+    for (Cookie one : arr) {
+        if (one.getName().equals("user")) {
+            out.println("Welcome back " + one.getValue());
+        }
+    }
+}
+
+Cookie del = new Cookie("user", "");   // delete
+del.setMaxAge(0);
+response.addCookie(del);
+
+// B) HttpSession — server side (Gmail login)
 if ("java".equals(login) &amp;&amp; "servlet".equals(pwd)) {
-    request.getSession(true).setAttribute("username", login);
+    HttpSession session = request.getSession(true);
+    session.setAttribute("username", login);
     response.sendRedirect("NotesSessionWelcome");
 }
-// Welcome: getSession(false); if null → send back to login
-// Logout: session.invalidate();
+// Welcome
+HttpSession s = request.getSession(false);   // do not create a new one
+if (s == null || s.getAttribute("username") == null) {
+    response.sendRedirect("capstone.html");
+    return;
+}
+// Logout
+s.invalidate();
 
-// URL rewriting — cookies blocked
-String url = response.encodeURL("Url2?s_id1=054&amp;s_id2=055");
-
-// Hidden field — next POST still has session_id
-// &lt;input type="hidden" name="session_id" value="054"&gt;
-
-// Portal success
+// C) Portal — both together
 request.getSession(true).setAttribute("username", login);
-Cookie remember = new Cookie("remember", login);   // name only, not password
+Cookie remember = new Cookie("remember", login);   // name only, never the password
 remember.setMaxAge(60 * 60 * 24 * 7);
 response.addCookie(remember);
 request.getRequestDispatcher("CapstoneWelcome").forward(request, response);
-// Fail: include capstone.html   Logout: invalidate + remember maxAge 0</pre>
-    <p>Full classes: <a href="source/Cookie1.html">Cookie1</a> · <a href="source/NotesSessionLogin.html">NotesSessionLogin</a> · <a href="source/Url1.html">Url1</a> · <a href="source/Valid.html">Valid</a> · <a href="source/CapstoneLogin.html">CapstoneLogin</a>.</p>
+// Wrong password: print the error, then include capstone.html
+// Logout: session.invalidate() AND remember cookie setMaxAge(0)</pre>
+    <p>Full classes: <a href="source/Cookie1.html">Cookie1</a> · <a href="source/Cookie2.html">Cookie2</a> · <a href="source/CookieDelete.html">CookieDelete</a> · <a href="source/NotesSessionLogin.html">NotesSessionLogin</a> · <a href="source/CapstoneLogin.html">CapstoneLogin</a>.</p>
 
     <h3 class="sec">11. Medium web.xml (pattern + list)</h3>
     <pre class="syntax">&lt;servlet&gt;
@@ -801,38 +817,39 @@ CookieDelete → /CookieDelete
 NotesSessionLogin → /NotesSessionLogin
 NotesSessionWelcome → /NotesSessionWelcome
 NotesSessionLogout → /NotesSessionLogout
-Url1 → /Url1                Url2 → /Url2
-Valid → /Valid              Welcome → /Welcome
 CapstoneLogin → /CapstoneLogin
 CapstoneWelcome → /CapstoneWelcome
 CapstoneLogout → /CapstoneLogout</pre>
     <p>Copy the Cookie1 block for every class. Full XML is in <code>WEB-INF/web.xml</code>.</p>
 
     <table class="obs"><tr><th>Check</th><th>Expected</th><th>What I saw</th></tr>
-    <tr><td>Cookie after delete</td><td>user gone</td><td></td></tr>
-    <tr><td>Password in URL on login?</td><td>No (POST)</td><td></td></tr>
-    <tr><td>Welcome after logout</td><td>Blocked / login page</td><td></td></tr>
-    <tr><td>Hidden session_id in View Source</td><td>Yes, 054</td><td></td></tr>
-    <tr><td>Capstone success URL</td><td>Still /CapstoneLogin (forward)</td><td></td></tr></table>
+    <tr><td>Cookie <code>user</code> after Forget me</td><td>Gone</td><td></td></tr>
+    <tr><td>Password in the URL on login?</td><td>No (POST)</td><td></td></tr>
+    <tr><td>Welcome after Logout</td><td>Blocked — back to login</td><td></td></tr>
+    <tr><td>Cookie visible in DevTools?</td><td>Yes — so no password in it</td><td></td></tr>
+    <tr><td>Portal success URL</td><td>Still /CapstoneLogin (forward)</td><td></td></tr></table>
 
-    <h3 class="sec">11. Result and conclusion</h3>
-    <p><b>Result:</b> Cookie remembered a display name and could be deleted. HttpSession kept the ERP login until invalidate. encodeURL carried extra ids (and session id if cookies were off). Hidden field survived forward. The portal joined POST, session, cookie, forward, include and logout.</p>
-    <p><b>Conclusion:</b> Choose the technique by where the data must live. Cookie = browser, non-secret. Session = server, login. URL rewriting = cookies off. Hidden field = one extra POST, not a secret. A real portal uses session for identity and a cookie only for a display name.</p>
-    <div class="viva"><b>12. Viva-voce</b>
-      <p><b>Q.1</b> Cookie versus HttpSession?<br><span class="ans"><b>A.</b> Cookie is client-side name=value. Session is a server-side map. Logout must invalidate the session.</span></p>
-      <p><b>Q.2</b> Why not store the password in a cookie or hidden field?<br><span class="ans"><b>A.</b> Both can be read on the client (storage or View Source).</span></p>
-      <p><b>Q.3</b> What two things must portal logout clear?<br><span class="ans"><b>A.</b> The HttpSession (invalidate) and the remember cookie (maxAge 0).</span></p>
-      <p><b>Q.4</b> Why forward on success and include on failure?<br><span class="ans"><b>A.</b> Forward shows Welcome on the same request (URL unchanged). Include reprints the form with an error.</span></p>
+    <h3 class="sec">12. Result and conclusion</h3>
+    <p><b>Result:</b> The cookie remembered a display name in the browser and could be deleted with <code>setMaxAge(0)</code>. The HttpSession kept the login on the server until <code>invalidate()</code>, after which Welcome was blocked. The portal joined POST, session, cookie, forward, include and logout on one page.</p>
+    <p><b>Conclusion:</b> Choose the tool by where the data must live. A <b>cookie</b> lives in the browser, so use it only for non-secret things like a display name. An <b>HttpSession</b> lives on the server, so use it for identity after login. A real portal uses the session to prove who you are and a cookie only to greet you, and Logout must clear both.</p>
+    <div class="viva"><b>13. Viva-voce</b>
+      <p><b>Q.1</b> Cookie versus HttpSession?<br><span class="ans"><b>A.</b> A cookie is a client-side name=value stored in the browser. A session is a server-side map in Tomcat memory. The browser holds only the session id.</span></p>
+      <p><b>Q.2</b> Why must a password never go in a cookie?<br><span class="ans"><b>A.</b> The student owns the browser and can read and edit any cookie in DevTools.</span></p>
+      <p><b>Q.3</b> What two things must portal Logout clear?<br><span class="ans"><b>A.</b> The HttpSession with <code>invalidate()</code> and the remember cookie with <code>setMaxAge(0)</code>. Clearing only one leaves the account open.</span></p>
+      <p><b>Q.4</b> Why <code>getSession(false)</code> on the Welcome page?<br><span class="ans"><b>A.</b> <code>getSession(true)</code> would create a new empty session, so a logged-out student would look logged in. <code>false</code> returns null and we send them back to the form.</span></p>
+      <p><b>Q.5</b> Why forward on success and include on failure?<br><span class="ans"><b>A.</b> Forward shows Welcome on the same request, so the URL does not change. Include prints the form again under the error line, so the student can retype the password.</span></p>
     </div>
     <p>
       <a class="exec-xl" href="capstone.html">Run MyMail account project</a>
-      <a class="btn ghost" href="topics/08-httpsession/theory.html">Theory</a>
+      <a class="btn source" href="source/CapstoneLogin.html">Source</a>
+      <a class="btn ghost" href="topics/07-cookies/theory.html">Cookies theory</a>
+      <a class="btn ghost" href="topics/08-httpsession/theory.html">HttpSession theory</a>
     </p>
   </article>
 
   <div class="info">
     <b>Suggested marks (teacher may change):</b> execution 8 · observation 6 · viva 6 · journal (figure, complete program, XML) 5. Total 25 per practical, or as announced.
-    <p style="margin:10px 0 0">Theory notes (all 11 chapters, English) remain in the Theory tab. These four ICA practicals are the journal record for Internal Continuous Assessment.</p>
+    <p style="margin:10px 0 0">Theory notes (all 9 chapters, English) remain in the Theory tab, and the Programs tab has the same ideas with different real-life examples. These four ICA practicals are the journal record for Internal Continuous Assessment.</p>
   </div>
 
   <p>

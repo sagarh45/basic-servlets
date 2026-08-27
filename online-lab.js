@@ -11,7 +11,7 @@
   if (window.__labOnline) return;
   window.__labOnline = true;
 
-  var SERVLET = /^(httpmethods|getpostdiff|lifecycle|configcontext|forward|redirect|target|includefooter|FwdDemo|RedirectOk|cookiedemo|Cookie1|Cookie2|Cookie3|CookieDelete|NotesSessionLogin|NotesSessionWelcome|NotesSessionLogout|Url1|Url2|Valid|Welcome|CapstoneLogin|CapstoneWelcome|CapstoneLogout|hello|sampleregister|getpost|generic|requestinfo|response|include|attributes|HyperLinkDemo|DoGetDemo|Max|CounterServlet|MyServlet|ServletContextDemo|ConcatServlet|CallServlet|intro)$/i;
+  var SERVLET = /^(httpmethods|getpostdiff|lifecycle|configcontext|forward|redirect|target|includefooter|FwdDemo|RedirectOk|cookiedemo|Cookie1|Cookie2|Cookie3|CookieDelete|NotesSessionLogin|NotesSessionWelcome|NotesSessionLogout|CapstoneLogin|CapstoneWelcome|CapstoneLogout|hello|sampleregister|getpost|generic|requestinfo|response|include|attributes|HyperLinkDemo|DoGetDemo|Max|CounterServlet|MyServlet|ServletContextDemo|ConcatServlet|CallServlet|intro)$/i;
 
   function nameOf(url) {
     var u = String(url || "").split("?")[0];
@@ -52,30 +52,48 @@
     });
   }
 
-  /* Same HTML Tomcat would send. Address bar shows localhost like the lab PC. */
-  function showLocalhost(mapping, query, inner) {
+  /* Same HTML Tomcat would send. The result stays on this page, in the
+     Output box, so the student never loses the form. */
+  function page(mapping, query, inner) {
     var q = query ? ("?" + query) : "";
     var url = "http://localhost:8080/basic-servlets/" + mapping + q;
-    var html =
-      "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + esc(mapping) + "</title>" +
-      "<style>" +
-      "body{margin:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;}" +
-      ".loc{background:#f1f3f4;border-bottom:1px solid #c0c0c0;padding:8px 14px;font:13px Consolas,'Courier New',monospace;}" +
-      ".loc b{font-family:Arial;font-size:12px;margin-right:10px;color:#444;}" +
-      ".page{padding:18px 22px;}" +
-      "a{color:#00e;}" +
-      "</style></head><body>" +
-      "<div class='loc'><b>Address bar</b>" + esc(url) + "</div>" +
-      "<div class='page'>" + inner + "</div>" +
-      "<script src='online-lab.js?v=2700'></script>" +
-      "</body></html>";
-    document.open();
-    document.write(html);
-    document.close();
+    var box = document.getElementById("labOut");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "labOut";
+      box.className = "labout";
+      var head = document.createElement("h3");
+      head.className = "sec";
+      head.textContent = "Output";
+      var host = document.querySelector(".wrap") || document.body;
+      host.appendChild(head);
+      host.appendChild(box);
+    }
+    box.innerHTML =
+      "<div class='labout-bar'><b>Address bar</b><code>" + esc(url) + "</code></div>" +
+      "<div class='labout-page'>" + inner + "</div>";
+    if (box.scrollIntoView) {
+      box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   }
 
-  function page(mapping, query, inner) {
-    showLocalhost(mapping, query, inner);
+  /* sendRedirect back to a form page: if that page is already open, print the
+     result here instead of reloading and losing it. */
+  function redirectTo(file, inner) {
+    var here = location.pathname.split("/").pop() || "";
+    if (here === file) {
+      page(file, "", inner);
+      return;
+    }
+    location.href = file;
+  }
+
+  /* GET must show its data in the address bar without leaving this page. */
+  function markUrl(query) {
+    var here = location.pathname.split("/").pop() || "";
+    try {
+      history.replaceState(null, "", here + (query ? "?" + query : ""));
+    } catch (e) { /* file:// blocks replaceState */ }
   }
 
   function student() {
@@ -85,7 +103,7 @@
 
   function life() {
     var x = get("lab-life", null);
-    if (!x) x = { init: 1, service: 0, visitor: "" };
+    if (!x) x = { init: 1, service: 0, visitor: "-" };
     x.service += 1;
     set("lab-life", x);
     return x;
@@ -156,12 +174,7 @@
       } else {
         html = "Choose Write, Read, Display all, or Delete.";
       }
-      var box = document.getElementById("cookieOut");
-      if (box) {
-        box.innerHTML = html;
-        return;
-      }
-      page("cookiedemo", "", "<p>" + html + "</p><p><a href='cookie.html'>Back</a></p>");
+      page("cookiedemo", "", "<h2>Cookie demo</h2><p>" + html + "</p>");
       return;
     }
 
@@ -208,7 +221,7 @@
       if (!roll) msg = "GET view";
       else if (rec.exists && rec.roll === roll) msg = "GET found roll " + roll;
       else msg = "GET roll not found: " + roll;
-      history.replaceState(null, "", (location.pathname.split("/").pop() || "httpmethods.html") + (roll ? "?roll=" + encodeURIComponent(roll) : ""));
+      markUrl(roll ? "roll=" + encodeURIComponent(roll) : "");
       page("httpmethods", roll ? "roll=" + encodeURIComponent(roll) : "", httpShow("GET", msg, rec));
       return;
     }
@@ -216,7 +229,7 @@
     if (/^getpostdiff$/i.test(servlet)) {
       if (method === "GET") {
         var qq = data.q || "";
-        history.replaceState(null, "", "getpostdiff.html?q=" + encodeURIComponent(qq));
+        markUrl("q=" + encodeURIComponent(qq));
         page("getpostdiff", "q=" + encodeURIComponent(qq),
           "<h2>request.getMethod() = GET</h2>" +
           "<p>GET search q=" + esc(qq) + " URL=q=" + esc(qq) + "</p>" +
@@ -234,10 +247,10 @@
       var L = life();
       if (method === "POST" && data.visitor) L.visitor = data.visitor;
       set("lab-life", L);
-      var head = method === "POST" ? ("POST signed " + (L.visitor || "")) : "GET view book";
+      var head = method === "POST" ? ("POST signed " + L.visitor) : "GET open video";
       page("lifecycle", "",
         "<h2>" + esc(head) + "</h2>" +
-        "<p>init=" + L.init + " service=" + L.service + " lastVisitor=" + esc(L.visitor || "null") + "</p>" +
+        "<p>init=" + L.init + " service=" + L.service + " lastVisitor=" + esc(L.visitor) + "</p>" +
         "<p><a href='lifecycle.html'>Back</a></p>");
       return;
     }
@@ -371,61 +384,34 @@
         page("NotesSessionWelcome", "",
           "<h1>Welcome " + esc(data.login) + "</h1>" +
           "<p><a href='NotesSessionLogout'>Logout</a></p>" +
-          "<p><a href='index.html'>Index</a></p>");
+          "<p><a href='index.html#ex-session-welcome'>Index</a></p>");
       } else {
         page("NotesSessionLogin", "",
           "<p>Wrong login. Use java / servlet.</p>" +
-          "<p><a href='capstone.html'>Back to MyMail project</a></p>");
+          "<p><a href='capstone.html'>Back</a></p>");
       }
       return;
     }
     if (/^NotesSessionWelcome$/i.test(servlet)) {
       var u = sessionStorage.getItem("lab-session");
       if (!u) {
-        location.href = "capstone.html";
+        redirectTo("capstone.html",
+          "<h2>Welcome is blocked</h2>" +
+          "<p>getSession(false) returned null, so sendRedirect sent you back to the login form.</p>");
       } else {
         page("NotesSessionWelcome", "",
           "<h1>Welcome " + esc(u) + "</h1>" +
           "<p><a href='NotesSessionLogout'>Logout</a></p>" +
-          "<p><a href='capstone.html'>Back to MyMail project</a></p>");
+          "<p><a href='index.html#ex-session-welcome'>Index</a></p>");
       }
       return;
     }
     if (/^NotesSessionLogout$/i.test(servlet)) {
       sessionStorage.removeItem("lab-session");
-      location.href = "capstone.html";
-      return;
-    }
-
-    if (/^Url1$/i.test(servlet)) {
-      var a = data.s_id1 || "054", b = data.s_id2 || "055";
-      var link = "Url2?s_id1=" + encodeURIComponent(a) + "&amp;s_id2=" + encodeURIComponent(b);
-      page("Url1", "",
-        "<h2>Url1</h2>" +
-        "<p><a href='" + link.replace(/&amp;/g, "&") + "'>next page</a></p>" +
-        "<p><a href='capstone.html'>Back to MyMail project</a></p>");
-      return;
-    }
-    if (/^Url2$/i.test(servlet)) {
-      page("Url2", "s_id1=" + encodeURIComponent(data.s_id1 || "") + "&s_id2=" + encodeURIComponent(data.s_id2 || ""),
-        "<h2>Url2</h2>" +
-        "<p>s_id1=" + esc(data.s_id1) + "</p>" +
-        "<p>s_id2=" + esc(data.s_id2) + "</p>" +
-        "<p><a href='capstone.html'>Back to MyMail project</a></p>");
-      return;
-    }
-
-    if (/^Valid$/i.test(servlet) || /^Welcome$/i.test(servlet)) {
-      if ((data.login || "") === "java" && (data.pwd || "") === "servlet") {
-        page("Valid", "",
-          "<h1>id:" + esc(data.session_id || "054") + "</h1>" +
-          "<h3>Welcome " + esc(data.login) + "</h3>" +
-          "<p><a href='capstone.html'>Back to MyMail project</a></p>");
-      } else {
-        page("Valid", "",
-          "<h1>Incorrect LoginId/Password</h1>" +
-          "<p><a href='capstone.html'>Back to MyMail project</a></p>");
-      }
+      redirectTo("capstone.html",
+        "<h2>Logout</h2>" +
+        "<p>session.invalidate() ran. sendRedirect sent the browser to capstone.html.</p>" +
+        "<p>Click Sign in again — Welcome is blocked until you do.</p>");
       return;
     }
 
@@ -433,32 +419,27 @@
       if ((data.login || "") === "java" && (data.pwd || "") === "servlet") {
         sessionStorage.setItem("lab-capstone", data.login);
         cookieSet("remember", data.login, 7);
+        /* forward keeps the URL at /CapstoneLogin and prints CapstoneWelcome */
         page("CapstoneLogin", "",
           "<h1>Welcome " + esc(data.login) + "</h1>" +
-          "<p>Login success using <b>forward</b>.</p>" +
-          "<p>Username stored in <b>HttpSession</b>.</p>" +
-          "<p>Cookie <b>remember</b> also created for next visit.</p>" +
-          "<p><a href='CapstoneLogout'>Logout</a></p>" +
-          "<p><a href='capstone.html'>Back to MyMail project</a></p>");
+          "<p><a href='CapstoneLogout'>Logout</a></p>");
       } else {
+        /* include() reprints the form page under the error line */
         page("CapstoneLogin", "",
           "<p>Incorrect Login ID / Password</p>" +
-          "<form method='post' action='CapstoneLogin'>" +
-          "Login: <input name='login' value='java'> " +
-          "Password: <input type='password' name='pwd'> " +
-          "<input type='submit' value='Open MyMail portal (POST)'></form>" +
-          "<p><a href='capstone.html'>Back to MyMail project</a></p>");
+          "<p>The login form on this page was included again. Try java / servlet.</p>");
       }
       return;
     }
     if (/^CapstoneWelcome$/i.test(servlet)) {
       var c = sessionStorage.getItem("lab-capstone");
       if (!c) {
-        location.href = "capstone.html";
+        redirectTo("capstone.html",
+          "<h2>Welcome is blocked</h2>" +
+          "<p>getSession(false) returned null, so sendRedirect sent you back to the login form.</p>");
       } else {
         page("CapstoneWelcome", "",
           "<h1>Welcome " + esc(c) + "</h1>" +
-          "<p>Login success using <b>forward</b>.</p>" +
           "<p><a href='CapstoneLogout'>Logout</a></p>");
       }
       return;
@@ -466,7 +447,10 @@
     if (/^CapstoneLogout$/i.test(servlet)) {
       sessionStorage.removeItem("lab-capstone");
       cookieDel("remember");
-      location.href = "capstone.html?back=ch-capstone";
+      redirectTo("capstone.html",
+        "<h2>Logout</h2>" +
+        "<p>Logout cleared both stores: session.invalidate() and cookie remember with setMaxAge(0).</p>" +
+        "<p>Open the portal again to log in.</p>");
       return;
     }
 

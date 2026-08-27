@@ -12,9 +12,7 @@
     { id: "ch-fwd", n: "06", title: "Forward and Redirect", href: "forward.html?back=ch-fwd" },
     { id: "ch-cookies", n: "07", title: "Cookies", href: "cookie.html?back=ch-cookies" },
     { id: "ch-session", n: "08", title: "HttpSession", href: "session_notes_login.html?back=ch-session" },
-    { id: "ch-url", n: "09", title: "URL Rewriting", href: "url.html?back=ch-url" },
-    { id: "ch-hidden", n: "10", title: "Hidden Form Field", href: "hidden_login.html?back=ch-hidden" },
-    { id: "ch-capstone", n: "11", title: "Capstone Portal", href: "capstone.html?back=ch-capstone" }
+    { id: "ch-capstone", n: "09", title: "Capstone Portal", href: "capstone.html?back=ch-capstone" }
   ];
 
   function base() {
@@ -161,11 +159,6 @@
       ["cookie", "ch-cookies"],
       ["08-httpsession", "ch-session"],
       ["session_", "ch-session"],
-      ["09-urlrewrite", "ch-url"],
-      ["url.html", "ch-url"],
-      ["url2", "ch-url"],
-      ["10-hidden", "ch-hidden"],
-      ["hidden_", "ch-hidden"],
       ["11-capstone", "ch-capstone"],
       ["capstone", "ch-capstone"]
     ];
@@ -355,11 +348,12 @@
       { q: "ServletContext is shared by:", a: ["Only one servlet", "All servlets in this web application", "All webapps on the machine", "Only the browser"], c: 1, why: "Context-param values (college, department) are app-wide. Config is per servlet." },
       { q: "After RequestDispatcher.forward, the browser address bar:", a: ["Always changes to the target servlet URL", "Stays on the original URL", "Clears to localhost:8080", "Shows the password"], c: 1, why: "Forward is server-side. Redirect (302) is the one that changes the URL." },
       { q: "A cookie is stored:", a: ["Only in HttpSession on the server", "In the browser, sent back on later requests", "Inside web.xml", "In PrintWriter"], c: 1, why: "Cookie = client-side name/value. Session = server-side map + session id." },
-      { q: "HttpSession.setAttribute stores data:", a: ["In the address bar", "On the server, keyed by session id", "In a hidden field only", "In web.xml context-param"], c: 1, why: "Welcome pages read the name from session, not from a cookie (cookie is optional remember)." },
-      { q: "URL rewriting is used when:", a: ["You want prettier CSS", "Cookies may be disabled, so the session id is put in the link", "You must hide the password", "destroy() failed"], c: 1, why: "encodeURL / extra path info carries jsessionid if the browser will not store a cookie." },
-      { q: "A hidden form field:", a: ["Can never be seen by the user", "Is not in the address bar, but is visible in View Source", "Is stored by Tomcat like HttpSession", "Replaces web.xml"], c: 1, why: "type=hidden is still HTML. Students can see it in page source." },
+      { q: "HttpSession.setAttribute stores data:", a: ["In the address bar", "On the server, keyed by session id", "In the cookie value", "In web.xml context-param"], c: 1, why: "Welcome pages read the name from the session, not from a cookie (the cookie only remembers a display name)." },
+      { q: "Why must a password never be stored in a cookie?", a: ["Cookies are too small", "The student owns the browser and can read or edit any cookie", "Tomcat deletes cookies every hour", "Cookies only hold numbers"], c: 1, why: "A cookie sits on the client. Open DevTools → Application → Cookies and you can see it." },
+      { q: "Welcome should call getSession(false) because:", a: ["It is faster", "getSession(true) would create a new empty session and a logged-out student would look logged in", "false disables cookies", "It prints the session id"], c: 1, why: "getSession(false) returns null after logout, so you can send the student back to the login form." },
       { q: "Capstone success path uses:", a: ["GET login + redirect to Google", "POST + session + remember cookie + forward to Welcome", "Only cookies, no session", "TRACE then DELETE"], c: 1, why: "That is the mini-project: join POST, session, cookie, forward, include, invalidate." },
-      { q: "Logout should:", a: ["Only hide the Welcome HTML with CSS", "session.invalidate() and delete the remember cookie", "Call destroy() on every servlet", "Restart Tomcat"], c: 1, why: "invalidate() drops server session data. setMaxAge(0) drops the cookie." }
+      { q: "Logout should:", a: ["Only hide the Welcome HTML with CSS", "session.invalidate() and delete the remember cookie", "Call destroy() on every servlet", "Restart Tomcat"], c: 1, why: "invalidate() drops server session data. setMaxAge(0) drops the cookie. Clearing only one leaves the account open." },
+      { q: "You write cookie user=Rahul, then write user=Sagar. What does Read show?", a: ["Both Rahul and Sagar", "Only Sagar — the same cookie name is overwritten", "Only Rahul", "An error"], c: 1, why: "One browser keeps one cookie per name. To keep both names you must use two different cookie names." }
     ];
     var score = 0, answered = 0;
     qs.forEach(function (item, i) {
@@ -414,7 +408,7 @@
       || /\/basic-servlets\/?$/.test(path);
     if (!skipOnline) {
       var lab = document.createElement("script");
-      lab.src = base() + "online-lab.js?v=2720";
+      lab.src = base() + "online-lab.js?v=2800";
       document.head.appendChild(lab);
     }
   });

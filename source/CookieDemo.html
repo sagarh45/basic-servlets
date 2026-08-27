@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Source - CookieDemo</title><style>
+body{font-family:Arial,Helvetica,sans-serif;margin:30px;background:#f7f7f7;color:#222}
+h1,h2{color:#222} h2{margin-top:28px;border-bottom:1px solid #ccc;padding-bottom:6px}
+a.btn{display:inline-block;margin-right:8px;padding:6px 14px;border:1px solid #336699;color:#fff;background:#336699;text-decoration:none}
+pre.code{background:#fff;color:#000;padding:18px;overflow:auto;border:1px solid #ccc;font-size:17px;line-height:1.55;font-family:Consolas,"Courier New",monospace}
+.kw{color:#0000ff;font-weight:bold}.cls{color:#267f99;font-weight:bold}.mtd{color:#795e26;font-weight:bold}
+.str{color:#a31515}.cmt{color:#008000}.ann{color:#808080}.num{color:#098658}
+.tag{color:#800000;font-weight:bold}.attr{color:#ff0000}.aval{color:#0000ff}
+.info{background:#eef6ff;padding:12px;border:1px solid #cde;margin-bottom:16px}
+</style><link rel="stylesheet" href="source.css">
+</head>
+<body>
+<p class="icatag">CHAPTER 07 · COOKIES</p>
+<div class="rel"><b>One HTML page:</b> <code>cookie.html</code> — one text box and four buttons: Write, Read, Display all, Delete.
+Java: <a href="CookieDemo.html">CookieDemo</a> (this page). The four-class ICA version is <a href="Cookie1.html">Cookie1</a> · <a href="Cookie2.html">Cookie2</a> · <a href="Cookie3.html">Cookie3</a> · <a href="CookieDelete.html">CookieDelete</a>.
+<a href="../practicals.html#ica-4">ICA journal</a>
+<a class="btn" href="../cookie.html">Run cookie demo</a></div>
+<div class="realex"><b>Real example:</b> a library card kept in your own pocket. The library writes your name on it, you carry it, and you show it on the next visit instead of filling the form again. The library can cancel it by asking for it back — that is <code>setMaxAge(0)</code>. Never write a password on that card.</div>
+
+<h1>Source: CookieDemo</h1>
+<div class="ps">
+<h2>Problem statement</h2>
+<p><b>Title:</b> Cookie write, read, display all and delete on one page</p>
+<p>Write one servlet that does all four cookie jobs from one form, so a student can see the whole life of a cookie without leaving the page. Every name that is written must stay until it is deleted, so writing <b>Rahul</b> and then <b>Sagar</b> must show both.</p>
+<p><b>What you must do:</b></p>
+<ol>
+<li>One HTML form, one text box named <code>cval</code>, four submit buttons sharing the name <code>op</code> with values <code>write</code>, <code>read</code>, <code>list</code> and <code>delete</code>.</li>
+<li>A browser cannot keep two cookies with the same name, so give each name its own cookie: <code>Rahul</code> is stored as cookie <code>u_Rahul</code>, <code>Sagar</code> as <code>u_Sagar</code>. Display them all back as <code>user = Rahul</code>.</li>
+<li>Delete uses the same cookie name with <code>setMaxAge(0)</code>.</li>
+<li>Write complete Java and complete web.xml for CookieDemo only.</li>
+</ol>
+<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/cookiedemo</code>):</p>
+<pre class="sample-out">WRITE saved user = Sagar. Names stored now:
+All names stored in this browser:
+user = Rahul
+user = Sagar</pre>
+</div>
+<div class="pflow">
+<h2>Program output flow</h2>
+<p class="pflow-cap">A cookie you just wrote is not in the same request. The browser sends it back on the <b>next</b> request — that is why Write and Read are two separate clicks.</p>
+<div class="pflow-lab">Write</div>
+<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type Rahul, click Write</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/cookiedemo</code> op=write</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>addCookie u_Rahul=Rahul</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>WRITE saved user = Rahul</span></div></div>
+<div class="pflow-lab">Read / Display all</div>
+<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Click Display all</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>sends every cookie back</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>getCookies() loop, skip JSESSIONID</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>user = Rahul<br>user = Sagar</span></div></div>
+<div class="pflow-lab">Delete</div>
+<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Type Rahul, click Delete</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>u_Rahul with setMaxAge(0)</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>DELETE cookie u_Rahul<br>Display all now shows only Sagar</span></div></div>
+</div>
+<p><a class="btn" href="../cookie.html">Run this program</a> <a class="btn ghost" href="../topics/07-cookies/theory.html">Cookies theory</a> <a class="btn" href="../index.html">Index</a></p>
+<div class="info">This is the exact class that answers <code>/cookiedemo</code>. Copy-paste file: <code>src/CookieDemo.java</code>.</div>
+
+<h2>1) Java program — CookieDemo.java</h2>
+<pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">Cookie</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="cmt">/**
+ * Each Write adds a new cookie. Rahul then Sagar both stay.
+ * Cookie name is u_Rahul, u_Sagar so names do not overwrite each other.
+ */</span>
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">CookieDemo</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = <span class="num">1L</span>;
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">show</span>(request, response, <span class="str">&quot;Type Rahul, Write. Type Sagar, Write. Read / Display all shows both.&quot;</span>);
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> op = request.<span class="mtd">getParameter</span>(<span class="str">&quot;op&quot;</span>);
+        <span class="cls">String</span> text = request.<span class="mtd">getParameter</span>(<span class="str">&quot;cval&quot;</span>);
+        <span class="kw">if</span> (text == <span class="kw">null</span>) {
+            text = request.<span class="mtd">getParameter</span>(<span class="str">&quot;login&quot;</span>);
+        }
+        <span class="kw">if</span> (text == <span class="kw">null</span>) {
+            text = <span class="str">&quot;&quot;</span>;
+        }
+        text = text.<span class="mtd">trim</span>();
+        <span class="cls">String</span> path = <span class="mtd">cookiePath</span>(request);
+
+        <span class="cls">String</span> msg;
+        <span class="kw">if</span> (<span class="str">&quot;write&quot;</span>.<span class="mtd">equals</span>(op)) {
+            <span class="cls">String</span> value = text.<span class="mtd">isEmpty</span>() ? <span class="str">&quot;Rahul&quot;</span> : text;
+            <span class="cls">String</span> name = <span class="mtd">key</span>(value);
+            <span class="mtd">put</span>(response, path, name, value, <span class="num">60</span> * <span class="num">60</span>);
+            msg = <span class="str">&quot;WRITE saved &lt;b&gt;user = &quot;</span> + value + <span class="str">&quot;&lt;/b&gt;. Names stored now:&lt;br&gt;&quot;</span>
+                    + <span class="mtd">listCookies</span>(request, name, value);
+        } <span class="kw">else</span> <span class="kw">if</span> (<span class="str">&quot;read&quot;</span>.<span class="mtd">equals</span>(op) || <span class="str">&quot;list&quot;</span>.<span class="mtd">equals</span>(op)) {
+            msg = <span class="mtd">listCookies</span>(request, <span class="kw">null</span>, <span class="kw">null</span>);
+        } <span class="kw">else</span> <span class="kw">if</span> (<span class="str">&quot;delete&quot;</span>.<span class="mtd">equals</span>(op)) {
+            <span class="cls">String</span> name = <span class="mtd">pickDeleteName</span>(request, text);
+            <span class="mtd">put</span>(response, path, name, <span class="str">&quot;x&quot;</span>, <span class="num">0</span>);
+            msg = <span class="str">&quot;DELETE cookie &lt;b&gt;&quot;</span> + name + <span class="str">&quot;&lt;/b&gt;. Click Display all. &quot;</span>
+                    + <span class="str">&quot;Type the name (Rahul) or cookie id (u_Rahul) to delete that one.&quot;</span>;
+        } <span class="kw">else</span> {
+            msg = <span class="str">&quot;Choose Write, Read, Display all, or Delete.&quot;</span>;
+        }
+        <span class="mtd">show</span>(request, response, msg);
+    }
+
+    <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">key</span>(<span class="cls">String</span> value) {
+        <span class="cls">String</span> s = value.<span class="mtd">replaceAll</span>(<span class="str">&quot;[^A-Za-z0-9]&quot;</span>, <span class="str">&quot;&quot;</span>);
+        <span class="kw">if</span> (s.<span class="mtd">isEmpty</span>()) {
+            s = <span class="str">&quot;guest&quot;</span>;
+        }
+        <span class="kw">return</span> <span class="str">&quot;u_&quot;</span> + s;
+    }
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">cookiePath</span>(<span class="cls">HttpServletRequest</span> request) {
+        <span class="cls">String</span> path = request.<span class="mtd">getContextPath</span>();
+        <span class="kw">return</span> (path == <span class="kw">null</span> || path.<span class="mtd">isEmpty</span>()) ? <span class="str">&quot;/&quot;</span> : path;
+    }
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">void</span> <span class="mtd">put</span>(<span class="cls">HttpServletResponse</span> response, <span class="cls">String</span> path, <span class="cls">String</span> name, <span class="cls">String</span> value, <span class="kw">int</span> maxAge) {
+        <span class="cls">Cookie</span> c = <span class="kw">new</span> <span class="cls">Cookie</span>(name, value);
+        c.<span class="mtd">setMaxAge</span>(maxAge);
+        c.<span class="mtd">setPath</span>(path);
+        response.<span class="mtd">addCookie</span>(c);
+    }
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">pickDeleteName</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">String</span> text) {
+        <span class="kw">if</span> (text.<span class="mtd">isEmpty</span>()) {
+            <span class="kw">return</span> <span class="str">&quot;u_Rahul&quot;</span>;
+        }
+        <span class="kw">if</span> (<span class="mtd">find</span>(request, text) != <span class="kw">null</span>) {
+            <span class="kw">return</span> text;
+        }
+        <span class="cls">String</span> k = <span class="mtd">key</span>(text);
+        <span class="kw">if</span> (<span class="mtd">find</span>(request, k) != <span class="kw">null</span>) {
+            <span class="kw">return</span> k;
+        }
+        <span class="kw">return</span> k;
+    }
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">find</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">String</span> name) {
+        <span class="cls">Cookie</span>[] arr = request.<span class="mtd">getCookies</span>();
+        <span class="kw">if</span> (arr == <span class="kw">null</span>) {
+            <span class="kw">return</span> <span class="kw">null</span>;
+        }
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
+            <span class="kw">if</span> (name.<span class="mtd">equals</span>(arr[i].<span class="mtd">getName</span>())) {
+                <span class="kw">return</span> arr[i].<span class="mtd">getValue</span>();
+            }
+        }
+        <span class="kw">return</span> <span class="kw">null</span>;
+    }
+
+    <span class="kw">private</span> <span class="kw">static</span> <span class="cls">String</span> <span class="mtd">listCookies</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">String</span> extraName, <span class="cls">String</span> extraValue) {
+        <span class="cls">Cookie</span>[] arr = request.<span class="mtd">getCookies</span>();
+        <span class="cls">StringBuilder</span> sb = <span class="kw">new</span> <span class="cls">StringBuilder</span>(<span class="str">&quot;All names stored in this browser:&lt;br&gt;&quot;</span>);
+        <span class="kw">int</span> n = <span class="num">0</span>;
+        <span class="kw">boolean</span> sawExtra = <span class="kw">false</span>;
+        <span class="kw">if</span> (arr != <span class="kw">null</span>) {
+            <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
+                <span class="cls">String</span> name = arr[i].<span class="mtd">getName</span>();
+                <span class="kw">if</span> (<span class="str">&quot;JSESSIONID&quot;</span>.<span class="mtd">equalsIgnoreCase</span>(name)) {
+                    <span class="kw">continue</span>;
+                }
+                <span class="kw">if</span> (extraName != <span class="kw">null</span> &amp;&amp; extraName.<span class="mtd">equals</span>(name)) {
+                    sawExtra = <span class="kw">true</span>;
+                    sb.<span class="mtd">append</span>(<span class="str">&quot;user = &quot;</span>).<span class="mtd">append</span>(extraValue).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
+                } <span class="kw">else</span> <span class="kw">if</span> (name.<span class="mtd">startsWith</span>(<span class="str">&quot;u_&quot;</span>)) {
+                    sb.<span class="mtd">append</span>(<span class="str">&quot;user = &quot;</span>).<span class="mtd">append</span>(arr[i].<span class="mtd">getValue</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
+                } <span class="kw">else</span> {
+                    sb.<span class="mtd">append</span>(<span class="str">&quot;&lt;b&gt;&quot;</span>).<span class="mtd">append</span>(name).<span class="mtd">append</span>(<span class="str">&quot;&lt;/b&gt; = &quot;</span>).<span class="mtd">append</span>(arr[i].<span class="mtd">getValue</span>()).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
+                }
+                n++;
+            }
+        }
+        <span class="kw">if</span> (extraName != <span class="kw">null</span> &amp;&amp; !sawExtra) {
+            sb.<span class="mtd">append</span>(<span class="str">&quot;user = &quot;</span>).<span class="mtd">append</span>(extraValue).<span class="mtd">append</span>(<span class="str">&quot;&lt;br&gt;&quot;</span>);
+            n++;
+        }
+        <span class="kw">if</span> (n == <span class="num">0</span>) {
+            sb.<span class="mtd">append</span>(<span class="str">&quot;None yet. Write Rahul, then Write Sagar.&quot;</span>);
+        }
+        <span class="kw">return</span> sb.<span class="mtd">toString</span>();
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> <span class="mtd">show</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response, <span class="cls">String</span> msg)
+            <span class="kw">throws</span> <span class="cls">IOException</span> {
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html; charset=UTF-8&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;meta charset=&#x27;UTF-8&#x27;&gt;&lt;title&gt;Cookie demo&lt;/title&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;link rel=&#x27;stylesheet&#x27; href=&#x27;portal.css&#x27;&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&#x27;wrap&#x27;&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h1&gt;Cookie demo&lt;/h1&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;form method=&#x27;post&#x27; action=&#x27;cookiedemo&#x27; autocomplete=&#x27;off&#x27;&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Name &lt;input name=&#x27;cval&#x27; placeholder=&#x27;Rahul&#x27; autocomplete=&#x27;off&#x27;&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;button type=&#x27;submit&#x27; name=&#x27;op&#x27; value=&#x27;write&#x27;&gt;Write cookie&lt;/button&gt; &quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;button type=&#x27;submit&#x27; name=&#x27;op&#x27; value=&#x27;read&#x27;&gt;Read cookie&lt;/button&gt; &quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;button type=&#x27;submit&#x27; name=&#x27;op&#x27; value=&#x27;list&#x27;&gt;Display all cookies&lt;/button&gt; &quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;button type=&#x27;submit&#x27; name=&#x27;op&#x27; value=&#x27;delete&#x27;&gt;Delete selected cookie&lt;/button&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/p&gt;&lt;/form&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;div class=&#x27;card&#x27;&gt;&lt;h3&gt;Result&lt;/h3&gt;&lt;p&gt;&quot;</span> + msg + <span class="str">&quot;&lt;/p&gt;&lt;/div&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;cookie.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+    }
+}
+</pre>
+<p><a href="../index.html">Return to Index</a></p>
+
+<h2>2) web.xml — complete file for this program</h2>
+<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;<span class="tag">web-app</span> <span class="attr">xmlns</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee&quot;</span>
+         <span class="attr">xmlns:xsi</span>=<span class="str">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+         <span class="attr">xsi:schemaLocation</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;</span>
+         <span class="attr">version</span>=<span class="str">&quot;6.1&quot;</span>&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;CookieDemo&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;CookieDemo&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;CookieDemo&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/cookiedemo&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
+&lt;/<span class="tag">web-app</span>&gt;
+</pre>
+</body>
+</html>

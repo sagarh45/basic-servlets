@@ -116,6 +116,12 @@ FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">ForwardServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
 
     <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">doPost</span>(request, response);
+    }
+
+    <span class="ann">@Override</span>
     <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
         <span class="cls">String</span> student = request.<span class="mtd">getParameter</span>(<span class="str">&quot;student&quot;</span>);

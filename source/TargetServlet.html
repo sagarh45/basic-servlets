@@ -91,51 +91,37 @@ Include = Gmail “Wrong password” still shows the form on the same page.</div
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
 
-<span class="cmt">/**
- * Target servlet for Forward and Redirect demos.
- */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">TargetServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
 
-    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1<span class="cls">L</span>;
-
+    <span class="cmt">// Redirect creates a new GET, so doGet is required here.</span>
     <span class="ann">@Override</span>
     <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
-
-        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
-        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
-
-        <span class="cmt">// Check if request came via forward (attribute) or redirect (query param)</span>
-        <span class="cls">String</span> forwardedMessage = (<span class="cls">String</span>) request.<span class="mtd">getAttribute</span>(<span class="str">&quot;message&quot;</span>);
-        <span class="cls">String</span> forwardedSource = (<span class="cls">String</span>) request.<span class="mtd">getAttribute</span>(<span class="str">&quot;source&quot;</span>);
-        <span class="cls">String</span> redirectFrom = request.<span class="mtd">getParameter</span>(<span class="str">&quot;from&quot;</span>);
-
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;!DOCTYPE html&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Target Servlet&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;TargetServlet - Destination Page&lt;/h2&gt;&quot;</span>);
-
-        <span class="kw">if</span> (forwardedMessage != <span class="kw">null</span>) {
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p style=&#x27;color:green;&#x27;&gt;&lt;b&gt;Arrived via FORWARD from &quot;</span> + forwardedSource + <span class="str">&quot;&lt;/b&gt;&lt;/p&gt;&quot;</span>);
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Message: &quot;</span> + forwardedMessage + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;i&gt;Notice: Browser URL still shows /forward (forward keeps same request).&lt;/i&gt;&lt;/p&gt;&quot;</span>);
-        } <span class="kw">else</span> <span class="kw">if</span> (redirectFrom != <span class="kw">null</span>) {
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p style=&#x27;color:blue;&#x27;&gt;&lt;b&gt;Arrived via REDIRECT from &quot;</span> + redirectFrom + <span class="str">&quot;&lt;/b&gt;&lt;/p&gt;&quot;</span>);
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;i&gt;Notice: Browser URL changed to /target (redirect creates new request).&lt;/i&gt;&lt;/p&gt;&quot;</span>);
-        } <span class="kw">else</span> {
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Direct access to TargetServlet.&lt;/p&gt;&quot;</span>);
-        }
-
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;forward&#x27;&gt;Try Forward&lt;/a&gt; | &lt;a href=&#x27;redirect&#x27;&gt;Try Redirect&lt;/a&gt; | &lt;a href=&#x27;index.html#ex-target&#x27;&gt;Index&lt;/a&gt;&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
-
-        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;[TargetServlet] doGet() executed.&quot;</span>);
+        <span class="mtd">show</span>(request, response);
     }
 
-    <span class="cmt">// Forward from a POST form keeps POST, so TargetServlet must also handle doPost.</span>
+    <span class="cmt">// Forward keeps POST, so doPost is required here.</span>
     <span class="ann">@Override</span>
     <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
-        <span class="mtd">doGet</span>(request, response);
+        <span class="mtd">show</span>(request, response);
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> <span class="mtd">show</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response) <span class="kw">throws</span> <span class="cls">IOException</span> {
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        <span class="cls">String</span> msg = (<span class="cls">String</span>) request.<span class="mtd">getAttribute</span>(<span class="str">&quot;message&quot;</span>);
+        <span class="cls">String</span> from = request.<span class="mtd">getParameter</span>(<span class="str">&quot;from&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;TargetServlet&lt;/h2&gt;&quot;</span>);
+        <span class="kw">if</span> (msg != <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;FORWARD: &quot;</span> + msg + <span class="str">&quot; (URL still /forward)&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> <span class="kw">if</span> (from != <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;REDIRECT from &quot;</span> + from + <span class="str">&quot; student=&quot;</span>
+                    + request.<span class="mtd">getParameter</span>(<span class="str">&quot;student&quot;</span>) + <span class="str">&quot; (URL changed)&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Direct access&lt;/p&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;forward.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
     }
 }
 </pre>

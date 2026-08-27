@@ -94,25 +94,23 @@ REDIRECT from RedirectServlet student=Rahul (URL changed)</pre>
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
 
-<span class="cmt">/**
- * Practical 7: sendRedirect Demo
- * Sends HTTP 302 redirect to TargetServlet. Browser URL changes.
- */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">RedirectServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
 
-    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">long</span> serialVersionUID = 1<span class="cls">L</span>;
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">doPost</span>(request, response);
+    }
 
     <span class="ann">@Override</span>
     <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
-
-        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;[RedirectServlet] Sending redirect to /target ...&quot;</span>);
-
-        <span class="cmt">// sendRedirect tells browser to make a NEW request to the given URL</span>
-        <span class="cmt">// Note: request attributes are NOT passed (new request is created)</span>
-        response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;target?from=RedirectServlet&quot;</span>);
-
-        <span class="cls">System</span>.out.<span class="mtd">println</span>(<span class="str">&quot;[RedirectServlet] Redirect response sent to client.&quot;</span>);
+        <span class="cls">String</span> student = request.<span class="mtd">getParameter</span>(<span class="str">&quot;student&quot;</span>);
+        <span class="kw">if</span> (student == <span class="kw">null</span>) {
+            student = <span class="str">&quot;Rahul&quot;</span>;
+        }
+        response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;target?from=RedirectServlet&amp;student=&quot;</span>
+                + java.net.<span class="cls">URLEncoder</span>.<span class="mtd">encode</span>(student, <span class="str">&quot;UTF-8&quot;</span>));
     }
 }
 </pre>

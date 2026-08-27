@@ -49,14 +49,13 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 04 · MYMAIL ACCOUNT</p>
-<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookies, session, URL rewrite, hidden field and portal together.
-Java: <a href="Cookie1.html">Cookie1</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="Url1.html">Url1</a> · <a href="Valid.html">Valid</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
+<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookie, HttpSession and the portal that uses both.
+Java: <a href="Cookie1.html">Cookie1</a> · <a href="Cookie2.html">Cookie2</a> · <a href="CookieDelete.html">CookieDelete</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
 <a href="../practicals.html#ica-4">ICA journal</a>
 <a class="btn" href="../capstone.html">Run MyMail account</a></div>
 <div class="realex"><b>Real examples:</b> Cookie = YouTube / Instagram Continue as Rahul (never store a password).
 HttpSession = Gmail / WhatsApp Web login until Logout.
-URL rewriting = old net-banking when cookies are blocked.
-Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + forward / include.</div>
+Portal joins POST + session + cookie + forward / include: the session proves you are logged in, the cookie only remembers your display name.</div>
 
 <h1>Source: Cookie2</h1>
 <div class="ps">
@@ -104,29 +103,38 @@ Account cookies</pre>
 <span class="kw">import</span> jakarta.servlet.*;
 <span class="kw">import</span> jakarta.servlet.http.*;
 
+<span class="cmt">/** WatchTube Home — READ cookies that Cookie1 wrote. */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">Cookie2</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
     <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
         response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
         <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
-        <span class="cls">String</span> display = <span class="str">&quot;guest&quot;</span>;
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;body&gt;&lt;h2&gt;Home — last watched&lt;/h2&gt;&quot;</span>);
+        <span class="cls">String</span> user = <span class="kw">null</span>;
+        <span class="cls">String</span> video = <span class="kw">null</span>;
         <span class="cls">Cookie</span>[] arr = request.<span class="mtd">getCookies</span>();
         <span class="kw">if</span> (arr != <span class="kw">null</span>) {
             <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
-                <span class="kw">if</span> (<span class="str">&quot;user&quot;</span>.<span class="mtd">equals</span>(arr[i].<span class="mtd">getName</span>())) {
-                    display = arr[i].<span class="mtd">getValue</span>();
+                <span class="cls">String</span> n = arr[i].<span class="mtd">getName</span>();
+                <span class="kw">if</span> (<span class="str">&quot;user&quot;</span>.<span class="mtd">equals</span>(n)) {
+                    user = arr[i].<span class="mtd">getValue</span>();
+                } <span class="kw">else</span> <span class="kw">if</span> (<span class="str">&quot;lastVideo&quot;</span>.<span class="mtd">equals</span>(n)) {
+                    video = arr[i].<span class="mtd">getValue</span>();
                 }
-                out.<span class="mtd">println</span>(arr[i].<span class="mtd">getName</span>() + <span class="str">&quot; = &quot;</span> + arr[i].<span class="mtd">getValue</span>() + <span class="str">&quot;&lt;br&gt;&quot;</span>);
             }
-        } <span class="kw">else</span> {
-            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;No cookies yet. Stay signed in first.&lt;/p&gt;&quot;</span>);
         }
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Welcome back &quot;</span> + display + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
-        <span class="cls">Cookie</span> c2 = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;lastVideo&quot;</span>, <span class="str">&quot;Java&quot;</span>);
-        response.<span class="mtd">addCookie</span>(c2);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Saved last watched: Java Servlets (cookie lastVideo=Java), like YouTube remembers the last video.&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;Cookie3&#x27;&gt;Account cookies&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;body&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;2. READ cookies — Home (last watched)&lt;/h2&gt;&quot;</span>);
+        <span class="kw">if</span> (user == <span class="kw">null</span>) {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;No Remember-me cookie. Write one first.&lt;/p&gt;&quot;</span>);
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;cookie.html&#x27;&gt;1. WRITE cookie&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        } <span class="kw">else</span> {
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;user = &quot;</span> + user + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;lastVideo = &quot;</span> + (video == <span class="kw">null</span> ? <span class="str">&quot;(not yet)&quot;</span> : video) + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Welcome back &quot;</span> + user + <span class="str">&quot; — you did not type the name again.&lt;/p&gt;&quot;</span>);
+            out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;YouTube-style last watched: Java Servlets.&lt;/p&gt;&quot;</span>);
+        }
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;Cookie3&#x27;&gt;List all lab cookies&lt;/a&gt; | &lt;a href=&#x27;CookieDelete&#x27;&gt;3. DELETE cookies&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;cookie.html&#x27;&gt;Back to WatchTube cookies&lt;/a&gt;&lt;/p&gt;&quot;</span>);
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
     }
 }

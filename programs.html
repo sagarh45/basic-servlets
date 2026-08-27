@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Programs · Execute Online · Unit-II Servlets</title>
-<link rel="stylesheet" href="portal.css?v=2600">
-<script src="portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="portal.css?v=2800">
+<script src="portal.js?v=2800" defer></script>
 </head>
 <body>
 <header class="sitebar">
@@ -24,172 +24,247 @@
 
 <div class="wrap">
   <section class="hero">
-    <span class="kicker">Tab 2 · Live Tomcat 11 programs</span>
+    <span class="kicker">Tab 2 · Practice programs · One page each</span>
     <h1>Programs — Execute Online</h1>
-    <p>Every green button opens an Execute page. On the public website, the program runs in the browser <b>only after you click Execute</b> (or submit the form on that page). Theory, Programs list, and ICA journal do not simulate servlets. On Tomcat port <b>8080</b>, the real Java classes in <code>WEB-INF/classes</code> run. Copy-paste Java lives in <code>src/*.java</code> (Jakarta, Java 21, Tomcat 11).</p>
+    <p>This is a <b>separate list</b> from the ICA journal. Each program here is small, has its own real-life story from a different place — college office, hospital, bank, canteen, railway, library — and prints its answer <b>on the same page</b> in an Output box. Nothing jumps away, so you never lose the form.</p>
     <div class="hero-actions">
       <a class="btn ghost" href="theory.html">Back to Theory</a>
-      <a class="btn ghost" href="practicals.html">ICA Practicals</a>
+      <a class="btn ghost" href="practicals.html">ICA Practicals (only 4)</a>
     </div>
   </section>
 
   <div class="info">
-    <b>How to execute:</b> Click <b>Execute Online</b>. On the public website it runs here in the browser after that click.
-    On localhost Tomcat 11, the same forms hit real servlets. Copy Java from <code>src/</code> (or Source), then run <code>compile.bat</code> if you change a class.
-    Login for session programs: <b>java</b> / <b>servlet</b>.
+    <b>The four ICA journal projects are not repeated here.</b> ShopEasy, WatchTube, MyMail + PayNow and MyMail account live in the
+    <a href="practicals.html">ICA Practicals</a> tab. This tab gives you <b>different examples</b> of the same theory, so you can practise a concept twice with two different stories.
+    <p style="margin:8px 0 0">Every <b>Source</b> button shows exactly the Java that runs. On Tomcat port <b>8080</b> the real class in <code>WEB-INF/classes</code> answers. On the public website the same text is printed in the browser. Copy-paste Java is in <code>src/*.java</code>.</p>
   </div>
 
-  <h2>A) Syllabus programs (must run)</h2>
+  <h2>A) One program for each theory chapter</h2>
+  <p class="note">Read the chapter, then run its program here. Different story, same concept.</p>
 
-  <div class="prog" id="p-http">
+  <div class="prog" id="p-intro">
     <div>
-      <h3>2. ICA 1 · ShopEasy — HTTP methods</h3>
-      <p>Amazon Track / Checkout / Edit city / Cancel. Same page also has GET search vs POST review.</p>
+      <h3>Chapter 01 · College notice board</h3>
+      <p><b>Story:</b> a paper notice board never changes. The office wants a board that writes a fresh line by itself. That is why a servlet exists — Java builds the page, the browser only shows it.</p>
+      <p><code>HelloServlet</code> · one <code>doGet</code>, one <code>PrintWriter</code>.</p>
     </div>
     <div class="acts">
-      <a class="exec-xl" href="httpmethods.html">Execute Online</a>
-      <a class="btn source" href="source/HttpMethodsServlet.html">Source</a>
-      <a class="btn ghost" href="sample-registration.html">Sample form</a>
+      <a class="exec-xl" href="hello.html">Execute Online</a>
+      <a class="btn source" href="source/HelloServlet.html">Source</a>
+      <a class="btn ghost" href="topics/01-intro/theory.html">Theory</a>
+    </div>
+  </div>
+
+  <div class="prog" id="p-methods">
+    <div>
+      <h3>Chapter 02 · Canteen counter — one window, many jobs</h3>
+      <p><b>Story:</b> one canteen window. “Show me the menu” is a different job from “take my order”. The window is one URL; the job is the HTTP method.</p>
+      <p><code>GetPostDemoServlet</code> · same fields reach <code>doGet</code> and <code>doPost</code>.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="getpost.html">Execute Online</a>
+      <a class="btn source" href="source/GetPostDemoServlet.html">Source</a>
+      <a class="btn ghost" href="topics/02-http/theory.html">Theory</a>
     </div>
   </div>
 
   <div class="prog" id="p-getpost">
     <div>
-      <h3>3. ICA 1 · GET vs POST (same ShopEasy page)</h3>
-      <p>YouTube search vs review. Do not use a second HTML file. Source matches ICA 1.</p>
+      <h3>Chapter 03 · Weather site — the URL tells the secret</h3>
+      <p><b>Story:</b> you search a city on a weather site and the city sits in the address bar, so you can bookmark it. Type your email in the same style and everyone behind you can read it. That is why a password must never use GET.</p>
+      <p><code>DoGetDemo</code> · watch the address bar after you submit.</p>
     </div>
     <div class="acts">
-      <a class="exec-xl" href="httpmethods.html#getpost">Execute Online</a>
-      <a class="btn source" href="source/GetPostDiffServlet.html">Source</a>
+      <a class="exec-xl" href="doget.html">Execute Online</a>
+      <a class="btn source" href="source/DoGetDemo.html">Source</a>
+      <a class="btn ghost" href="topics/03-getpost/theory.html">Theory</a>
     </div>
   </div>
 
   <div class="prog" id="p-life">
     <div>
-      <h3>4. ICA 2 · WatchTube — lifecycle</h3>
-      <p>YouTube view count: init once, every refresh is a view.</p>
+      <h3>Chapter 04 · Temple footfall counter</h3>
+      <p><b>Story:</b> the gate counter is fixed once in the morning. Every person who walks in adds 1. Nobody buys a new counter per person. Tomcat does the same: <code>init</code> once, then one <code>service</code> per visitor.</p>
+      <p><code>CounterServlet</code> · refresh and watch the count grow.</p>
     </div>
     <div class="acts">
-      <a class="exec-xl" href="lifecycle.html">Execute Online</a>
-      <a class="btn source" href="source/LifecycleServlet.html">Source</a>
+      <a class="exec-xl" href="counter.html">Execute Online</a>
+      <a class="btn source" href="source/CounterServlet.html">Source</a>
+      <a class="btn ghost" href="topics/04-lifecycle/theory.html">Theory</a>
     </div>
   </div>
 
   <div class="prog" id="p-config">
     <div>
-      <h3>5. ICA 2 · Channel name vs author (same WatchTube page)</h3>
-      <p>ServletContext (collegeName) vs ServletConfig (author). Same HTML as lifecycle.</p>
+      <h3>Chapter 05 · Bank — this branch versus the whole bank</h3>
+      <p><b>Story:</b> the branch manager’s name belongs to one branch only (<code>init-param</code> → ServletConfig). The bank’s name is printed on every branch’s passbook (<code>context-param</code> → ServletContext). Two programs, one idea.</p>
+      <p><code>MyServlet</code> reads the branch. <code>ServletContextDemo</code> reads the bank.</p>
     </div>
     <div class="acts">
-      <a class="exec-xl" href="lifecycle.html#config">Execute Online</a>
-      <a class="btn source" href="source/ConfigContextServlet.html">Source</a>
+      <a class="exec-xl" href="myservlet.html">Branch (Config)</a>
+      <a class="exec-xl" href="servletcontext.html">Bank (Context)</a>
+      <a class="btn source" href="source/MyServlet.html">Source</a>
+      <a class="btn ghost" href="topics/05-config/theory.html">Theory</a>
     </div>
   </div>
 
   <div class="prog" id="p-fwd">
     <div>
-      <h3>6. ICA 3 · MyMail + PayNow</h3>
-      <p>Forward = open mail (URL stays). Redirect = Amazon Pay (URL changes). Include = footer on the same page.</p>
+      <h3>Chapter 06 · Hospital — same slip or a new counter?</h3>
+      <p><b>Story:</b> reception passes your slip to the doctor’s room without giving you a new token — that is <b>forward</b>, same request, URL unchanged. The ATM lobby instead tells you “go to counter 3” and you walk there yourself — that is <b>redirect</b>, new request, new URL.</p>
+      <p><code>IncludeServlet</code> pastes a common hospital footer, then keeps printing — <code>include</code> returns, <code>forward</code> does not.</p>
     </div>
     <div class="acts">
-      <a class="exec-xl" href="forward.html">Execute Online</a>
-      <a class="btn source" href="source/ForwardServlet.html">Source</a>
-      <a class="btn ghost" href="redirect_demo.html">Redirect demo</a>
+      <a class="exec-xl" href="include.html">Include (footer)</a>
+      <a class="exec-xl" href="redirect_demo.html">Redirect (new URL)</a>
+      <a class="btn source" href="source/IncludeServlet.html">Source</a>
+      <a class="btn ghost" href="topics/06-forward-redirect/theory.html">Theory</a>
     </div>
   </div>
 
   <div class="prog" id="p-cookie">
     <div>
-      <h3>7. ICA 4 · Cookie demo (write, read, list, delete)</h3>
-      <p>One text box, four buttons. After Write, click Read — the stored name shows in the result box. No 404.</p>
+      <h3>Chapter 07 · Library card in your own pocket</h3>
+      <p><b>Story:</b> the library writes your name on a card and <b>you</b> keep it. Next visit you show the card instead of filling the form again. A cookie is that card: it lives in the browser, and the library can cancel it by asking for it back (<code>setMaxAge(0)</code>).</p>
+      <p><code>CookieDemo</code> · write many names, read them all, delete one. Every name stays until you delete it.</p>
     </div>
     <div class="acts">
       <a class="exec-xl" href="cookie.html">Execute Online</a>
-      <a class="btn source" href="source/Cookie1.html">Source</a>
+      <a class="btn source" href="source/CookieDemo.html">Source</a>
+      <a class="btn ghost" href="topics/07-cookies/theory.html">Theory</a>
     </div>
   </div>
 
   <div class="prog" id="p-session">
     <div>
-      <h3>8. ICA 4 · Gmail login (HttpSession)</h3>
-      <p>Login <b>java</b> / <b>servlet</b>. Same <code>capstone.html</code> as the rest of ICA 4.</p>
+      <h3>Chapter 08 · Railway cloakroom token</h3>
+      <p><b>Story:</b> the cloakroom keeps your bag and gives you a small token. The bag (your data) stays with the railway; you only carry the number. HttpSession works the same way — data sits in Tomcat memory, the browser carries only the session id. Losing the token, or the clerk closing the counter (<code>invalidate()</code>), ends it.</p>
+      <p><code>NotesSessionLogin</code>, <code>NotesSessionWelcome</code>, <code>NotesSessionLogout</code> · login <b>java</b> / <b>servlet</b>.</p>
     </div>
     <div class="acts">
-      <a class="exec-xl" href="capstone.html">Execute Online</a>
+      <a class="exec-xl" href="session_notes_login.html">Execute Online</a>
       <a class="btn source" href="source/NotesSessionLogin.html">Source</a>
+      <a class="btn ghost" href="topics/08-httpsession/theory.html">Theory</a>
     </div>
   </div>
 
-  <div class="prog" id="p-url">
+  <div class="prog" id="p-portal">
     <div>
-      <h3>9. ICA 4 · URL rewriting (cookies off)</h3>
-      <p>Old net-banking style. Same MyMail account page.</p>
-    </div>
-    <div class="acts">
-      <a class="exec-xl" href="capstone.html">Execute Online</a>
-      <a class="btn source" href="source/Url1.html">Source</a>
-    </div>
-  </div>
-
-  <div class="prog" id="p-hidden">
-    <div>
-      <h3>10. ICA 4 · Hidden form field</h3>
-      <p>IRCTC-style step id. Same <code>capstone.html</code>.</p>
-    </div>
-    <div class="acts">
-      <a class="exec-xl" href="capstone.html">Execute Online</a>
-      <a class="btn source" href="source/Valid.html">Source</a>
-    </div>
-  </div>
-
-  <div class="prog" id="p-capstone">
-    <div>
-      <h3>11. ICA 4 · MyMail portal</h3>
-      <p>POST login, HttpSession, remember cookie, forward on success, include on failure, logout. Same <code>capstone.html</code>.</p>
+      <h3>Chapter 09 · Capstone — card and token together</h3>
+      <p><b>Story:</b> a real site uses both. The library card (cookie) only remembers your <i>name</i> so the page can say hello. The cloakroom token (session) proves you are actually logged in. Logout must destroy both, or the next person on that computer walks in as you.</p>
+      <p><code>CapstoneLogin</code>, <code>CapstoneWelcome</code>, <code>CapstoneLogout</code> · forward on success, include on wrong password.</p>
     </div>
     <div class="acts">
       <a class="exec-xl" href="capstone.html">Execute Online</a>
       <a class="btn source" href="source/CapstoneLogin.html">Source</a>
-      <a class="btn ghost" href="topics/11-capstone/project.html">Project</a>
+      <a class="btn ghost" href="topics/11-capstone/theory.html">Theory</a>
     </div>
   </div>
 
-  <h2>B) Extra lab programs (same server)</h2>
-  <p class="note">These also Execute Online on Tomcat. Use them for extra practice after the syllabus list.</p>
+  <h2>B) Extra practice programs</h2>
+  <p class="note">Same server, smaller ideas. Good for viva answers.</p>
 
-  <div class="prog"><div><h3>Hello servlet</h3><p><code>HelloServlet</code> · first HTML from Java.</p></div>
-    <div class="acts"><a class="exec-xl" href="hello.html">Execute Online</a><a class="btn source" href="source/HelloServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>GenericServlet</h3><p><code>GenericServletDemo</code> · service() without HTTP helpers.</p></div>
-    <div class="acts"><a class="exec-xl" href="generic.html">Execute Online</a><a class="btn source" href="source/GenericServletDemo.html">Source</a></div></div>
-  <div class="prog"><div><h3>Request information</h3><p><code>RequestInfoServlet</code> · method, URI, query string.</p></div>
-    <div class="acts"><a class="exec-xl" href="requestinfo.html">Execute Online</a><a class="btn source" href="source/RequestInfoServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>Response headers</h3><p><code>ResponseDemoServlet</code> · content type and writer.</p></div>
-    <div class="acts"><a class="exec-xl" href="response.html">Execute Online</a><a class="btn source" href="source/ResponseDemoServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>ICA 3 · Include footer</h3><p><code>IncludeServlet</code> · Gmail-style footer on the same page. Run from MyMail + PayNow.</p></div>
-    <div class="acts"><a class="exec-xl" href="forward.html">Execute Online</a><a class="btn source" href="source/IncludeServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>Request attributes</h3><p><code>AttributeDemoServlet</code> · data carried on a forward.</p></div>
-    <div class="acts"><a class="exec-xl" href="attributes.html">Execute Online</a><a class="btn source" href="source/AttributeDemoServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>Hyperlink → servlet</h3><p><code>HyperLinkDemo</code> · GET from an &lt;a&gt; tag.</p></div>
-    <div class="acts"><a class="exec-xl" href="hyperlink.html">Execute Online</a><a class="btn source" href="source/HyperLinkDemo.html">Source</a></div></div>
-  <div class="prog"><div><h3>doGet demo</h3><p><code>DoGetDemo</code> · classic GET handler.</p></div>
-    <div class="acts"><a class="exec-xl" href="doget.html">Execute Online</a><a class="btn source" href="source/DoGetDemo.html">Source</a></div></div>
-  <div class="prog"><div><h3>Maximum of numbers</h3><p><code>Max</code> · form values, compare, print result.</p></div>
-    <div class="acts"><a class="exec-xl" href="max.html">Execute Online</a><a class="btn source" href="source/Max.html">Source</a></div></div>
-  <div class="prog"><div><h3>Hit counter</h3><p><code>CounterServlet</code> · instance variable across refreshes.</p></div>
-    <div class="acts"><a class="exec-xl" href="counter.html">Execute Online</a><a class="btn source" href="source/CounterServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>ServletConfig init-param</h3><p><code>MyServlet</code> · name from web.xml.</p></div>
-    <div class="acts"><a class="exec-xl" href="myservlet.html">Execute Online</a><a class="btn source" href="source/MyServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>ServletContext demo</h3><p><code>ServletContextDemo</code> · shared context-param.</p></div>
-    <div class="acts"><a class="exec-xl" href="servletcontext.html">Execute Online</a><a class="btn source" href="source/ServletContextDemo.html">Source</a></div></div>
-  <div class="prog"><div><h3>Concat / call servlet</h3><p><code>ConcatServlet</code> + <code>CallServlet</code>.</p></div>
-    <div class="acts"><a class="exec-xl" href="concat.html">Execute Online</a><a class="btn source" href="source/ConcatServlet.html">Source</a></div></div>
-  <div class="prog"><div><h3>GET vs POST (second demo)</h3><p><code>GetPostDemoServlet</code> · extra form.</p></div>
-    <div class="acts"><a class="exec-xl" href="getpost.html">Execute Online</a><a class="btn source" href="source/GetPostDemoServlet.html">Source</a></div></div>
+  <div class="prog">
+    <div>
+      <h3>Library gate register — GenericServlet</h3>
+      <p><b>Story:</b> the gate register does not care which door you used. One <code>service()</code> handles everyone. <code>HttpServlet</code> is the polite version that splits it into <code>doGet</code> and <code>doPost</code>.</p>
+      <p><code>GenericServletDemo</code></p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="generic.html">Execute Online</a>
+      <a class="btn source" href="source/GenericServletDemo.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div>
+      <h3>Hospital reception slip — read the whole request</h3>
+      <p><b>Story:</b> reception writes down everything about your visit: which door, which department, what you asked. A servlet can print the same about an HTTP request.</p>
+      <p><code>RequestInfoServlet</code> · method, URI, context path, query string, all parameters.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="requestinfo.html">Execute Online</a>
+      <a class="btn source" href="source/RequestInfoServlet.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div>
+      <h3>Exam result page — status codes</h3>
+      <p><b>Story:</b> a correct roll number gives the marksheet (200 OK). A wrong roll number must say “no such roll” (404), not a blank page. The servlet decides the content type and the status.</p>
+      <p><code>ResponseDemoServlet</code></p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="response.html">Execute Online</a>
+      <a class="btn source" href="source/ResponseDemoServlet.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div>
+      <h3>Railway counter note — request attributes</h3>
+      <p><b>Story:</b> counter 1 writes a note on your form and hands it to counter 2 inside the same building. The note survives a forward, but it is thrown away once you leave — attributes do not survive a redirect.</p>
+      <p><code>AttributeDemoServlet</code> · request scope versus application scope.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="attributes.html">Execute Online</a>
+      <a class="btn source" href="source/AttributeDemoServlet.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div>
+      <h3>Library catalogue link — a plain link is a GET</h3>
+      <p><b>Story:</b> clicking a book title in the catalogue is already an HTTP GET. You do not need a form to reach a servlet.</p>
+      <p><code>HyperLinkDemo</code></p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="hyperlink.html">Execute Online</a>
+      <a class="btn source" href="source/HyperLinkDemo.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div>
+      <h3>Two bank balances — which is bigger?</h3>
+      <p><b>Story:</b> compare two account balances. The numbers go in the body (POST), so they never appear in the address bar.</p>
+      <p><code>Max</code> · read two parameters, compare, print the answer.</p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="max.html">Execute Online</a>
+      <a class="btn source" href="source/Max.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div>
+      <h3>Address label printer — join two words</h3>
+      <p><b>Story:</b> the office prints a courier label by joining the city and the state. One servlet calls another to do it.</p>
+      <p><code>ConcatServlet</code> + <code>CallServlet</code></p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="concat.html">Execute Online</a>
+      <a class="btn source" href="source/ConcatServlet.html">Source</a>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div>
+      <h3>Hostel admission form — a full POST form</h3>
+      <p><b>Story:</b> a long admission form with many fields. POST sends all of them in the body and the servlet prints them back as a table.</p>
+      <p><code>SampleRegisterServlet</code></p>
+    </div>
+    <div class="acts">
+      <a class="exec-xl" href="sample-registration.html">Execute Online</a>
+      <a class="btn ghost" href="webxml.html">Complete web.xml</a>
+    </div>
+  </div>
 
   <p style="margin-top:22px">
-    <a class="exec-xl" href="practicals.html">Next tab: ICA Practicals (real life)</a>
+    <a class="exec-xl" href="practicals.html">Next tab: the 4 ICA Practicals</a>
+    <a class="btn ghost" href="quiz.html">Self-check quiz</a>
   </p>
-  <div class="footer">Programs run on this Tomcat · not simulated</div>
+  <div class="footer">Programs tab · own real-life stories · results print on the same page</div>
 </div>
 </body>
 </html>

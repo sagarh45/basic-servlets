@@ -7,8 +7,8 @@
 <meta http-equiv="Expires" content="0">
 <title>2. HTTP Methods: GET, POST, PUT, DELETE, TRACE, OPTIONS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../../portal.css?v=2600">
-<script src="../../portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="../../portal.css?v=2800">
+<script src="../../portal.js?v=2800" defer></script>
 
 </head>
 <body>
@@ -340,7 +340,7 @@ After a successful DELETE, GET search for that roll should not find the student.
 The saved record is cleared. Search GET for 101 then says not found. Register with POST if you need the student again.</p>
 <p><b>Choose DELETE when</b> you remove a resource (REST delete).</p>
 <p><b>Do not choose DELETE</b> from a plain college HTML form. If the browser can only submit a form, teachers often
-use POST with a hidden field such as <code>action=delete</code>. In this lab we send a real DELETE so you see <code>doDelete</code>.</p>
+use POST with an extra parameter such as <code>action=delete</code>. In this lab we send a real DELETE so you see <code>doDelete</code>.</p>
 
 <h3>Syntax</h3>
 <pre class="syntax">@Override

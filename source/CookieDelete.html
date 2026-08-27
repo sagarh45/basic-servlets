@@ -49,14 +49,13 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 04 · MYMAIL ACCOUNT</p>
-<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookies, session, URL rewrite, hidden field and portal together.
-Java: <a href="Cookie1.html">Cookie1</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="Url1.html">Url1</a> · <a href="Valid.html">Valid</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
+<div class="rel"><b>One HTML page:</b> <code>capstone.html</code> — cookie, HttpSession and the portal that uses both.
+Java: <a href="Cookie1.html">Cookie1</a> · <a href="Cookie2.html">Cookie2</a> · <a href="CookieDelete.html">CookieDelete</a> · <a href="NotesSessionLogin.html">NotesSessionLogin</a> · <a href="CapstoneLogin.html">CapstoneLogin</a>.
 <a href="../practicals.html#ica-4">ICA journal</a>
 <a class="btn" href="../capstone.html">Run MyMail account</a></div>
 <div class="realex"><b>Real examples:</b> Cookie = YouTube / Instagram Continue as Rahul (never store a password).
 HttpSession = Gmail / WhatsApp Web login until Logout.
-URL rewriting = old net-banking when cookies are blocked.
-Hidden field = IRCTC step 1 → step 2. Portal joins POST + session + cookie + forward / include.</div>
+Portal joins POST + session + cookie + forward / include: the session proves you are logged in, the cookie only remembers your display name.</div>
 
 <h1>Source: CookieDelete</h1>
 <div class="ps">
@@ -103,20 +102,25 @@ Check account cookies | Index</pre>
 <span class="kw">import</span> jakarta.servlet.*;
 <span class="kw">import</span> jakarta.servlet.http.*;
 
+<span class="cmt">/** WatchTube Forget me — DELETE user and lastVideo, then READ remaining. */</span>
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">CookieDelete</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
     <span class="kw">public</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
             <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
-        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
-        <span class="cls">Cookie</span> del = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;user&quot;</span>, <span class="str">&quot;&quot;</span>);
-        del.<span class="mtd">setMaxAge</span>(<span class="num">0</span>);
-        response.<span class="mtd">addCookie</span>(del);
-        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;html&gt;&lt;body&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;Forgot you on this device&lt;/h2&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Cookie user was deleted (setMaxAge(0)), like YouTube Sign out of this browser.&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;lastVideo may still be here until you clear site data.&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;Cookie3&#x27;&gt;Check account cookies&lt;/a&gt; | &lt;a href=&#x27;index.html#ex-cookiedelete&#x27;&gt;Index&lt;/a&gt;&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);
+        <span class="cls">String</span> path = request.<span class="mtd">getContextPath</span>();
+        <span class="kw">if</span> (path == <span class="kw">null</span> || path.<span class="mtd">isEmpty</span>()) {
+            path = <span class="str">&quot;/&quot;</span>;
+        }
+        <span class="cls">Cookie</span> user = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;user&quot;</span>, <span class="str">&quot;x&quot;</span>);
+        user.<span class="mtd">setMaxAge</span>(<span class="num">0</span>);
+        user.<span class="mtd">setPath</span>(path);
+        response.<span class="mtd">addCookie</span>(user);
+
+        <span class="cls">Cookie</span> video = <span class="kw">new</span> <span class="cls">Cookie</span>(<span class="str">&quot;lastVideo&quot;</span>, <span class="str">&quot;x&quot;</span>);
+        video.<span class="mtd">setMaxAge</span>(<span class="num">0</span>);
+        video.<span class="mtd">setPath</span>(path);
+        response.<span class="mtd">addCookie</span>(video);
+
+        response.<span class="mtd">sendRedirect</span>(<span class="str">&quot;Cookie3?deleted=1&quot;</span>);
     }
 }
 </pre>

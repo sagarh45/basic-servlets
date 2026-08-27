@@ -924,8 +924,52 @@ html[data-theme="dark"] .syntax .cmt { color: #6ee0a6; }
   margin: 0 0 16px;
 }
 
+/* Output box: every Execute page prints its result here, on the same page. */
+.labout {
+  border: 2px solid var(--teal);
+  border-radius: 14px;
+  background: var(--paper-2);
+  overflow: hidden;
+  margin: 18px 0 6px;
+  scroll-margin-top: calc(var(--sitebar-h) + 12px);
+}
+.labout-bar {
+  background: var(--teal-soft);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 14px;
+  font-size: 13px;
+}
+.labout-bar b {
+  color: var(--teal);
+  margin-right: 10px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 11px;
+}
+.labout-bar code {
+  font-family: var(--mono);
+  color: var(--ink);
+  background: none;
+  padding: 0;
+}
+.labout-page { padding: 14px 18px; }
+.labout-page h1,
+.labout-page h2,
+.labout-page h3 { margin: 0 0 10px; color: var(--teal); }
+.labout-page p { margin: 0 0 8px; }
+.labout-page table { border-collapse: collapse; margin: 6px 0 10px; }
+.labout-page td,
+.labout-page th { border: 1px solid var(--line); padding: 5px 9px; }
+.labout-empty {
+  color: var(--muted);
+  font-style: italic;
+  padding: 14px 18px;
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   .gates, .split2, .prog { grid-template-columns: 1fr; }
   .prog .acts { justify-content: flex-start; }
   .sitebar .tabs { width: 100%; }
+  .labout-bar code { word-break: break-all; }
 }

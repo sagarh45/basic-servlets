@@ -7,8 +7,8 @@
 <meta http-equiv="Expires" content="0">
 <title>8. Session Management - HttpSession</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../../portal.css?v=2600">
-<script src="../../portal.js?v=2600" defer></script>
+<link rel="stylesheet" href="../../portal.css?v=2800">
+<script src="../../portal.js?v=2800" defer></script>
 
 </head>
 <body>
@@ -40,7 +40,7 @@ See <a href="../../setup.html">Lab Setup</a>.
 <div class="card">
 <p>Gmail / Instagram remembers who you are on every inner page until you log out or the session times out. That memory is on the server (HttpSession). The browser only keeps a session id (usually cookie <code>JSESSIONID</code>). Login for this lab: user <b>java</b>, password <b>servlet</b>. Password must travel in POST, never in the GET URL.</p>
 <p><b>HttpSession</b> is memory <b>on the server</b> for one user (one browser session).
-Tomcat tracks it with a cookie named <code>JSESSIONID</code> (or URL rewriting if cookies are off).</p>
+Tomcat tracks it with a cookie named <code>JSESSIONID</code>. Only that id travels to the browser, never the data itself.</p>
 <p>Login stores <code>username</code>. Welcome reads it. Logout calls <code>invalidate()</code>.</p>
 </div></div>
 
