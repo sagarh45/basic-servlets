@@ -4,59 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>WatchTube cookies — write, read, delete</title>
-<link rel="stylesheet" href="portal.css?v=2600">
-<script src="portal.js?v=2600" defer></script>
+<title>Cookie demo — write, read, list, delete</title>
+<link rel="stylesheet" href="portal.css?v=2700">
+<script src="portal.js?v=2700" defer></script>
+<style>
+.cook-btns { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; }
+.cook-btns button { padding:10px 16px; font-size:16px; cursor:pointer; }
+.cookie-out { min-height:72px; background:#fff8e6; border:2px solid #0d7377; border-radius:10px; padding:14px 16px; margin-top:16px; font-size:18px; }
+.cookie-out b { color:#0d7377; }
+</style>
 </head>
 <body>
 <div class="wrap">
-<h1>Small project: WatchTube Remember me (like YouTube)</h1>
-<p>One real cookie project. Three steps must all work: <b>WRITE</b> → <b>READ</b> → <b>DELETE</b> → READ again (empty). Password is never stored. Cookie names: <code>user</code> and <code>lastVideo=Java</code>.</p>
+<h1>Cookie demo (like YouTube Remember me)</h1>
+<p>One text box. Four buttons. This page never jumps to <code>/Cookie3</code>. After Write, click <b>Read cookie</b> — the stored name appears in the result box.</p>
 <div class="nav">
 <a class="btn ghost" href="topics/07-cookies/theory.html">Theory</a>
 <a class="btn active" href="cookie.html">Run project</a>
 <a class="btn source" href="source/Cookie1.html">Source</a>
-<a class="btn ghost" href="practicals.html#ica-4">ICA journal</a>
-</div>
-
-<div class="ps">
-<h2>What this project does</h2>
-<p>YouTube still says Continue as Rahul because the <b>browser</b> kept a sticker. This page is that mini site.</p>
-<ol>
-<li><b>WRITE</b> — Remember me as Rahul. Java <code>addCookie</code> saves <code>user=Rahul</code> and <code>lastVideo=Java</code>.</li>
-<li><b>READ</b> — Open Home. You do not type the name again. Java <code>getCookies()</code> prints both values.</li>
-<li><b>DELETE</b> — Forget me. Java <code>setMaxAge(0)</code> on the <b>same names and path</b>. Then READ must show both gone.</li>
-</ol>
-<pre class="sample-out">After WRITE then READ:
-user = Rahul
-lastVideo = Java
-Welcome back Rahul
-
-After DELETE then READ:
-No lab cookies (user / lastVideo).
-Forget me worked.</pre>
 </div>
 
 <div class="card">
-<h3>1. WRITE cookie (Remember me)</h3>
-<p>Like YouTube Stay signed in. Display name only.</p>
-<form method="post" action="Cookie1">
-<div class="row"><label class="f">Display name</label><input name="login" value="Rahul"></div>
-<input type="submit" value="1. WRITE cookie (POST)">
+<form id="cookieForm" method="post" action="cookiedemo">
+  <div class="row">
+    <label class="f">Name</label>
+    <input id="cookieName" name="login" value="Rahul" autocomplete="off">
+  </div>
+  <div class="cook-btns">
+    <button type="submit" name="op" value="write">Write cookie</button>
+    <button type="submit" name="op" value="read">Read cookie</button>
+    <button type="submit" name="op" value="list">Display all cookies</button>
+    <button type="submit" name="op" value="delete">Delete selected cookie</button>
+  </div>
 </form>
-</div>
-
-<div class="card">
-<h3>2. READ cookie (Home)</h3>
-<p>Browser sends the sticker by itself. Proof that WRITE worked.</p>
-<p><a class="btn" href="Cookie2">2. READ Home</a>
-   <a class="btn ghost" href="Cookie3">List cookies</a></p>
-</div>
-
-<div class="card">
-<h3>3. DELETE cookie (Forget me)</h3>
-<p>Same names, <code>setMaxAge(0)</code>, same path. Then Java opens the READ page so you can see they are gone.</p>
-<p><a class="btn" href="CookieDelete">3. DELETE cookies</a></p>
+<div class="cookie-out" id="cookieOut">Result box — Write a name, then click Read cookie.</div>
+<p class="note" style="margin-top:12px">Write saves cookie <code>user</code> = the name. Read shows that value here. Display all lists cookies. Delete: type cookie name <code>user</code>, or leave the saved name — it deletes cookie <code>user</code>.</p>
 </div>
 
 <p style="margin-top:18px;"><a href="programs.html#p-cookie">Back to Programs</a></p>

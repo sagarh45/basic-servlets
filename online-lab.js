@@ -11,7 +11,7 @@
   if (window.__labOnline) return;
   window.__labOnline = true;
 
-  var SERVLET = /^(httpmethods|getpostdiff|lifecycle|configcontext|forward|redirect|target|includefooter|FwdDemo|RedirectOk|Cookie1|Cookie2|Cookie3|CookieDelete|NotesSessionLogin|NotesSessionWelcome|NotesSessionLogout|Url1|Url2|Valid|Welcome|CapstoneLogin|CapstoneWelcome|CapstoneLogout|hello|sampleregister|getpost|generic|requestinfo|response|include|attributes|HyperLinkDemo|DoGetDemo|Max|CounterServlet|MyServlet|ServletContextDemo|ConcatServlet|CallServlet|intro)$/i;
+  var SERVLET = /^(httpmethods|getpostdiff|lifecycle|configcontext|forward|redirect|target|includefooter|FwdDemo|RedirectOk|cookiedemo|Cookie1|Cookie2|Cookie3|CookieDelete|NotesSessionLogin|NotesSessionWelcome|NotesSessionLogout|Url1|Url2|Valid|Welcome|CapstoneLogin|CapstoneWelcome|CapstoneLogout|hello|sampleregister|getpost|generic|requestinfo|response|include|attributes|HyperLinkDemo|DoGetDemo|Max|CounterServlet|MyServlet|ServletContextDemo|ConcatServlet|CallServlet|intro)$/i;
 
   function nameOf(url) {
     var u = String(url || "").split("?")[0];
@@ -67,7 +67,7 @@
       "</style></head><body>" +
       "<div class='loc'><b>Address bar</b>" + esc(url) + "</div>" +
       "<div class='page'>" + inner + "</div>" +
-      "<script src='online-lab.js?v=2600'></script>" +
+      "<script src='online-lab.js?v=2700'></script>" +
       "</body></html>";
     document.open();
     document.write(html);
@@ -106,6 +106,49 @@
     data = data || {};
     var q = qs(url);
     q.forEach(function (v, k) { if (data[k] == null) data[k] = v; });
+
+    if (/^cookiedemo$/i.test(servlet)) {
+      var op = data.op || "read";
+      var text = (data.login || "").trim();
+      var all = {};
+      String(document.cookie || "").split(";").forEach(function (part) {
+        var s = part.trim();
+        if (!s) return;
+        var i = s.indexOf("=");
+        var n = i < 0 ? s : s.slice(0, i);
+        var v = i < 0 ? "" : decodeURIComponent(s.slice(i + 1));
+        if (n && n.toUpperCase() !== "JSESSIONID") all[n] = v;
+      });
+      var html;
+      if (op === "write") {
+        var value = text || "Rahul";
+        cookieSet("user", value, 7);
+        html = "WRITE done. Saved cookie <b>user=" + esc(value) + "</b>. Click <b>Read cookie</b> — this box will show it.";
+      } else if (op === "read") {
+        var got = cookieGet("user");
+        html = got
+          ? "READ (what is stored):<br><b>user = " + esc(got) + "</b>"
+          : "READ: nothing stored yet. Type a name and click Write cookie.";
+      } else if (op === "list") {
+        var keys = Object.keys(all);
+        html = "DISPLAY ALL cookies:<br>";
+        if (!keys.length) html += "No lab cookies. Click Write cookie first.";
+        else keys.forEach(function (k) { html += "<b>" + esc(k) + "</b> = " + esc(all[k]) + "<br>"; });
+      } else if (op === "delete") {
+        var delName = (text && all[text] != null) ? text : (all.user != null ? "user" : (text || "user"));
+        cookieDel(delName);
+        html = "DELETE sent for cookie <b>" + esc(delName) + "</b> (setMaxAge 0). Click <b>Display all cookies</b> to confirm it is gone.";
+      } else {
+        html = "Choose Write, Read, Display all, or Delete.";
+      }
+      var box = document.getElementById("cookieOut");
+      if (box) {
+        box.innerHTML = html;
+        return;
+      }
+      page("cookiedemo", "", "<p>" + html + "</p><p><a href='cookie.html'>Back</a></p>");
+      return;
+    }
 
     if (/^httpmethods$/i.test(servlet)) {
       var rec = student();
@@ -611,7 +654,11 @@
     var action = form.getAttribute("action") || "";
     if (!isServlet(action)) return;
     e.preventDefault();
-    handle(action, form.method || "GET", formData(form), action);
+    var data = formData(form);
+    if (e.submitter && e.submitter.name) {
+      data[e.submitter.name] = e.submitter.value;
+    }
+    handle(action, form.method || "GET", data, action);
   }, true);
 
   document.addEventListener("click", function (e) {

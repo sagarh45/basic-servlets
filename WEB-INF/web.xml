@@ -456,6 +456,16 @@
         <url-pattern>/CapstoneLogout</url-pattern>
     </servlet-mapping>
 
+    <!-- One-page cookie lab: write / read / list / delete (YouTube Remember me) -->
+    <servlet>
+        <servlet-name>CookieDemo</servlet-name>
+        <servlet-class>CookieDemo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CookieDemo</servlet-name>
+        <url-pattern>/cookiedemo</url-pattern>
+    </servlet-mapping>
+
     <!-- Welcome file -->
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
