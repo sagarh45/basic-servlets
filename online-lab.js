@@ -254,49 +254,56 @@
     if (/^Cookie1$/i.test(servlet)) {
       var nm = data.login || "Rahul";
       cookieSet("user", nm, 7);
+      cookieSet("lastVideo", "Java", 7);
       page("Cookie1", "",
-        "<h2>Continue as " + esc(nm) + "</h2>" +
-        "<p>This browser saved your name (cookie user=" + esc(nm) + "), like YouTube Remember me.</p>" +
+        "<h2>1. WRITE cookie — Continue as " + esc(nm) + "</h2>" +
+        "<p>Saved cookie <b>user=" + esc(nm) + "</b> and <b>lastVideo=Java</b> (YouTube Remember me).</p>" +
         "<p>Password is not stored.</p>" +
-        "<p><a href='Cookie2'>Open Home (last watched)</a> | <a href='CookieDelete'>Forget me on this device</a></p>" +
-        "<p><a href='capstone.html'>Back to MyMail project</a></p>");
+        "<p>A cookie you just wrote is not in this same request. Click READ so the browser sends it back.</p>" +
+        "<p><a href='Cookie2'>2. READ cookies (Home)</a> | <a href='Cookie3'>List cookies</a> | <a href='CookieDelete'>3. DELETE cookies</a></p>" +
+        "<p><a href='cookie.html'>Back to WatchTube cookies</a></p>");
       return;
     }
     if (/^Cookie2$/i.test(servlet)) {
       var u2 = cookieGet("user");
       var v2 = cookieGet("lastVideo");
-      var lines = "";
-      if (u2) lines += "user = " + esc(u2) + "<br>";
-      if (v2) lines += "lastVideo = " + esc(v2) + "<br>";
-      cookieSet("lastVideo", "Java", 7);
-      var greet = u2 || "guest";
+      var body;
+      if (!u2) {
+        body = "<p>No Remember-me cookie. Write one first.</p>" +
+          "<p><a href='cookie.html'>1. WRITE cookie</a></p>";
+      } else {
+        body = "<p>user = " + esc(u2) + "</p>" +
+          "<p>lastVideo = " + esc(v2 || "(not yet)") + "</p>" +
+          "<p>Welcome back " + esc(u2) + " — you did not type the name again.</p>" +
+          "<p>YouTube-style last watched: Java Servlets.</p>";
+      }
       page("Cookie2", "",
-        "<h2>Home — last watched</h2>" +
-        (lines || "<p>No cookies yet. Stay signed in first.</p>") +
-        "<p>Welcome back " + esc(greet) + "</p>" +
-        "<p>Saved last watched: Java Servlets (cookie lastVideo=Java), like YouTube remembers the last video.</p>" +
-        "<p><a href='Cookie3'>Account cookies</a></p>");
+        "<h2>2. READ cookies — Home (last watched)</h2>" + body +
+        "<p><a href='Cookie3'>List all lab cookies</a> | <a href='CookieDelete'>3. DELETE cookies</a></p>" +
+        "<p><a href='cookie.html'>Back to WatchTube cookies</a></p>");
       return;
     }
     if (/^Cookie3$/i.test(servlet)) {
       var u3 = cookieGet("user");
       var v3 = cookieGet("lastVideo");
+      var afterDel = (data.deleted === "1") || /[?&]deleted=1/.test(String(url || ""));
       var l3 = "";
       if (u3) l3 += "user = " + esc(u3) + "<br>";
       if (v3) l3 += "lastVideo = " + esc(v3) + "<br>";
-      page("Cookie3", "",
-        "<h2>Account — cookies on this browser</h2>" +
-        (l3 || "<p>No cookies.</p>") +
-        "<p><a href='CookieDelete'>Forget me on this device</a> | <a href='index.html'>Index</a></p>");
+      var title = afterDel ? "3. DELETE done — READ remaining cookies" : "READ — cookies on this browser";
+      var proof = (afterDel && !u3 && !v3)
+        ? "<p><b>Forget me worked.</b> user and lastVideo are gone.</p>"
+        : "";
+      page("Cookie3", afterDel ? "deleted=1" : "",
+        "<h2>" + title + "</h2>" +
+        (l3 || "<p>No lab cookies (user / lastVideo).</p>") + proof +
+        "<p><a href='cookie.html'>1. WRITE again</a> | <a href='Cookie2'>2. READ Home</a> | <a href='CookieDelete'>3. DELETE</a></p>");
       return;
     }
     if (/^CookieDelete$/i.test(servlet)) {
       cookieDel("user");
-      page("CookieDelete", "",
-        "<h2>Forgot you on this device</h2>" +
-        "<p>Cookie user was deleted (setMaxAge(0)), like YouTube Sign out of this browser.</p>" +
-        "<p>lastVideo may still be here until you clear site data.</p>" +
-        "<p><a href='Cookie3'>Check account cookies</a> | <a href='index.html'>Index</a></p>");
+      cookieDel("lastVideo");
+      handle("Cookie3", "GET", { deleted: "1" }, "Cookie3?deleted=1");
       return;
     }
 

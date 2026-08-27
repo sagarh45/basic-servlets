@@ -2,77 +2,64 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Execute - Session Management - Cookies</title>
+<title>WatchTube cookies — write, read, delete</title>
 <link rel="stylesheet" href="portal.css?v=2600">
 <script src="portal.js?v=2600" defer></script>
 </head>
 <body>
 <div class="wrap">
-<h1>Execute: 7. Cookies — YouTube “Remember me”</h1>
-<div class="match" style="background:#e8ffe8;border:2px solid #3a7a3a;padding:12px;margin:12px 0;">
-<b>Matched example:</b> <code>Cookie1</code> &nbsp; URL <code>/Cookie1</code><br>
-<a href="topics/07-cookies/theory.html?v=2400">Open matching Theory</a>
-</div>
+<h1>Small project: WatchTube Remember me (like YouTube)</h1>
+<p>One real cookie project. Three steps must all work: <b>WRITE</b> → <b>READ</b> → <b>DELETE</b> → READ again (empty). Password is never stored. Cookie names: <code>user</code> and <code>lastVideo=Java</code>.</p>
 <div class="nav">
-<a class="btn ghost" href="topics/07-cookies/theory.html?v=2400">Theory</a>
-<a class="btn active" href="cookie.html?back=ch-cookies">Execute</a>
+<a class="btn ghost" href="topics/07-cookies/theory.html">Theory</a>
+<a class="btn active" href="cookie.html">Run project</a>
 <a class="btn source" href="source/Cookie1.html">Source</a>
-<a class="btn secondary" href="index.html#ch-cookies">Index</a>
+<a class="btn ghost" href="practicals.html#ica-4">ICA journal</a>
 </div>
 
 <div class="ps">
-<h2>Problem statement</h2>
-<p><b>Title:</b> Remember me on this browser (YouTube-style cookie)</p>
-<p>HTTP forgets you after each click. YouTube still says <b>Continue as Rahul</b> because the <b>browser</b> kept a small sticker: cookie <code>user=Rahul</code>. Password is never stored.</p>
-<p><b>What you must do:</b></p>
+<h2>What this project does</h2>
+<p>YouTube still says Continue as Rahul because the <b>browser</b> kept a sticker. This page is that mini site.</p>
 <ol>
-<li>POST display name Rahul to Cookie1. The page must show Continue as Rahul (cookie <code>user=Rahul</code>).</li>
-<li>Open Home (Cookie2). It greets Rahul without typing the name again, and saves last watched <code>lastVideo=Java</code>. Open Account cookies (Cookie3) and print both cookies.</li>
-<li>Open Forget me (CookieDelete). Then Cookie3 must no longer show <code>user</code>. Write all four classes and complete web.xml.</li>
+<li><b>WRITE</b> — Remember me as Rahul. Java <code>addCookie</code> saves <code>user=Rahul</code> and <code>lastVideo=Java</code>.</li>
+<li><b>READ</b> — Open Home. You do not type the name again. Java <code>getCookies()</code> prints both values.</li>
+<li><b>DELETE</b> — Forget me. Java <code>setMaxAge(0)</code> on the <b>same names and path</b>. Then READ must show both gone.</li>
 </ol>
-<p><b>Sample output</b> (same HTML Tomcat prints at <code>http://localhost:8080/basic-servlets/Cookie1</code>):</p>
-<pre class="sample-out">Continue as Rahul
-This browser saved your name (cookie user=Rahul), like YouTube Remember me.
-Password is not stored.
-Open Home (last watched) | Forget me on this device</pre>
-</div>
-<div class="pflow">
-<h2>Program output flow</h2>
-<p class="pflow-cap">Like YouTube: the name lives in the browser. Next page reads it without typing again. Password is never stored.</p>
-<div class="pflow-lab">Cookie1 — Remember me</div>
-<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Stay signed in as Rahul</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>POST <code>/Cookie1</code></span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>addCookie user=Rahul</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Continue as Rahul<br>(YouTube Remember me)</span></div></div>
-<div class="pflow-lab">Cookie2 — Home / last watched</div>
-<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Open Home</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>sends cookie user automatically</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>getCookies + lastVideo=Java</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>Welcome back Rahul<br>saved lastVideo=Java</span></div></div>
-<div class="pflow-lab">Cookie3 — Account cookies</div>
-<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Open settings</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Browser</b><span>sends all cookies</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>3. Java</b><span>getCookies() only</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>4. Output</b><span>user = Rahul<br>lastVideo = Java</span></div></div>
-<div class="pflow-lab">CookieDelete — Forget me</div>
-<div class="pflow-row"><div class="pflow-n"><b>1. You</b><span>Sign out of this browser</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n"><b>2. Java</b><span>setMaxAge(0) on user</span></div><div class="pflow-a">&rarr;</div><div class="pflow-n out"><b>3. Output</b><span>Forgot you on this device<br>Cookie3 no longer shows user</span></div></div>
+<pre class="sample-out">After WRITE then READ:
+user = Rahul
+lastVideo = Java
+Welcome back Rahul
+
+After DELETE then READ:
+No lab cookies (user / lastVideo).
+Forget me worked.</pre>
 </div>
 
 <div class="card">
-<h3>Stay signed in on this browser (like YouTube)</h3>
-<p>You type your display name on a cafe laptop. The site saves only the name in cookie <code>user</code>. Password is never stored.</p>
+<h3>1. WRITE cookie (Remember me)</h3>
+<p>Like YouTube Stay signed in. Display name only.</p>
 <form method="post" action="Cookie1">
 <div class="row"><label class="f">Display name</label><input name="login" value="Rahul"></div>
-<input type="submit" value="Remember me on this browser (POST)">
+<input type="submit" value="1. WRITE cookie (POST)">
 </form>
 </div>
 
 <div class="card">
-<h3>Then open Home / settings / sign out</h3>
-<p><a href="Cookie2">Open Home (last watched)</a> &nbsp;|&nbsp; <a href="Cookie3">Account cookies</a> &nbsp;|&nbsp;
-<a href="CookieDelete">Forget me on this device</a></p>
+<h3>2. READ cookie (Home)</h3>
+<p>Browser sends the sticker by itself. Proof that WRITE worked.</p>
+<p><a class="btn" href="Cookie2">2. READ Home</a>
+   <a class="btn ghost" href="Cookie3">List cookies</a></p>
 </div>
 
-<p style="margin-top:18px;"><a href="index.html#ch-cookies" id="backLink">Return to Index</a></p>
-<script>
-(function(){
-  var p=new URLSearchParams(location.search);
-  var b=p.get('back');
-  if(b) document.getElementById('backLink').href='index.html#'+b;
-})();
-</script>
+<div class="card">
+<h3>3. DELETE cookie (Forget me)</h3>
+<p>Same names, <code>setMaxAge(0)</code>, same path. Then Java opens the READ page so you can see they are gone.</p>
+<p><a class="btn" href="CookieDelete">3. DELETE cookies</a></p>
+</div>
+
+<p style="margin-top:18px;"><a href="programs.html#p-cookie">Back to Programs</a></p>
 </div>
 </body>
 </html>
