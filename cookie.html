@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Cookie demo — write, read, list, delete</title>
-<link rel="stylesheet" href="portal.css?v=2710">
-<script src="portal.js?v=2710" defer></script>
+<link rel="stylesheet" href="portal.css?v=2720">
+<script src="portal.js?v=2720" defer></script>
 <style>
 .cook-btns { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; }
 .cook-btns button { padding:10px 16px; font-size:16px; cursor:pointer; }
@@ -17,7 +17,7 @@
 <body>
 <div class="wrap">
 <h1>Cookie demo (like YouTube Remember me)</h1>
-<p>One text box. Four buttons. This page never jumps to <code>/Cookie3</code>. After Write, click <b>Read cookie</b> — the stored name appears in the result box.</p>
+<p>Type <b>Rahul</b> → Write. Type <b>Sagar</b> → Write. Read / Display all shows <b>both</b> (each name is its own cookie).</p>
 <div class="nav">
 <a class="btn ghost" href="topics/07-cookies/theory.html">Theory</a>
 <a class="btn active" href="cookie.html">Run project</a>
@@ -39,10 +39,9 @@
     <button type="submit" name="op" value="delete">Delete selected cookie</button>
   </div>
 </form>
-<div class="cookie-out" id="cookieOut">Result box — Write a name, then click Read cookie.</div>
+<div class="cookie-out" id="cookieOut">Result box — Write Rahul, then Write Sagar. Both names stay.</div>
 <p class="note" style="margin-top:12px">
-  Write stores two cookies in the browser: <code>user</code> (your name) and <code>lastVideo=Java</code>.
-  Read shows both. Delete: type <code>user</code> or <code>lastVideo</code> then click Delete selected cookie.
+  Each Write adds a name. Rahul then Sagar both stay. Delete: type that name (Rahul) and click Delete selected cookie.
 </p>
 <script>
 (function () {

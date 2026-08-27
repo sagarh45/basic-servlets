@@ -120,34 +120,39 @@
         if (n && n.toUpperCase() !== "JSESSIONID") all[n] = v;
       });
       var html;
+      function cookieKey(v) {
+        var s = String(v || "").replace(/[^A-Za-z0-9]/g, "");
+        return "u_" + (s || "guest");
+      }
+      function listAll() {
+        var keys = Object.keys(all);
+        var html = "All names stored in this browser:<br>";
+        var n = 0;
+        keys.forEach(function (k) {
+          if (k.indexOf("u_") === 0) {
+            html += "user = " + esc(all[k]) + "<br>";
+            n++;
+          } else {
+            html += "<b>" + esc(k) + "</b> = " + esc(all[k]) + "<br>";
+            n++;
+          }
+        });
+        if (!n) html += "None yet. Write Rahul, then Write Sagar.";
+        return html;
+      }
       if (op === "write") {
         var value = text || "Rahul";
-        cookieSet("user", value, 7);
-        cookieSet("lastVideo", "Java", 7);
-        html = "WRITE: both cookies are in the browser now.<br>"
-          + "<b>user = " + esc(value) + "</b><br><b>lastVideo = Java</b><br>"
-          + "Click <b>Read cookie</b> to see them in the box.";
-      } else if (op === "read") {
-        var got = cookieGet("user");
-        var vid = cookieGet("lastVideo");
-        if (!got && !vid) {
-          html = "READ: no lab cookies. Click Write cookie first.";
-        } else {
-          html = "READ (from this browser):<br>"
-            + "<b>user = " + esc(got || "(missing)") + "</b><br>"
-            + "<b>lastVideo = " + esc(vid || "(missing)") + "</b>";
-        }
-      } else if (op === "list") {
-        var keys = Object.keys(all);
-        html = "DISPLAY ALL cookies in this browser:<br>";
-        if (!keys.length) html += "No lab cookies. Click Write cookie first.";
-        else keys.forEach(function (k) { html += "<b>" + esc(k) + "</b> = " + esc(all[k]) + "<br>"; });
+        var cname = cookieKey(value);
+        cookieSet(cname, value, 7);
+        all[cname] = value;
+        html = "WRITE saved <b>user = " + esc(value) + "</b>. Names stored now:<br>" + listAll();
+      } else if (op === "read" || op === "list") {
+        html = listAll();
       } else if (op === "delete") {
-        var delName = (text === "user" || text === "lastVideo") ? text
-          : (text && all[text] != null ? text : "user");
+        var delName = text && all[text] != null ? text : cookieKey(text || "Rahul");
         cookieDel(delName);
-        html = "DELETE cookie <b>" + esc(delName) + "</b>. Click Display all to check. "
-          + "Type <code>user</code> or <code>lastVideo</code> to delete the other one.";
+        html = "DELETE cookie <b>" + esc(delName) + "</b>. Click Display all. "
+          + "Type the name (Rahul) or cookie id (u_Rahul) to delete that one.";
       } else {
         html = "Choose Write, Read, Display all, or Delete.";
       }

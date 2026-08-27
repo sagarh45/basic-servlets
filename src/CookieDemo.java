@@ -6,7 +6,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/** One page: Write two cookies, Read both, Display all, Delete selected. */
+/**
+ * Each Write adds a new cookie. Rahul then Sagar both stay.
+ * Cookie name is u_Rahul, u_Sagar so names do not overwrite each other.
+ */
 public class CookieDemo extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -14,7 +17,7 @@ public class CookieDemo extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        show(request, response, "Type a name. Write stores two cookies in the browser. Read shows both.");
+        show(request, response, "Type Rahul, Write. Type Sagar, Write. Read / Display all shows both.");
     }
 
     @Override
@@ -34,32 +37,29 @@ public class CookieDemo extends HttpServlet {
         String msg;
         if ("write".equals(op)) {
             String value = text.isEmpty() ? "Rahul" : text;
-            put(response, path, "user", value, 60 * 60);
-            put(response, path, "lastVideo", "Java", 60 * 60);
-            msg = "WRITE: both cookies are in the browser now.<br>"
-                    + "<b>user = " + value + "</b><br><b>lastVideo = Java</b><br>"
-                    + "Click <b>Read cookie</b> to see them in the box.";
-        } else if ("read".equals(op)) {
-            String user = find(request, "user");
-            String video = find(request, "lastVideo");
-            if (user == null && video == null) {
-                msg = "READ: no lab cookies. Click Write cookie first.";
-            } else {
-                msg = "READ (from this browser):<br>"
-                        + "<b>user = " + (user == null ? "(missing)" : user) + "</b><br>"
-                        + "<b>lastVideo = " + (video == null ? "(missing)" : video) + "</b>";
-            }
-        } else if ("list".equals(op)) {
-            msg = listCookies(request);
+            String name = key(value);
+            put(response, path, name, value, 60 * 60);
+            msg = "WRITE saved <b>user = " + value + "</b>. Names stored now:<br>"
+                    + listCookies(request, name, value);
+        } else if ("read".equals(op) || "list".equals(op)) {
+            msg = listCookies(request, null, null);
         } else if ("delete".equals(op)) {
             String name = pickDeleteName(request, text);
             put(response, path, name, "x", 0);
-            msg = "DELETE cookie <b>" + name + "</b>. Click Display all to check. "
-                    + "Type <code>user</code> or <code>lastVideo</code> to delete the other one.";
+            msg = "DELETE cookie <b>" + name + "</b>. Click Display all. "
+                    + "Type the name (Rahul) or cookie id (u_Rahul) to delete that one.";
         } else {
             msg = "Choose Write, Read, Display all, or Delete.";
         }
         show(request, response, msg);
+    }
+
+    static String key(String value) {
+        String s = value.replaceAll("[^A-Za-z0-9]", "");
+        if (s.isEmpty()) {
+            s = "guest";
+        }
+        return "u_" + s;
     }
 
     private static String cookiePath(HttpServletRequest request) {
@@ -75,13 +75,17 @@ public class CookieDemo extends HttpServlet {
     }
 
     private static String pickDeleteName(HttpServletRequest request, String text) {
-        if ("user".equals(text) || "lastVideo".equals(text)) {
+        if (text.isEmpty()) {
+            return "u_Rahul";
+        }
+        if (find(request, text) != null) {
             return text;
         }
-        if (!text.isEmpty() && find(request, text) != null) {
-            return text;
+        String k = key(text);
+        if (find(request, k) != null) {
+            return k;
         }
-        return "user";
+        return k;
     }
 
     private static String find(HttpServletRequest request, String name) {
@@ -97,22 +101,34 @@ public class CookieDemo extends HttpServlet {
         return null;
     }
 
-    private static String listCookies(HttpServletRequest request) {
+    private static String listCookies(HttpServletRequest request, String extraName, String extraValue) {
         Cookie[] arr = request.getCookies();
-        StringBuilder sb = new StringBuilder("DISPLAY ALL cookies in this browser:<br>");
+        StringBuilder sb = new StringBuilder("All names stored in this browser:<br>");
         int n = 0;
+        boolean sawExtra = false;
         if (arr != null) {
             for (int i = 0; i < arr.length; i++) {
                 String name = arr[i].getName();
                 if ("JSESSIONID".equalsIgnoreCase(name)) {
                     continue;
                 }
-                sb.append("<b>").append(name).append("</b> = ").append(arr[i].getValue()).append("<br>");
+                if (extraName != null && extraName.equals(name)) {
+                    sawExtra = true;
+                    sb.append("user = ").append(extraValue).append("<br>");
+                } else if (name.startsWith("u_")) {
+                    sb.append("user = ").append(arr[i].getValue()).append("<br>");
+                } else {
+                    sb.append("<b>").append(name).append("</b> = ").append(arr[i].getValue()).append("<br>");
+                }
                 n++;
             }
         }
+        if (extraName != null && !sawExtra) {
+            sb.append("user = ").append(extraValue).append("<br>");
+            n++;
+        }
         if (n == 0) {
-            sb.append("No lab cookies. Click Write cookie first.");
+            sb.append("None yet. Write Rahul, then Write Sagar.");
         }
         return sb.toString();
     }
