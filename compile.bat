@@ -28,11 +28,17 @@ if not defined CP (
   exit /b 1
 )
 
-echo Using API: %CP%
-echo Compiling src\*.java for Java 21 / Tomcat 11 ...
-javac --release 21 -encoding UTF-8 -cp "%CP%" -d WEB-INF\classes src\*.java
+where javac >nul 2>&1
 if errorlevel 1 (
-  echo Compile failed.
+  echo javac not found. Install any JDK 21 or later and add it to PATH.
+  exit /b 1
+)
+
+echo Using API: %CP%
+echo Compiling src\*.java with the JDK on PATH (21, 22, 25... any 21+ is fine).
+javac -encoding UTF-8 -cp "%CP%" -d WEB-INF\classes src\*.java
+if errorlevel 1 (
+  echo Compile failed. Use JDK 21 or later. Tomcat 11 must also run on that same JDK.
   exit /b 1
 )
 echo OK. Classes are in WEB-INF\classes

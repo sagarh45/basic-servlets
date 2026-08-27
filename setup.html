@@ -91,7 +91,7 @@ This portal uses <b>jakarta.servlet</b> on Tomcat 11.0.24.
 <h2>5) How to compile and deploy this lab</h2>
 <ol class="steps-n">
 <li>Copy this whole folder into Tomcat <code>webapps\basic-servlets</code> (folder name must be <b>basic-servlets</b>).</li>
-<li>Full Java sources are in <code>src\</code>. Compiled classes are already in <code>WEB-INF\classes</code>. If you edit Java, run <b>compile.bat</b> (needs JDK 21+ and Tomcat 11 <code>lib\servlet-api.jar</code>).</li>
+<li>Full Java sources are in <code>src\</code>. Compiled classes are already in <code>WEB-INF\classes</code>. If you edit Java, run <b>compile.bat</b>. Any JDK 21 or later works (21, 22, 25…). No <code>--release</code> flag. Tomcat 11 <code>lib\servlet-api.jar</code> is used only to compile.</li>
 <li>Optional: run <b>deploy-full.bat</b> to copy into
     <code>C:\Program Files\Apache Software Foundation\Tomcat 11.0\webapps\basic-servlets\</code>
     (or <code>%CATALINA_HOME%\webapps\basic-servlets</code>).</li>
