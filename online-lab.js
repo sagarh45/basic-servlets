@@ -109,7 +109,7 @@
 
     if (/^cookiedemo$/i.test(servlet)) {
       var op = data.op || "read";
-      var text = (data.login || "").trim();
+      var text = (data.cval || data.login || "").trim();
       var all = {};
       String(document.cookie || "").split(";").forEach(function (part) {
         var s = part.trim();
@@ -123,21 +123,31 @@
       if (op === "write") {
         var value = text || "Rahul";
         cookieSet("user", value, 7);
-        html = "WRITE done. Saved cookie <b>user=" + esc(value) + "</b>. Click <b>Read cookie</b> — this box will show it.";
+        cookieSet("lastVideo", "Java", 7);
+        html = "WRITE: both cookies are in the browser now.<br>"
+          + "<b>user = " + esc(value) + "</b><br><b>lastVideo = Java</b><br>"
+          + "Click <b>Read cookie</b> to see them in the box.";
       } else if (op === "read") {
         var got = cookieGet("user");
-        html = got
-          ? "READ (what is stored):<br><b>user = " + esc(got) + "</b>"
-          : "READ: nothing stored yet. Type a name and click Write cookie.";
+        var vid = cookieGet("lastVideo");
+        if (!got && !vid) {
+          html = "READ: no lab cookies. Click Write cookie first.";
+        } else {
+          html = "READ (from this browser):<br>"
+            + "<b>user = " + esc(got || "(missing)") + "</b><br>"
+            + "<b>lastVideo = " + esc(vid || "(missing)") + "</b>";
+        }
       } else if (op === "list") {
         var keys = Object.keys(all);
-        html = "DISPLAY ALL cookies:<br>";
+        html = "DISPLAY ALL cookies in this browser:<br>";
         if (!keys.length) html += "No lab cookies. Click Write cookie first.";
         else keys.forEach(function (k) { html += "<b>" + esc(k) + "</b> = " + esc(all[k]) + "<br>"; });
       } else if (op === "delete") {
-        var delName = (text && all[text] != null) ? text : (all.user != null ? "user" : (text || "user"));
+        var delName = (text === "user" || text === "lastVideo") ? text
+          : (text && all[text] != null ? text : "user");
         cookieDel(delName);
-        html = "DELETE sent for cookie <b>" + esc(delName) + "</b> (setMaxAge 0). Click <b>Display all cookies</b> to confirm it is gone.";
+        html = "DELETE cookie <b>" + esc(delName) + "</b>. Click Display all to check. "
+          + "Type <code>user</code> or <code>lastVideo</code> to delete the other one.";
       } else {
         html = "Choose Write, Read, Display all, or Delete.";
       }

@@ -414,7 +414,7 @@
       || /\/basic-servlets\/?$/.test(path);
     if (!skipOnline) {
       var lab = document.createElement("script");
-      lab.src = base() + "online-lab.js?v=2700";
+      lab.src = base() + "online-lab.js?v=2710";
       document.head.appendChild(lab);
     }
   });
