@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>ICA Practicals · Unit-II Servlets · WIT Solapur</title>
-<link rel="stylesheet" href="portal.css?v=2500">
-<script src="portal.js?v=2500" defer></script>
+<link rel="stylesheet" href="portal.css?v=2600">
+<script src="portal.js?v=2600" defer></script>
 </head>
 <body>
 <header class="sitebar">
@@ -38,7 +38,7 @@
       <li><a href="#ica-4"><b>ICA 4 · MyMail account</b></a> — Remember me, Gmail login, cookies off, hidden id, full portal. <a href="capstone.html">Run project</a></li>
     </ol>
     <p><b>How to write the journal:</b> copy the title and problem statement · draw the figure · paste the one HTML, every Java class, and web.xml · run the project · fill the observation table · write result, conclusion and viva.</p>
-    <p><b>Software:</b> JDK 17+ · Tomcat 11.0.24 · <code>jakarta.servlet.*</code> · folder <code>basic-servlets</code>. Login: <b>java</b> / <b>servlet</b>.</p>
+    <p><b>Software:</b> JDK 21+ · Tomcat 11.0.24 · <code>jakarta.servlet.*</code> · folder <code>basic-servlets</code>. Copy-paste Java from <code>src/</code>. Login: <b>java</b> / <b>servlet</b>.</p>
   </div>
 
   <div class="path" aria-label="Four practicals">
@@ -77,7 +77,7 @@
       </ul>
     </div>
 
-    <div class="softbox"><b>4. Software required:</b> JDK 17+ · Apache Tomcat 11.0.24 · Jakarta EE 11 · this web application · web browser.</div>
+    <div class="softbox"><b>4. Software required:</b> JDK 21+ · Apache Tomcat 11.0.24 · Jakarta EE 11 · this web application · web browser.</div>
 
     <h3 class="sec">5. Theory (copy into the journal — functions, syntax, use)</h3>
     <p>HTTP is the language between the browser and Tomcat. Every request has a <b>method</b> (verb). Class <code>HttpServlet</code> gives one Java method for each verb. You override the methods you need. The browser never runs this Java. Tomcat runs it and sends HTML back.</p>
@@ -190,41 +190,56 @@
     <p>PUT / DELETE / OPTIONS need a small fetch button (HTML forms send only GET and POST).</p>
 
     <h3 class="sec">10. Medium Java (two classes)</h3>
-    <pre class="syntax">public class HttpMethodsServlet extends HttpServlet {
+    <p>Copy from <code>src/HttpMethodsServlet.java</code> and <code>src/GetPostDiffServlet.java</code>. Do not write <code>throws Exception</code> on doGet/doPost — the parent signature is <code>throws ServletException, IOException</code>.</p>
+    <pre class="syntax">import java.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class HttpMethodsServlet extends HttpServlet {
     static String name = "Rahul", roll = "101", city = "Solapur";
     static boolean exists = true;
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         String r = req.getParameter("roll");
         String msg = (exists &amp;&amp; roll.equals(r)) ? "GET found " + r : "GET not found";
         show(req, res, msg);
     }
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         name = req.getParameter("name");
         roll = req.getParameter("roll");
         city = req.getParameter("city");
         exists = true;
         show(req, res, "POST saved (not in URL)");
     }
-    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doPut(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         city = req.getParameter("city");
         show(req, res, "PUT city=" + city);
     }
-    protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         exists = false;
         show(req, res, "DELETE cancelled");
     }
-    void show(HttpServletRequest req, HttpServletResponse res, String msg) throws Exception {
+    void show(HttpServletRequest req, HttpServletResponse res, String msg) throws IOException {
         res.setContentType("text/html");
         res.getWriter().println("&lt;h2&gt;" + req.getMethod() + "&lt;/h2&gt;&lt;p&gt;" + msg + "&lt;/p&gt;");
     }
 }
 
 public class GetPostDiffServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
         res.getWriter().println("GET search q=" + req.getParameter("q"));
     }
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
         res.getWriter().println("POST review=" + req.getParameter("message"));
     }
 }</pre>
@@ -369,7 +384,15 @@ public class GetPostDiffServlet extends HttpServlet {
 &lt;p&gt;&lt;a href="configcontext"&gt;Read store name (GET)&lt;/a&gt;&lt;/p&gt;</pre>
 
     <h3 class="sec">10. Medium Java (two classes)</h3>
-    <pre class="syntax">public class LifecycleServlet extends HttpServlet {
+    <p>Copy from <code>src/LifecycleServlet.java</code> and <code>src/ConfigContextServlet.java</code>.</p>
+    <pre class="syntax">import java.io.IOException;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class LifecycleServlet extends HttpServlet {
     static int initCount = 0, serviceCount = 0;
 
     public void init(ServletConfig config) throws ServletException {
@@ -381,16 +404,20 @@ public class GetPostDiffServlet extends HttpServlet {
         serviceCount++;                      // every request
         super.service(req, res);
     }
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
         res.getWriter().println("init=" + initCount + " service=" + serviceCount);
     }
     public void destroy() { System.out.println("destroy"); }
 }
 
 public class ConfigContextServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         String store  = getServletContext().getInitParameter("collegeName"); // shared
         String author = getServletConfig().getInitParameter("author");       // this servlet
+        res.setContentType("text/html");
         res.getWriter().println("store=" + store + " author=" + author);
     }
 }</pre>
@@ -538,26 +565,38 @@ public class ConfigContextServlet extends HttpServlet {
 &lt;p&gt;&lt;a href="include"&gt;Page with help footer (include)&lt;/a&gt;&lt;/p&gt;</pre>
 
     <h3 class="sec">10. Medium Java (three classes)</h3>
-    <pre class="syntax">public class ForwardServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    <p>Copy from <code>src/ForwardServlet.java</code>, <code>src/RedirectServlet.java</code>, <code>src/TargetServlet.java</code>.</p>
+    <pre class="syntax">import java.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class ForwardServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         req.setAttribute("message", "PASS");           // same request bag
         req.getRequestDispatcher("/target").forward(req, res); // URL stays /forward
     }
 }
 
 public class RedirectServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         res.sendRedirect("target?from=RedirectServlet&amp;student=Rahul"); // 302, new GET
     }
 }
 
 public class TargetServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         Object msg = req.getAttribute("message");      // present after forward only
         String from = req.getParameter("from");        // present after redirect
+        res.setContentType("text/html");
         res.getWriter().println(msg != null ? "FORWARD " + msg : "REDIRECT from=" + from);
     }
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         doGet(req, res);                               // forward keeps POST
     }
 }</pre>
@@ -716,7 +755,8 @@ IncludeServlet  → /include</pre>
   &lt;input type="submit" value="Portal login"&gt;
 &lt;/form&gt;</pre>
 
-    <h3 class="sec">10. Medium Java (core lines only)</h3>
+    <h3 class="sec">10. Medium Java (core lines — full files in src/)</h3>
+    <p>These lines show the idea. For copy-paste that compiles on Tomcat 11 + Java 21, use <code>src/Cookie1.java</code>, <code>src/NotesSessionLogin.java</code>, <code>src/Url1.java</code>, <code>src/Valid.java</code>, <code>src/CapstoneLogin.java</code>.</p>
     <pre class="syntax">// Cookie — YouTube Remember me
 Cookie c = new Cookie("user", login);
 c.setMaxAge(60 * 60);

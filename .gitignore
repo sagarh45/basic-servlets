@@ -8,11 +8,10 @@ Desktop.ini
 .vscode/
 *.iml
 
-# Java / Tomcat build output
-*.class
+# Compile-only servlet API (Tomcat already has this jar)
+lib/
 *.jar
 *.war
-WEB-INF/classes/
 work/
 logs/
 
@@ -20,3 +19,4 @@ logs/
 .env
 .env.*
 credentials.json
+.vercel

@@ -11,7 +11,7 @@
   if (window.__labOnline) return;
   window.__labOnline = true;
 
-  var SERVLET = /^(httpmethods|getpostdiff|lifecycle|configcontext|forward|redirect|target|Cookie1|Cookie2|Cookie3|CookieDelete|NotesSessionLogin|NotesSessionWelcome|NotesSessionLogout|Url1|Url2|Valid|Welcome|CapstoneLogin|CapstoneWelcome|CapstoneLogout|hello|sampleregister|getpost|generic|requestinfo|response|include|attributes|HyperLinkDemo|DoGetDemo|Max|CounterServlet|MyServlet|ServletContextDemo|ConcatServlet|CallServlet|intro)$/i;
+  var SERVLET = /^(httpmethods|getpostdiff|lifecycle|configcontext|forward|redirect|target|includefooter|FwdDemo|RedirectOk|Cookie1|Cookie2|Cookie3|CookieDelete|NotesSessionLogin|NotesSessionWelcome|NotesSessionLogout|Url1|Url2|Valid|Welcome|CapstoneLogin|CapstoneWelcome|CapstoneLogout|hello|sampleregister|getpost|generic|requestinfo|response|include|attributes|HyperLinkDemo|DoGetDemo|Max|CounterServlet|MyServlet|ServletContextDemo|ConcatServlet|CallServlet|intro)$/i;
 
   function nameOf(url) {
     var u = String(url || "").split("?")[0];
@@ -67,7 +67,7 @@
       "</style></head><body>" +
       "<div class='loc'><b>Address bar</b>" + esc(url) + "</div>" +
       "<div class='page'>" + inner + "</div>" +
-      "<script src='online-lab.js?v=2500'></script>" +
+      "<script src='online-lab.js?v=2600'></script>" +
       "</body></html>";
     document.open();
     document.write(html);
@@ -203,12 +203,46 @@
         "<p><a href='forward.html'>Back</a></p>");
       return;
     }
-    if (/^redirect$/i.test(servlet)) {
+    if (servlet === "redirect") {
       var rs = data.student || "Rahul";
       page("target", "from=RedirectServlet&student=" + encodeURIComponent(rs),
         "<h2>TargetServlet</h2>" +
         "<p>REDIRECT from RedirectServlet student=" + esc(rs) + " (URL changed)</p>" +
         "<p><a href='forward.html'>Back</a></p>");
+      return;
+    }
+    if (servlet === "Redirect") {
+      if ((data.login || "") === "java" && (data.pwd || "") === "servlet") {
+        page("RedirectOk", "",
+          "<h1>Login success</h1>" +
+          "<p>sendRedirect changed the address bar to /RedirectOk.</p>" +
+          "<p><a href='redirect_login.html'>Back</a></p>");
+      } else {
+        page("Redirect", "",
+          "<p>Wrong login. Use java / servlet.</p>" +
+          "<p><a href='redirect_login.html'>Back</a></p>");
+      }
+      return;
+    }
+    if (servlet === "RedirectOk") {
+      page("RedirectOk", "",
+        "<h1>Login success</h1>" +
+        "<p>sendRedirect changed the address bar to /RedirectOk.</p>" +
+        "<p><a href='redirect_login.html'>Back</a></p>");
+      return;
+    }
+    if (servlet === "FwdDemo") {
+      page("FwdDemo", "",
+        "<h1>Welcome " + esc(data.login || "") + "</h1>" +
+        "<p>URL may still show CallServlet (forward).</p>" +
+        "<p><a href='1.html'>Back</a></p>");
+      return;
+    }
+    if (/^includefooter$/i.test(servlet)) {
+      page("includefooter", "",
+        "<div style='background:#eee;padding:10px;text-align:center;'>" +
+        "<p><b>Footer included via RequestDispatcher.include()</b></p>" +
+        "<p>Walchand Institute of Technology, Solapur | Advanced Java Unit-II</p></div>");
       return;
     }
     if (/^target$/i.test(servlet)) {

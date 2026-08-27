@@ -128,7 +128,10 @@
       btn.className = "copy-btn";
       btn.textContent = "Copy";
       btn.addEventListener("click", function () {
-        var t = pre.innerText.replace(/\s*Copy\s*$/, "");
+        var clone = pre.cloneNode(true);
+        var extra = clone.querySelector(".copy-btn");
+        if (extra) extra.remove();
+        var t = clone.innerText.replace(/\u00a0/g, " ").replace(/\s+$/, "");
         navigator.clipboard.writeText(t).then(function () {
           btn.textContent = "Copied";
           setTimeout(function () { btn.textContent = "Copy"; }, 1200);
@@ -401,8 +404,18 @@
     palette();
     enhanceIndex();
     quizPage();
-    var lab = document.createElement("script");
-    lab.src = base() + "online-lab.js?v=2500";
-    document.head.appendChild(lab);
+    var port = String(location.port || "");
+    var onTomcat = port === "8080";
+    var path = location.pathname.replace(/\\/g, "/").toLowerCase();
+    var skipOnline = onTomcat
+      || path.indexOf("/topics/") !== -1
+      || path.indexOf("/source/") !== -1
+      || /\/(index|theory|practicals|programs|quiz|setup|webxml)\.html$/.test(path)
+      || /\/basic-servlets\/?$/.test(path);
+    if (!skipOnline) {
+      var lab = document.createElement("script");
+      lab.src = base() + "online-lab.js?v=2600";
+      document.head.appendChild(lab);
+    }
   });
 })();
