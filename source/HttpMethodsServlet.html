@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Source - HttpMethodsServlet.java + HTML + web.xml</title>
+<title>Source - ICA 1 ShopEasy: both Java files + HTML + web.xml</title>
 <style>
 body { font-family: Arial, Helvetica, sans-serif; margin: 30px; background: #f7f7f7; color: #222; }
 h1 { color: #222; font-size: 28px; }
@@ -76,7 +76,8 @@ Saved: Rahul / 101 / Solapur</pre>
 <a class="btn source" href="HttpMethodsServlet.html">Source</a>
 <a class="btn ghost" href="../index.html#ch-http">Index</a>
 </p>
-<h1>Source: HttpMethodsServlet</h1>
+<h1>Source: ICA 1 ShopEasy — both Java files</h1>
+<p class="info">Required files: <code>index.html</code> · <code>HttpMethodsServlet.java</code> · <code>GetPostDiffServlet.java</code> · <code>WEB-INF/web.xml</code>. Copy all four.</p>
 <div class="info">White background, large font, syntax highlight:
   <div class="legend" style="margin-top:8px;">
     <span class="kw">keyword</span>
@@ -224,7 +225,44 @@ function send(m){
     }
 }
 </pre>
-<h2>3. web.xml — complete file</h2><p>Copy this whole file into <code>WEB-INF/web.xml</code>.</p><pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<h2>3. Java — complete file (GetPostDiffServlet.java) — required</h2>
+<p>Second class for ICA 1. Same <code>index.html</code>. Maps to <code>/getpostdiff</code>. GET search shows <code>?q=Java</code> in the address bar. POST review does not.</p>
+<pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
+<span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
+<span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">GetPostDiffServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> q = request.<span class="mtd">getParameter</span>(<span class="str">&quot;q&quot;</span>);
+        <span class="mtd">show</span>(request, response, <span class="str">&quot;GET search q=&quot;</span> + q + <span class="str">&quot; URL=&quot;</span> + request.<span class="mtd">getQueryString</span>());
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="cls">String</span> name = request.<span class="mtd">getParameter</span>(<span class="str">&quot;name&quot;</span>);
+        <span class="cls">String</span> message = request.<span class="mtd">getParameter</span>(<span class="str">&quot;message&quot;</span>);
+        <span class="mtd">show</span>(request, response, <span class="str">&quot;POST saved name=&quot;</span> + name + <span class="str">&quot; message=&quot;</span> + message
+                + <span class="str">&quot; query=&quot;</span> + request.<span class="mtd">getQueryString</span>());
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> <span class="mtd">show</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response, <span class="cls">String</span> msg)
+            <span class="kw">throws</span> <span class="cls">IOException</span> {
+        response.<span class="mtd">setContentType</span>(<span class="str">&quot;text/html&quot;</span>);
+        <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;request.getMethod() = &quot;</span> + request.<span class="mtd">getMethod</span>() + <span class="str">&quot;&lt;/h2&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&quot;</span> + msg + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;index.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+    }
+}
+</pre>
+<h2>4. web.xml — complete file</h2><p>Copy this whole file into <code>WEB-INF/web.xml</code>. Both servlet mappings are required.</p><pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;<span class="tag">web-app</span> <span class="attr">xmlns</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee&quot;</span>
          <span class="attr">xmlns:xsi</span>=<span class="str">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
          <span class="attr">xsi:schemaLocation</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee
