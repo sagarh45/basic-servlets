@@ -422,7 +422,7 @@ public class ConfigContextServlet extends HttpServlet {
         res.getWriter().println("store=" + store + " author=" + author);
     }
 }</pre>
-    <p>Full classes: <a href="source/LifecycleServlet.html">LifecycleServlet</a> · <a href="source/ConfigContextServlet.html">ConfigContextServlet</a>.</p>
+    <p>Full classes: <a href="source/LifecycleServlet.html">LifecycleServlet</a>.</p>
 
     <h3 class="sec">11. Medium web.xml</h3>
     <pre class="syntax">&lt;context-param&gt;
@@ -800,7 +800,7 @@ response.addCookie(remember);
 request.getRequestDispatcher("CapstoneWelcome").forward(request, response);
 // Wrong password: print the error, then include capstone.html
 // Logout: session.invalidate() AND remember cookie setMaxAge(0)</pre>
-    <p>Full classes: <a href="source/Cookie1.html">Cookie1</a> · <a href="source/Cookie2.html">Cookie2</a> · <a href="source/CookieDelete.html">CookieDelete</a> · <a href="source/NotesSessionLogin.html">NotesSessionLogin</a> · <a href="source/CapstoneLogin.html">CapstoneLogin</a>.</p>
+    <p>Full classes: <a href="source/CapstoneLogin.html">CapstoneLogin</a> · <a href="source/CapstoneWelcome.html">CapstoneWelcome</a> · <a href="source/CapstoneLogout.html">CapstoneLogout</a>.</p>
 
     <h3 class="sec">11. Medium web.xml (pattern + list)</h3>
     <pre class="syntax">&lt;servlet&gt;

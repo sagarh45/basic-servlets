@@ -42,7 +42,7 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 01 · SHOPEASY (like Amazon)</p>
-<div class="rel"><b>One HTML page:</b> <code>httpmethods.html</code> — do not add a second HTML file.
+<div class="rel"><b>One HTML page:</b> <code>index.html</code> — do not add a second HTML file.
 Java: <a href="HttpMethodsServlet.html">HttpMethodsServlet</a> · <a href="GetPostDiffServlet.html">GetPostDiffServlet</a>.
 <a href="../practicals.html#ica-1">ICA journal</a>
 <a class="btn" href="../httpmethods.html">Run ShopEasy</a></div>
@@ -53,7 +53,7 @@ PUT = Edit delivery city. DELETE = Cancel order / empty cart.</div>
 <div class="ps">
 <h2>Problem statement (ICA 1 · ShopEasy — same HTML)</h2>
 <p><b>Title:</b> GET search versus POST review on the ShopEasy page</p>
-<p>This class lives on the <b>same</b> <code>httpmethods.html</code> as HttpMethodsServlet. Do not create getpostdiff.html as a student file.</p>
+<p>This class lives on the <b>same</b> <code>index.html</code> as HttpMethodsServlet. Do not create getpostdiff.html as a student file.</p>
 <p><b>What you must do:</b></p>
 <ol>
 <li>GET product search Java. URL must show <code>?q=Java</code> (like YouTube / Flipkart search).</li>
@@ -87,27 +87,50 @@ GET search q=Java URL=q=Java</pre>
     <span class="cmt">&lt;!-- comment --&gt;</span>
   </div>
 </div>
-<h2>1. HTML — one ICA page (httpmethods.html) — ShopEasy, same file</h2><div class="why"><b>Simple meaning:</b> Two forms, one servlet. method=get → doGet. method=post → doPost. No script needed.</div><div class="why"><b>Is &lt;script&gt; required?</b> <b>No.</b> The form is enough.</div><table class="synexp"><tr><th>HTML / line</th><th>Simple meaning</th></tr><tr><td><code>&lt;form method=&quot;get&quot; action=&quot;getpostdiff&quot;&gt;</code></td><td>GET search. Address bar shows ?q=Java.</td></tr><tr><td><code>&lt;input name=&quot;q&quot;&gt;</code></td><td>doGet reads request.getParameter("q").</td></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;getpostdiff&quot;&gt;</code></td><td>POST review / comment. Address bar stays /getpostdiff.</td></tr><tr><td><code>name and message</code></td><td>doPost reads getParameter("name") and getParameter("message").</td></tr></table><p>Copy this small page. <code>name=</code> must match <code>getParameter</code> in Java.</p><pre class="code">&lt;!DOCTYPE html&gt;
-&lt;<span class="tag">html</span>&gt;
+<h2>1. HTML — complete file (index.html)</h2><p>Copy this whole file. In the ICA folder this is <code>index.html</code>.</p><pre class="code">&lt;<span class="tag">html</span>&gt;
 &lt;<span class="tag">head</span>&gt;
 &lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
-&lt;<span class="tag">title</span>&gt;GET vs POST&lt;/<span class="tag">title</span>&gt;
+&lt;<span class="tag">title</span>&gt;ShopEasy&lt;/<span class="tag">title</span>&gt;
 &lt;/<span class="tag">head</span>&gt;
 &lt;<span class="tag">body</span>&gt;
-&lt;<span class="tag">h2</span>&gt;Track order (GET) book&lt;/<span class="tag">h2</span>&gt;
-&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;get&quot;</span> <span class="attr">action</span>=<span class="str">&quot;getpostdiff&quot;</span>&gt;
-  Book: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;q&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Java&quot;</span>&gt;
-  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Search&quot;</span>&gt;
+&lt;<span class="tag">h2</span>&gt;Track order (GET)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;get&quot;</span> <span class="attr">action</span>=<span class="str">&quot;httpmethods&quot;</span>&gt;
+  Order: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;roll&quot;</span> <span class="attr">value</span>=<span class="str">&quot;101&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Track (GET)&quot;</span>&gt;
 &lt;/<span class="tag">form</span>&gt;
 
-&lt;<span class="tag">h2</span>&gt;POST - feedback&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">h2</span>&gt;Place order (POST)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;httpmethods&quot;</span>&gt;
+  Name: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;name&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  Order: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;roll&quot;</span> <span class="attr">value</span>=<span class="str">&quot;101&quot;</span>&gt;
+  City: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;city&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Solapur&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Place order (POST)&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;PUT / DELETE (script needed)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">button</span> <span class="attr">onclick</span>=<span class="str">&quot;send(&#x27;PUT&#x27;)&quot;</span>&gt;Edit city (PUT)&lt;/<span class="tag">button</span>&gt;
+&lt;<span class="tag">button</span> <span class="attr">onclick</span>=<span class="str">&quot;send(&#x27;DELETE&#x27;)&quot;</span>&gt;Cancel (DELETE)&lt;/<span class="tag">button</span>&gt;
+&lt;<span class="tag">script</span>&gt;<span class="js">
+function send(m){
+  fetch(&#x27;httpmethods?roll=101&amp;city=Pune&#x27;,{method:m})
+    .then(r=&gt;r.text()).then(t=&gt;document.write(t));
+}
+</span>&lt;/<span class="tag">script</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;Search vs review — same HTML (GetPostDiffServlet)&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;get&quot;</span> <span class="attr">action</span>=<span class="str">&quot;getpostdiff&quot;</span>&gt;
+  Product: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;q&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Java&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Search (GET)&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
 &lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;getpostdiff&quot;</span>&gt;
   Name: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;name&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
-  Message: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;message&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Lab was clear&quot;</span>&gt;
-  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Send&quot;</span>&gt;
+  Review: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;message&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Fast delivery&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Review (POST)&quot;</span>&gt;
 &lt;/<span class="tag">form</span>&gt;
 &lt;/<span class="tag">body</span>&gt;
-&lt;/<span class="tag">html</span>&gt;</pre><h2>2. Java program — GetPostDiffServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+&lt;/<span class="tag">html</span>&gt;
+</pre>
+<h2>2. Java — complete file (GetPostDiffServlet.java)</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
@@ -138,30 +161,34 @@ GET search q=Java URL=q=Java</pre>
         <span class="cls">PrintWriter</span> out = response.<span class="mtd">getWriter</span>();
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;request.getMethod() = &quot;</span> + request.<span class="mtd">getMethod</span>() + <span class="str">&quot;&lt;/h2&gt;&quot;</span>);
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&quot;</span> + msg + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;httpmethods.html#getpost&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;index.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
     }
 }
 </pre>
-<p><a class="btn" href="../index.html#ch-getpost">Return to Index</a></p>
+<h2>3. web.xml — complete file</h2><p>Copy this whole file into <code>WEB-INF/web.xml</code>.</p><pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;<span class="tag">web-app</span> <span class="attr">xmlns</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee&quot;</span>
+         <span class="attr">xmlns:xsi</span>=<span class="str">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+         <span class="attr">xsi:schemaLocation</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;</span>
+         <span class="attr">version</span>=<span class="str">&quot;6.1&quot;</span>&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;HttpMethodsServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;HttpMethodsServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;HttpMethodsServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/httpmethods&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
 
-<h2>web.xml — complete file for this program</h2>
-<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
-
-<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
-         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
-         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
-         version=&quot;6.1&quot;&gt;
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;GetPostDiffServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;GetPostDiffServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/getpostdiff&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-&lt;/web-app&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;GetPostDiffServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;GetPostDiffServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;GetPostDiffServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/getpostdiff&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
+&lt;/<span class="tag">web-app</span>&gt;
 </pre>
 </body>
 </html>

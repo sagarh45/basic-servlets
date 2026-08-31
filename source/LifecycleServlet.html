@@ -42,8 +42,8 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 02 · WATCHTUBE (like YouTube)</p>
-<div class="rel"><b>One HTML page:</b> <code>lifecycle.html</code> — do not add a second HTML file.
-Java: <a href="LifecycleServlet.html">LifecycleServlet</a> · <a href="ConfigContextServlet.html">ConfigContextServlet</a>.
+<div class="rel"><b>One HTML page:</b> <code>index.html</code> — do not add a second HTML file.
+Java: <a href="LifecycleServlet.html">LifecycleServlet</a>.
 <a href="../practicals.html#ica-2">ICA journal</a>
 <a class="btn" href="../lifecycle.html">Run WatchTube</a></div>
 <div class="realex"><b>Real examples:</b> init once = YouTube player starts once.
@@ -54,7 +54,7 @@ ServletContext = channel / store name (shared). ServletConfig = this video’s a
 <div class="ps">
 <h2>Problem statement (ICA 2 · WatchTube)</h2>
 <p><b>Title:</b> WatchTube view counter — init once, service on every view</p>
-<p>Like YouTube: the player starts once; every refresh is another view. Same HTML also prints channel name vs this video’s author (ConfigContextServlet).</p>
+<p>Like YouTube: the player starts once; every refresh is another view. One HTML page and one Java class: <code>LifecycleServlet</code>.</p>
 <p><b>What you must do:</b></p>
 <ol>
 <li>Open the video (GET) at least five times. init stays 1. service goes 1, 2, 3…</li>
@@ -88,7 +88,7 @@ init=1 service=5 lastVisitor=null</pre>
     <span class="cmt">&lt;!-- comment --&gt;</span>
   </div>
 </div>
-<h2>1. HTML — one ICA page (lifecycle.html) — WatchTube</h2><div class="why"><b>Simple meaning:</b> A link is GET. A form with method=post is POST. No script needed.</div><div class="why"><b>Is &lt;script&gt; required?</b> <b>No.</b> Link = GET, form = POST.</div><table class="synexp"><tr><th>HTML / line</th><th>Simple meaning</th></tr><tr><td><code>&lt;a href=&quot;lifecycle&quot;&gt;</code></td><td>Click = GET. Tomcat runs doGet. No new name is written.</td></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;lifecycle&quot;&gt;</code></td><td>Submit = POST. Tomcat runs doPost.</td></tr><tr><td><code>&lt;input name=&quot;visitor&quot;&gt;</code></td><td>doPost reads request.getParameter("visitor").</td></tr></table><p>Copy this small page. <code>name=</code> must match <code>getParameter</code> in Java.</p><pre class="code">&lt;!DOCTYPE html&gt;
+<h2>1. HTML — complete file (index.html)</h2><p>Copy this whole file. In the ICA folder this is <code>index.html</code>.</p><pre class="code">&lt;!DOCTYPE html&gt;
 &lt;<span class="tag">html</span>&gt;
 &lt;<span class="tag">head</span>&gt;
 &lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
@@ -104,7 +104,9 @@ init=1 service=5 lastVisitor=null</pre>
   &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Sign&quot;</span>&gt;
 &lt;/<span class="tag">form</span>&gt;
 &lt;/<span class="tag">body</span>&gt;
-&lt;/<span class="tag">html</span>&gt;</pre><h2>2. Java program — LifecycleServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+&lt;/<span class="tag">html</span>&gt;
+</pre>
+<h2>2. Java — complete file (LifecycleServlet.java)</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletConfig</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
@@ -157,31 +159,26 @@ init=1 service=5 lastVisitor=null</pre>
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;h2&gt;&quot;</span> + msg + <span class="str">&quot;&lt;/h2&gt;&quot;</span>);
         out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;init=&quot;</span> + initCount + <span class="str">&quot; service=&quot;</span> + serviceCount
                 + <span class="str">&quot; lastVisitor=&quot;</span> + lastVisitor + <span class="str">&quot;&lt;/p&gt;&quot;</span>);
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;lifecycle.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;index.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
     }
 }
 </pre>
-<p><a class="btn" href="../index.html#ch-lifecycle">Return to Index</a></p>
-
-<h2>web.xml — complete file for this program</h2>
-<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
-
-<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
-         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
-         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
-         version=&quot;6.1&quot;&gt;
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;LifecycleServlet&lt;/servlet-class&gt;
-        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;LifecycleServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/lifecycle&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-&lt;/web-app&gt;
+<h2>3. web.xml — complete file</h2><p>Copy this whole file into <code>WEB-INF/web.xml</code>.</p><pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;<span class="tag">web-app</span> <span class="attr">xmlns</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee&quot;</span>
+         <span class="attr">xmlns:xsi</span>=<span class="str">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+         <span class="attr">xsi:schemaLocation</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;</span>
+         <span class="attr">version</span>=<span class="str">&quot;6.1&quot;</span>&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;LifecycleServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;LifecycleServlet&lt;/<span class="tag">servlet-class</span>&gt;
+        &lt;<span class="tag">load-on-startup</span>&gt;1&lt;/<span class="tag">load-on-startup</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;LifecycleServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/lifecycle&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
+&lt;/<span class="tag">web-app</span>&gt;
 </pre>
 </body>
 </html>

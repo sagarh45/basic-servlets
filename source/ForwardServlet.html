@@ -42,8 +42,8 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 03 · MYMAIL + PAYNOW</p>
-<div class="rel"><b>One HTML page:</b> <code>forward.html</code> — do not add extra HTML files.
-Java: <a href="ForwardServlet.html">ForwardServlet</a> · <a href="RedirectServlet.html">RedirectServlet</a> · <a href="TargetServlet.html">TargetServlet</a> · <a href="IncludeServlet.html">IncludeServlet</a>.
+<div class="rel"><b>One HTML page:</b> <code>index.html</code> — do not add extra HTML files.
+Java: <a href="ForwardServlet.html">ForwardServlet</a> · <a href="RedirectServlet.html">RedirectServlet</a> · <a href="TargetServlet.html">TargetServlet</a>.
 <a href="../practicals.html#ica-3">ICA journal</a>
 <a class="btn" href="../forward.html">Run MyMail + PayNow</a></div>
 <div class="realex"><b>Real examples:</b> Forward = Gmail opens a mail in the same tab (URL stays).
@@ -58,7 +58,7 @@ Include = Gmail “Wrong password” still shows the form on the same page.</div
 <ol>
 <li>Open mail (forward). Address bar stays <code>/forward</code>. Page shows FORWARD / PASS.</li>
 <li>Pay now (redirect). Address bar becomes <code>/target?from=RedirectServlet&amp;student=Rahul</code>.</li>
-<li>Write ForwardServlet, RedirectServlet, TargetServlet (and include) plus web.xml. One HTML: <code>forward.html</code>.</li>
+<li>Write ForwardServlet, RedirectServlet, TargetServlet (and include) plus web.xml. One HTML: <code>index.html</code>.</li>
 </ol>
 <p><b>Sample output:</b></p>
 <pre class="sample-out">TargetServlet
@@ -87,7 +87,7 @@ FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
     <span class="cmt">&lt;!-- comment --&gt;</span>
   </div>
 </div>
-<h2>1. HTML — one ICA page (forward.html) — MyMail + PayNow</h2><div class="why"><b>Simple meaning:</b> Two forms. action=forward stays on /forward. action=redirect changes the address bar to /target. No script needed.</div><div class="why"><b>Is &lt;script&gt; required?</b> <b>No.</b> Both forms submit by themselves.</div><table class="synexp"><tr><th>HTML / line</th><th>Simple meaning</th></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;forward&quot;&gt;</code></td><td>POST to /forward. Servlet forwards to TargetServlet. Address bar still shows /forward.</td></tr><tr><td><code>&lt;form method=&quot;post&quot; action=&quot;redirect&quot;&gt;</code></td><td>POST to /redirect. Servlet sendRedirect to /target. Address bar changes.</td></tr><tr><td><code>&lt;input name=&quot;student&quot;&gt;</code></td><td>Both servlets read request.getParameter("student").</td></tr></table><p>Copy this small page. <code>name=</code> must match <code>getParameter</code> in Java.</p><pre class="code">&lt;!DOCTYPE html&gt;
+<h2>1. HTML — complete file (index.html)</h2><p>Copy this whole file. In the ICA folder this is <code>index.html</code>.</p><pre class="code">&lt;!DOCTYPE html&gt;
 &lt;<span class="tag">html</span>&gt;
 &lt;<span class="tag">head</span>&gt;
 &lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
@@ -106,7 +106,9 @@ FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
   &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Pay fees&quot;</span>&gt;
 &lt;/<span class="tag">form</span>&gt;
 &lt;/<span class="tag">body</span>&gt;
-&lt;/<span class="tag">html</span>&gt;</pre><h2>2. Java program — ForwardServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+&lt;/<span class="tag">html</span>&gt;
+</pre>
+<h2>2. Java — complete file (ForwardServlet.java)</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">RequestDispatcher</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
@@ -131,13 +133,20 @@ FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
         rd.<span class="mtd">forward</span>(request, response);
     }
 }
-</pre><h2>3. Java program — RedirectServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+</pre>
+<h2>3. Java — complete file (RedirectServlet.java)</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletResponse</span>;
 
 <span class="kw">public</span> <span class="kw">class</span> <span class="cls">RedirectServlet</span> <span class="kw">extends</span> <span class="cls">HttpServlet</span> {
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doGet</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
+            <span class="kw">throws</span> <span class="cls">ServletException</span>, <span class="cls">IOException</span> {
+        <span class="mtd">doPost</span>(request, response);
+    }
 
     <span class="ann">@Override</span>
     <span class="kw">protected</span> <span class="kw">void</span> <span class="mtd">doPost</span>(<span class="cls">HttpServletRequest</span> request, <span class="cls">HttpServletResponse</span> response)
@@ -150,7 +159,8 @@ FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
                 + java.net.<span class="cls">URLEncoder</span>.<span class="mtd">encode</span>(student, <span class="str">&quot;UTF-8&quot;</span>));
     }
 }
-</pre><h2>4. Java program — TargetServlet.java</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+</pre>
+<h2>4. Java — complete file (TargetServlet.java)</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> java.io.<span class="cls">PrintWriter</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
@@ -187,48 +197,47 @@ FORWARD: Result for Rahul: PASS (URL still /forward)</pre>
         } <span class="kw">else</span> {
             out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;Direct access&lt;/p&gt;&quot;</span>);
         }
-        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;forward.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
+        out.<span class="mtd">println</span>(<span class="str">&quot;&lt;p&gt;&lt;a href=&#x27;index.html&#x27;&gt;Back&lt;/a&gt;&lt;/p&gt;&quot;</span>);
     }
 }
 </pre>
-<p><a class="btn" href="../index.html#ch-fwd">Return to Index</a></p>
+<h2>5. web.xml — complete file</h2><p>Copy this whole file into <code>WEB-INF/web.xml</code>.</p><pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;<span class="tag">web-app</span> <span class="attr">xmlns</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee&quot;</span>
+         <span class="attr">xmlns:xsi</span>=<span class="str">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+         <span class="attr">xsi:schemaLocation</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;</span>
+         <span class="attr">version</span>=<span class="str">&quot;6.1&quot;</span>&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;ForwardServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;ForwardServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;ForwardServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/forward&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
 
-<h2>web.xml — complete file for this program</h2>
-<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;RedirectServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;RedirectServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;RedirectServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/redirect&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
 
-<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
-         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
-         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
-         version=&quot;6.1&quot;&gt;
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;ForwardServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;ForwardServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/forward&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;TargetServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;TargetServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;TargetServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/target&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
 
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;RedirectServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/redirect&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;TargetServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;TargetServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/target&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-&lt;/web-app&gt;
+    &lt;<span class="tag">welcome-file-list</span>&gt;
+        &lt;<span class="tag">welcome-file</span>&gt;index.html&lt;/<span class="tag">welcome-file</span>&gt;
+    &lt;/<span class="tag">welcome-file-list</span>&gt;
+&lt;/<span class="tag">web-app</span>&gt;
 </pre>
 </body>
 </html>

@@ -49,8 +49,8 @@ pre.code { background:#ffffff; color:#000; padding:18px; overflow:auto; border:1
 </head>
 <body>
 <p class="icatag">ICA PRACTICAL 03 · MYMAIL + PAYNOW</p>
-<div class="rel"><b>One HTML page:</b> <code>forward.html</code> — do not add extra HTML files.
-Java: <a href="ForwardServlet.html">ForwardServlet</a> · <a href="RedirectServlet.html">RedirectServlet</a> · <a href="TargetServlet.html">TargetServlet</a> · <a href="IncludeServlet.html">IncludeServlet</a>.
+<div class="rel"><b>One HTML page:</b> <code>index.html</code> — do not add extra HTML files.
+Java: <a href="ForwardServlet.html">ForwardServlet</a> · <a href="RedirectServlet.html">RedirectServlet</a> · <a href="TargetServlet.html">TargetServlet</a>.
 <a href="../practicals.html#ica-3">ICA journal</a>
 <a class="btn" href="../forward.html">Run MyMail + PayNow</a></div>
 <div class="realex"><b>Real examples:</b> Forward = Gmail opens a mail in the same tab (URL stays).
@@ -61,7 +61,7 @@ Include = Gmail “Wrong password” still shows the form on the same page.</div
 <div class="ps">
 <h2>Problem statement (ICA 3 · PayNow redirect)</h2>
 <p><b>Title:</b> sendRedirect like Amazon Pay / net-banking</p>
-<p>Redirect makes the browser open a new URL. Request attributes are lost. Same HTML as forward: <code>forward.html</code>.</p>
+<p>Redirect makes the browser open a new URL. Request attributes are lost. Same HTML as forward: <code>index.html</code>.</p>
 <p><b>What you must do:</b></p>
 <ol>
 <li>Read student from the Pay now form (default Rahul).</li>
@@ -87,8 +87,28 @@ REDIRECT from RedirectServlet student=Rahul (URL changed)</pre>
     <span class="tag">&lt;xml-tag&gt;</span>
   </div>
 </div>
-<h2>1) Java code - RedirectServlet.java</h2>
-<pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
+<h2>1. HTML — complete file (index.html)</h2><p>Copy this whole file. In the ICA folder this is <code>index.html</code>.</p><pre class="code">&lt;!DOCTYPE html&gt;
+&lt;<span class="tag">html</span>&gt;
+&lt;<span class="tag">head</span>&gt;
+&lt;<span class="tag">meta</span> <span class="attr">charset</span>=<span class="str">&quot;UTF-8&quot;</span>&gt;
+&lt;<span class="tag">title</span>&gt;Forward vs Redirect&lt;/<span class="tag">title</span>&gt;
+&lt;/<span class="tag">head</span>&gt;
+&lt;<span class="tag">body</span>&gt;
+&lt;<span class="tag">h2</span>&gt;FORWARD - exam result&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;forward&quot;</span>&gt;
+  Student: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;student&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Submit exam&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+
+&lt;<span class="tag">h2</span>&gt;REDIRECT - fee receipt&lt;/<span class="tag">h2</span>&gt;
+&lt;<span class="tag">form</span> <span class="attr">method</span>=<span class="str">&quot;post&quot;</span> <span class="attr">action</span>=<span class="str">&quot;redirect&quot;</span>&gt;
+  Student: &lt;<span class="tag">input</span> <span class="attr">name</span>=<span class="str">&quot;student&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Rahul&quot;</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="str">&quot;Pay fees&quot;</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+&lt;/<span class="tag">body</span>&gt;
+&lt;/<span class="tag">html</span>&gt;
+</pre>
+<h2>2. Java — complete file (RedirectServlet.java)</h2><pre class="code"><span class="kw">import</span> java.io.<span class="cls">IOException</span>;
 <span class="kw">import</span> jakarta.servlet.<span class="cls">ServletException</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServlet</span>;
 <span class="kw">import</span> jakarta.servlet.http.<span class="cls">HttpServletRequest</span>;
@@ -114,26 +134,43 @@ REDIRECT from RedirectServlet student=Rahul (URL changed)</pre>
     }
 }
 </pre>
-<p><a href="../index.html#ex-redirect">Return to Index</a></p>
+<h2>3. web.xml — complete file</h2><p>Copy this whole file into <code>WEB-INF/web.xml</code>.</p><pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;<span class="tag">web-app</span> <span class="attr">xmlns</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee&quot;</span>
+         <span class="attr">xmlns:xsi</span>=<span class="str">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+         <span class="attr">xsi:schemaLocation</span>=<span class="str">&quot;https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;</span>
+         <span class="attr">version</span>=<span class="str">&quot;6.1&quot;</span>&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;ForwardServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;ForwardServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;ForwardServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/forward&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
 
-<h2>web.xml — complete file for this program</h2>
-<p>Copy this whole file into <code>WEB-INF/web.xml</code>. Only the tags this program needs.</p>
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;RedirectServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;RedirectServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;RedirectServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/redirect&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
 
-<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;web-app xmlns=&quot;https://jakarta.ee/xml/ns/jakartaee&quot;
-         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-         xsi:schemaLocation=&quot;https://jakarta.ee/xml/ns/jakartaee
-         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd&quot;
-         version=&quot;6.1&quot;&gt;
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;RedirectServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;RedirectServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/redirect&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-&lt;/web-app&gt;
+    &lt;<span class="tag">servlet</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;TargetServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">servlet-class</span>&gt;TargetServlet&lt;/<span class="tag">servlet-class</span>&gt;
+    &lt;/<span class="tag">servlet</span>&gt;
+    &lt;<span class="tag">servlet-mapping</span>&gt;
+        &lt;<span class="tag">servlet-name</span>&gt;TargetServlet&lt;/<span class="tag">servlet-name</span>&gt;
+        &lt;<span class="tag">url-pattern</span>&gt;/target&lt;/<span class="tag">url-pattern</span>&gt;
+    &lt;/<span class="tag">servlet-mapping</span>&gt;
+
+    &lt;<span class="tag">welcome-file-list</span>&gt;
+        &lt;<span class="tag">welcome-file</span>&gt;index.html&lt;/<span class="tag">welcome-file</span>&gt;
+    &lt;/<span class="tag">welcome-file-list</span>&gt;
+&lt;/<span class="tag">web-app</span>&gt;
 </pre>
 </body>
 </html>
